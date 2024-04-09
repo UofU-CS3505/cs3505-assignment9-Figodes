@@ -9,16 +9,21 @@ UILogicGate::UILogicGate(QWidget* parent)
     : QLabel(parent)
 {
     pickedUp = false;
-    this->setFixedSize(300, 200);
-    this->setStyleSheet("background-color : green");
-    this->setMouseTracking(true);
-    this->setFocusPolicy(Qt::ClickFocus);
+    setFixedSize(100, 75);
+    setStyleSheet("background-color : green");
+    setMouseTracking(true);
+    setFocusPolicy(Qt::ClickFocus);
+
+    QString operationName = "DEF";
+    setText(operationName);
+    setAlignment(Qt::AlignCenter);
+
 
     qint32 inputCount = 2;
     qint32 outputCount = 1;
 
-    qint32 edgeBuffer = 10;
-    qint32 buttonSize = 30;
+    qint32 edgeBuffer = 5;
+    qint32 buttonSize = 20;
     qint32 gateWidth = width();
     qint32 gateHeight = height();
     qint32 inputSpace = (gateHeight - 2 * edgeBuffer) / (inputCount + 1);

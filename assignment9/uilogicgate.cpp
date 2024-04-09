@@ -27,12 +27,21 @@ UILogicGate::UILogicGate(QWidget* parent)
 void UILogicGate::mousePressEvent(QMouseEvent* event)
 {
     pickedUp = !pickedUp;
+    if (pickedUp) {
+        // Record the offset inside the widget at which it was clicked
+        dragStartPosition = event->pos();
+    }
     std::cout << "clicked!" << std::endl;
 }
 
 void UILogicGate::mouseMoveEvent(QMouseEvent* event)
 {
-    if (pickedUp)
-        this->move(event->position().toPoint());
+    if (pickedUp) {
+        // Calculate the new position for the widget by converting the current mouse position
+        // within the widget to the parent's coordinate system, and then applying the initial offset
+        QPoint newPos = event->pos() - dragStartPosition;
+        // Move the widget to the new position within its parent's coordinate system
+        this->move(mapToParent(newPos));
+    }
     std::cout << "moved!" << std::endl;
 }

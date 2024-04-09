@@ -14,6 +14,7 @@ private:
     QPushButton* input1;
     QPushButton* input2;
     QPushButton* output;
+    QPoint dragStartPosition;
     bool pickedUp;
 
 public slots:

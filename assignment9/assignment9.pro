@@ -57,7 +57,8 @@ SOURCES += \
     Box2D/Rope/b2Rope.cpp \
     main.cpp \
     mainwindow.cpp \
-    simulatormodel.cpp
+    simulatormodel.cpp \
+    uilogicgate.cpp
 
 HEADERS += \
     Box2D/Box2D.h \
@@ -108,7 +109,8 @@ HEADERS += \
     Box2D/Dynamics/b2WorldCallbacks.h \
     Box2D/Rope/b2Rope.h \
     mainwindow.h \
-    simulatormodel.h
+    simulatormodel.h \
+    uilogicgate.h
 
 FORMS += \
     mainwindow.ui

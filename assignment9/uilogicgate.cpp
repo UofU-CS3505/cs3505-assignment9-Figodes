@@ -2,26 +2,41 @@
 #include <iostream>
 #include <QPushButton>
 #include <QMouseEvent>
+#include <QVector>
+#include <QtTypes>
 
 UILogicGate::UILogicGate(QWidget* parent)
     : QLabel(parent)
 {
-    this->setMouseTracking(true);
-    this->setFocusPolicy(Qt::ClickFocus);
-
     pickedUp = false;
     this->setFixedSize(300, 200);
     this->setStyleSheet("background-color : green");
+    this->setMouseTracking(true);
+    this->setFocusPolicy(Qt::ClickFocus);
 
-    input1 = new QPushButton("+", this);
-    input1->setFixedSize(30, 30);
-    input1->move(this->x() + 50, this->y() + 50);
-    input2 = new QPushButton("+", this);
-    input2->setFixedSize(30, 30);
-    input2->move(this->x() + 50, this->y() + 100);
-    output = new QPushButton("+", this);
-    output->setFixedSize(30, 30);
-    output->move(this->x() + 200, this->y() + 75);
+    qint32 inputCount = 2;
+    qint32 outputCount = 1;
+
+    qint32 edgeBuffer = 10;
+    qint32 buttonSize = 30;
+    qint32 gateWidth = width();
+    qint32 gateHeight = height();
+    qint32 inputSpace = (gateHeight - 2 * edgeBuffer) / (inputCount + 1);
+    qint32 outputSpace = (gateHeight - 2 * edgeBuffer) / (outputCount + 1);
+
+    for (int c = 0; c < inputCount; c++)
+    {
+        inputs.append( new QPushButton("+", this));
+        inputs[c]->setFixedSize(buttonSize, buttonSize);
+        inputs[c]->move(x() + edgeBuffer, y() + edgeBuffer + ((c + 1) * inputSpace) - (buttonSize / 2));
+    }
+
+    for (int c = 0; c < outputCount; c++)
+    {
+        outputs.append( new QPushButton("+", this));
+        outputs[c]->setFixedSize(buttonSize, buttonSize);
+        outputs[c]->move(x() + (gateWidth - edgeBuffer - buttonSize), y() + edgeBuffer + ((c + 1) * outputSpace) - (buttonSize / 2));
+    }
 }
 
 void UILogicGate::mousePressEvent(QMouseEvent* event)

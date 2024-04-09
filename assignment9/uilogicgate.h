@@ -3,6 +3,7 @@
 
 #include <QLabel>
 #include <QPushButton>
+#include <QVector>
 
 class UILogicGate : public QLabel
 {
@@ -11,6 +12,8 @@ class UILogicGate : public QLabel
 public:
     UILogicGate(QWidget *parent);
 private:
+    QVector<QPushButton*> inputs;
+    QVector<QPushButton*> outputs;
     QPushButton* input1;
     QPushButton* input2;
     QPushButton* output;

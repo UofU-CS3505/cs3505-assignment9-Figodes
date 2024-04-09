@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->wires->setStyleSheet("QLabel { border: 1px solid black; }");
+    ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
 
 }
 

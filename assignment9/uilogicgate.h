@@ -6,12 +6,19 @@
 
 class UILogicGate : public QLabel
 {
+    Q_OBJECT
+
 public:
     UILogicGate(QWidget *parent);
 private:
     QPushButton* input1;
     QPushButton* input2;
     QPushButton* output;
+    bool pickedUp;
+
+public slots:
+    void mousePressEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
 
 };
 

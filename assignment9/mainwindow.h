@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "uilogicgate.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,5 +27,7 @@ signals:
 
     // Signal to tell the model that a connection has been made between logic gates
     void connectionDrawn();
+
+    void updateGateLocation(UILogicGate gate);
 };
 #endif // MAINWINDOW_H

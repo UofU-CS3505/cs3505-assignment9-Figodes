@@ -19,14 +19,23 @@ private:
     QPushButton* output;
     QPoint dragStartPosition;
     bool pickedUp;
+    bool drawingLine;
+    QPoint lineStart;
+    QPoint lineEnd;
+    QPushButton* activeButton;
 
 signals:
     void updateLocation(UILogicGate *gate, QMouseEvent* event);
 
+
 public slots:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
+    void startLineDrawing();
+    void endLineDrawing();
 
+protected:
+    void paintEvent(QPaintEvent* event);
 };
 
 #endif // UILOGICGATE_H

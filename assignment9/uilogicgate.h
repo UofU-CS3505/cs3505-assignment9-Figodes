@@ -26,7 +26,7 @@ private:
     QPushButton* activeButton;
 
 signals:
-    void updateLocation(UILogicGate *gate, QMouseEvent* event);
+    void updatePickedUpGateLocation(UILogicGate *gate, QPoint initialPosition);
 
 
 public slots:
@@ -34,6 +34,8 @@ public slots:
     void mouseMoveEvent(QMouseEvent* event);
     void startLineDrawing();
     void endLineDrawing();
+
+    void updateLocation(QPoint newLocation);
 
 protected:
     void paintEvent(QPaintEvent* event);

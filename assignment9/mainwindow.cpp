@@ -2,6 +2,8 @@
 #include "qevent.h"
 #include "ui_mainwindow.h"
 #include <QDrag>
+#include <QMouseEvent>
+#include <iostream>
 #include "simulatorModel.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,7 +15,18 @@ MainWindow::MainWindow(QWidget *parent)
     model = new simulatorModel();
     idCounter = 0;
 
+    // Main issue: how should i make it so all uilogicgates are connected
+    UILogicGate* logicGate = new UILogicGate(ui->canvas, "TEST");
+
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+    connect(logicGate, &UILogicGate::updatePickedUpGateLocation, this, &MainWindow::updatePickedUpGate);
+
+
+    // UILogicGate* ex = new UILogicGate(ui->canvas, "DEF");
+    // UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
+    // UILogicGate* NotGate = new UILogicGate(ui->canvas, "NOT", 1, 1);
+    model = new simulatorModel();
+
 
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ prepareToAddGate(0); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ prepareToAddGate(1); });
@@ -41,10 +54,25 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
- void MainWindow::updateGateLocation(UILogicGate *gate, QMouseEvent *event) {
+void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
+    pickedUpGate = gate;
+    dragStartPosition = initialPosition;
+    std::cout << "in slot" << std::endl;
 
+}
 
- }
+void MainWindow::mouseMoveEvent(QMouseEvent* event) {
+    if (pickedUpGate) {
+        QPoint newPos = event->pos() - dragStartPosition;
+        // Move the widget to the new position within its parent's coordinate system
+        pickedUpGate->move(newPos);
+    }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* event) {
+
+}
+
 void MainWindow::setLevelDescription(QString text){
     ui->levelDescription->setText(text);
 }

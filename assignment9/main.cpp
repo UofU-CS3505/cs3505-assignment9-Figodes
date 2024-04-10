@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include "uilogicgate.h"
 
 int main(int argc, char *argv[])
 {

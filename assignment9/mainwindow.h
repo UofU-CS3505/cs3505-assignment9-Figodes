@@ -20,6 +20,11 @@ public:
     ~MainWindow();
 
 private:
+    Ui::MainWindow *ui;
+    UILogicGate *pickedUpGate;
+
+    QPoint dragStartPosition;
+
     Ui::MainWindow* ui;
     simulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
@@ -27,7 +32,9 @@ private:
     qint32 idCounter;
 
 public slots:
-    void updateGateLocation(UILogicGate *gate, QMouseEvent *event);
+
+    void updatePickedUpGate(UILogicGate *gate, QPoint initialPosition);
+
     /// \brief Sets the level description to display the given text.
     /// \param text
     void setLevelDescription(QString text);

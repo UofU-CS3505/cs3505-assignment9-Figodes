@@ -21,10 +21,19 @@ private:
     Ui::MainWindow *ui;
 
 public slots:
+    /// \brief Sets the level description to display the given text.
+    /// \param text
+    void setLevelDescription(QString text);
+
+    /// \brief Called when startButton is clicked, just calls simulationStarted.
+    void onStartClicked();
 
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates
     void connectionDrawn();
+
+    /// \brief Signal for when a level should start simulating.
+    void startSimulation();
 };
 #endif // MAINWINDOW_H

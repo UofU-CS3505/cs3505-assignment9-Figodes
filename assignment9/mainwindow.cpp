@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+
     UILogicGate* ex = new UILogicGate(ui->canvas);
     UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
 
@@ -18,4 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setLevelDescription(QString text){
+    ui->levelDescription->setText(text);
+}
+
+void MainWindow::onStartClicked(){
+    emit startSimulation();
 }

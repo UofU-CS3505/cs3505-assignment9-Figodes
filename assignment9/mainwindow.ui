@@ -27,22 +27,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="UILogicGate" name="exampleGate">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>260</y>
-      <width>201</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AND</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
    <widget class="QPushButton" name="addANDGate">
     <property name="geometry">
      <rect>
@@ -226,19 +210,12 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>17</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>UILogicGate</class>
-   <extends>QLabel</extends>
-   <header>uilogicgate.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

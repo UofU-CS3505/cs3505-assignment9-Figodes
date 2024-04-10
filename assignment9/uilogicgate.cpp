@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include <QVector>
 #include <QtTypes>
+#include <QPainter>
 
 UILogicGate::UILogicGate(QWidget* parent, QString operationName, qint32 inputCount, qint32 outputCount)
     : QLabel(parent)
@@ -36,6 +37,18 @@ UILogicGate::UILogicGate(QWidget* parent, QString operationName, qint32 inputCou
         outputs.append( new QPushButton("+", this));
         outputs[c]->setFixedSize(buttonSize, buttonSize);
         outputs[c]->move(x() + (gateWidth - edgeBuffer - buttonSize), y() + edgeBuffer + ((c + 1) * outputSpace) - (buttonSize / 2));
+    }
+
+    // Connect button press signals for inputs
+    for (int c = 0; c < inputCount; c++)
+    {
+        connect(inputs[c], &QPushButton::pressed, this, &UILogicGate::startLineDrawing);
+    }
+
+    // Connect button press signals for outputs
+    for (int c = 0; c < outputCount; c++)
+    {
+        connect(outputs[c], &QPushButton::pressed, this, &UILogicGate::startLineDrawing);
     }
 }
 
@@ -72,3 +85,35 @@ void UILogicGate::mouseMoveEvent(QMouseEvent* event)
     }
     std::cout << "moved!" << std::endl;*/
 }
+
+void UILogicGate::startLineDrawing()
+{
+    QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
+    if (senderButton) {
+        activeButton = senderButton;
+        drawingLine = true;
+        lineStart = mapToParent(activeButton->pos() + QPoint(activeButton->width() / 2, activeButton->height() / 2));
+        update(); // Calls paintEvent
+    }
+}
+
+void UILogicGate::endLineDrawing()
+{
+    if (drawingLine) {
+        drawingLine = false;
+        update(); // Calls paintEvent
+    }
+    drawingLine = !drawingLine;
+}
+
+void UILogicGate::paintEvent(QPaintEvent* event)
+{
+    QLabel::paintEvent(event);
+
+    if (drawingLine) {
+        QPainter painter(this);
+        painter.setPen(Qt::black);
+        painter.drawLine(lineStart, lineEnd);
+    }
+}
+

@@ -7,6 +7,8 @@ class simulatorModel
 {
 public:
     simulatorModel();
+    qint32 currentLevel;
+    QVector<QString> levelDescriptions;
 
 private:
     QVector <UILogicGate> gates;

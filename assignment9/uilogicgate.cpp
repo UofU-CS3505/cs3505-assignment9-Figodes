@@ -57,6 +57,8 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
 void UILogicGate::mouseMoveEvent(QMouseEvent* event)
 {
     if (pickedUp) {
+
+        emit updateLocation(this, event);
         // Calculate the new position for the widget by converting the current mouse position
         // within the widget to the parent's coordinate system, and then applying the initial offset
         QPoint newPos = event->pos() - dragStartPosition;

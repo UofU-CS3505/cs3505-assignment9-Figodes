@@ -118,7 +118,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="startButton">
     <property name="geometry">
      <rect>
       <x>900</x>
@@ -203,6 +203,22 @@
      </item>
     </layout>
    </widget>
+   <widget class="QLabel" name="levelDescription">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>20</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>this is the level description</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -210,7 +226,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>26</height>
+     <height>17</height>
     </rect>
    </property>
   </widget>

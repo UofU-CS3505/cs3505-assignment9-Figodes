@@ -22,6 +22,8 @@ private:
     };
 public:
     simulatorModel();
+    qint32 currentLevel;
+    QVector<QString> levelDescriptions;
 };
 
 #endif // SIMULATORMODEL_H

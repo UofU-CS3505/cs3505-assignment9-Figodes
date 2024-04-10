@@ -9,12 +9,16 @@ private:
     class gateNode
     {
     public:
-        gateNode(qint32 inputCount, qint32 outputCount, std::function<void()> evaluatorFunc);
+        gateNode(qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc);
         QVector<gateNode*> inputFromNodes;
         QVector<gateNode*> outputToNodes;
         QVector<bool> inputStates;
         QVector<bool> outputStates;
-        std::function<void()> evaluate;
+        void evaluate();
+        qint32 id;
+
+    private:
+        std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
 public:
     simulatorModel();

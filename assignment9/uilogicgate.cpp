@@ -63,5 +63,4 @@ void UILogicGate::mouseMoveEvent(QMouseEvent* event)
         // Move the widget to the new position within its parent's coordinate system
         this->move(mapToParent(newPos));
     }
-    std::cout << "moved!" << std::endl;
 }

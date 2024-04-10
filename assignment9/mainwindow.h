@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "simulatorModel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,7 +19,8 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
+    simulatorModel* model;
 
 public slots:
 

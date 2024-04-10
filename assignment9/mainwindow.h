@@ -19,5 +19,12 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+public slots:
+
+signals:
+
+    // Signal to tell the model that a connection has been made between logic gates
+    void connectionDrawn();
 };
 #endif // MAINWINDOW_H

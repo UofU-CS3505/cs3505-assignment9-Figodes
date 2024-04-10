@@ -20,9 +20,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    UILogicGate *pickedUpGate;
+
+    QPoint dragStartPosition;
+
 
 public slots:
-    void updateGateLocation(UILogicGate *gate, QMouseEvent *event);
+
+    void updatePickedUpGate(UILogicGate *gate, QPoint initialPosition);
+
     /// \brief Sets the level description to display the given text.
     /// \param text
     void setLevelDescription(QString text);
@@ -33,6 +39,9 @@ public slots:
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
     void showInputs(bool inputs[]);
+
+    void mousePressEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
 
 signals:
 

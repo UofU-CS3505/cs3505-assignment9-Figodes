@@ -21,11 +21,13 @@ private:
     bool pickedUp;
 
 signals:
-    void updateLocation(UILogicGate *gate, QMouseEvent* event);
+    void updatePickedUpGateLocation(UILogicGate *gate, QPoint initialPosition);
 
 public slots:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
+
+    void updateLocation(QPoint newLocation);
 
 };
 

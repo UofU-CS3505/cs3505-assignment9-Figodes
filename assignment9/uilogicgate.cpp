@@ -44,9 +44,10 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
     pickedUp = !pickedUp;
     if (pickedUp) {
         // Record the offset inside the widget at which it was clicked
-        dragStartPosition = event->pos();
+       // dragStartPosition = event->pos();
         setStyleSheet("background-color : lime");
         QWidget::raise();
+        emit updatePickedUpGateLocation(this, event->pos());
     }
     else {
         setStyleSheet("background-color : green");
@@ -54,16 +55,20 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
     std::cout << "clicked!" << std::endl;
 }
 
+void UILogicGate::updateLocation(QPoint newLocation) {
+    std::cout << newLocation.x() << newLocation.y() << std::endl;
+    this->move(mapToParent(newLocation));
+}
+
 void UILogicGate::mouseMoveEvent(QMouseEvent* event)
-{
+{/*
     if (pickedUp) {
 
-        emit updateLocation(this, event);
         // Calculate the new position for the widget by converting the current mouse position
         // within the widget to the parent's coordinate system, and then applying the initial offset
         QPoint newPos = event->pos() - dragStartPosition;
         // Move the widget to the new position within its parent's coordinate system
         this->move(mapToParent(newPos));
     }
-    std::cout << "moved!" << std::endl;
+    std::cout << "moved!" << std::endl;*/
 }

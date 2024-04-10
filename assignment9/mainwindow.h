@@ -25,7 +25,6 @@ private:
 
     QPoint dragStartPosition;
 
-    Ui::MainWindow* ui;
     simulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
@@ -45,10 +44,6 @@ public slots:
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
     void showInputs(bool inputs[]);
-
-    void addANDGate();
-    void addORGate();
-    void addNOTGate();
 
     void mouseMoveEvent(QMouseEvent* event);
     void hidePlaceholder();

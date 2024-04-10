@@ -1,4 +1,5 @@
 #include "uilogicgate.h"
+#include "mainwindow.h"
 #include <iostream>
 #include <QPushButton>
 #include <QMouseEvent>
@@ -10,6 +11,15 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
     : QLabel(parent)
     , id(id)
 {
+    MainWindow* mainWindow = nullptr;
+    QObject* currentParent = this;
+    while (!mainWindow) //if cast succeeded and we found mainwindow, this should exit since the ptr should no longer be null
+    {
+        currentParent = currentParent->parent();
+        mainWindow = qobject_cast<MainWindow*>(currentParent);
+    }
+    connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
+
     pickedUp = false;
     setFixedSize(100, 75);
     setStyleSheet("background-color : green");
@@ -72,19 +82,6 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
 void UILogicGate::updateLocation(QPoint newLocation) {
     std::cout << newLocation.x() << newLocation.y() << std::endl;
     this->move(mapToParent(newLocation));
-}
-
-void UILogicGate::mouseMoveEvent(QMouseEvent* event)
-{/*
-    if (pickedUp) {
-
-        // Calculate the new position for the widget by converting the current mouse position
-        // within the widget to the parent's coordinate system, and then applying the initial offset
-        QPoint newPos = event->pos() - dragStartPosition;
-        // Move the widget to the new position within its parent's coordinate system
-        this->move(mapToParent(newPos));
-    }
-    std::cout << "moved!" << std::endl;*/
 }
 
 void UILogicGate::startLineDrawing()

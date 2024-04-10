@@ -31,7 +31,6 @@ signals:
 
 public slots:
     void mousePressEvent(QMouseEvent* event);
-    void mouseMoveEvent(QMouseEvent* event);
     void startLineDrawing();
     void endLineDrawing();
 

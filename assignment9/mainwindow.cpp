@@ -16,10 +16,9 @@ MainWindow::MainWindow(QWidget *parent)
     idCounter = 0;
 
     // Main issue: how should i make it so all uilogicgates are connected
-    UILogicGate* logicGate = new UILogicGate(ui->canvas, "TEST");
+    UILogicGate* logicGate = new UILogicGate(ui->canvas, idCounter++, "TEST");
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
-    connect(logicGate, &UILogicGate::updatePickedUpGateLocation, this, &MainWindow::updatePickedUpGate);
 
 
     // UILogicGate* ex = new UILogicGate(ui->canvas, "DEF");
@@ -61,17 +60,17 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    if (pickedUpGate) {
-        QPoint newPos = event->pos() - dragStartPosition;
-        // Move the widget to the new position within its parent's coordinate system
-        pickedUpGate->move(newPos);
-    }
-}
+// void MainWindow::mouseMoveEvent(QMouseEvent* event) {
+//     if (pickedUpGate) {
+//         QPoint newPos = event->pos() - dragStartPosition;
+//         // Move the widget to the new position within its parent's coordinate system
+//         pickedUpGate->move(newPos);
+//     }
+// }
 
-void MainWindow::mousePressEvent(QMouseEvent* event) {
+// void MainWindow::mousePressEvent(QMouseEvent* event) {
 
-}
+// }
 
 void MainWindow::setLevelDescription(QString text){
     ui->levelDescription->setText(text);
@@ -98,48 +97,20 @@ void MainWindow::showInputs(bool inputs[]){
         ui->input3->setStyleSheet("background-color : green");
 }
 
-void MainWindow::addANDGate() {
-    UILogicGate* andGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
-
-    // Convert global cursor position to the canvas coordinate system
-    QPoint cursorPos = ui->canvas->mapFromGlobal(QCursor::pos());
-
-    // Adjust the gate's position so that it spawns at the mouse cursor
-    andGate->move(cursorPos.x() - (andGate->width() / 2), cursorPos.y() - (andGate->height() / 2));
-
-    andGate->show();
-}
-
-void MainWindow::addORGate() {
-    UILogicGate* orGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
-
-    // Convert global cursor position to the canvas coordinate system
-    QPoint cursorPos = ui->canvas->mapFromGlobal(QCursor::pos());
-
-    // Adjust the gate's position so that it spawns at the mouse cursor
-    orGate->move(cursorPos.x() - (orGate->width() / 2), cursorPos.y() - (orGate->height() / 2));
-
-    orGate->show();
-}
-
-void MainWindow::addNOTGate() {
-    UILogicGate* notGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
-
-    // Convert global cursor position to the canvas coordinate system
-    QPoint cursorPos = ui->canvas->mapFromGlobal(QCursor::pos());
-
-    // Adjust the gate's position so that it spawns at the mouse cursor
-    notGate->move(cursorPos.x() - (notGate->width() / 2), cursorPos.y() - (notGate->height() / 2));
-
-    notGate->show();
-}
-
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    QMainWindow::mouseMoveEvent(event);
-    if (gatePlaceholder->isVisible()) {
-        QPoint newPos = event->pos() - QPoint(gatePlaceholder->width() / 2, gatePlaceholder->height() / 2);
-        gatePlaceholder->move(newPos);
+    std::cout << "moved!" << std::endl;
+    if (pickedUpGate)
+    {
+        std::cout << "moved picked gate" << std::endl;
+        QPoint newPos = event->pos() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
+        pickedUpGate->move(ui->canvas->mapFromParent(newPos));
     }
+
+    // QMainWindow::mouseMoveEvent(event);
+    // if (gatePlaceholder->isVisible()) {
+    //     QPoint newPos = event->pos() - QPoint(gatePlaceholder->width() / 2, gatePlaceholder->height() / 2);
+    //     gatePlaceholder->move(newPos);
+    // }
 }
 
 
@@ -190,6 +161,8 @@ void MainWindow::mousePressEvent(QMouseEvent* event) {
             newGate->move(adjustedX, adjustedY);
             newGate->show();
         }
+
+        pickedUpGate = newGate;
 
         // Hide the placeholder after placing the gate
         gatePlaceholder->hide();

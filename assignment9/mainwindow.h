@@ -52,6 +52,7 @@ public slots:
     void hidePlaceholder();
     void prepareToAddGate(qint32 gateType);
     void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 
 
 signals:

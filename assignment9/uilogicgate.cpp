@@ -6,8 +6,9 @@
 #include <QtTypes>
 #include <QPainter>
 
-UILogicGate::UILogicGate(QWidget* parent, QString operationName, qint32 inputCount, qint32 outputCount)
+UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint32 inputCount, qint32 outputCount)
     : QLabel(parent)
+    , id(id)
 {
     pickedUp = false;
     setFixedSize(100, 75);

@@ -10,7 +10,8 @@ class UILogicGate : public QLabel
     Q_OBJECT
 
 public:
-    UILogicGate(QWidget* parent, QString operationName = "DEF", qint32 inputCount = 2, qint32 outputCount = 1);
+    UILogicGate(QWidget* parent, qint32 id, QString operationName = "DEF", qint32 inputCount = 2, qint32 outputCount = 1);
+    qint32 id;
 private:
     QVector<QPushButton*> inputs;
     QVector<QPushButton*> outputs;

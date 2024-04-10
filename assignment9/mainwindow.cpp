@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     model = new simulatorModel();
+    idCounter = 0;
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
@@ -70,7 +71,7 @@ void MainWindow::showInputs(bool inputs[]){
 }
 
 void MainWindow::addANDGate() {
-    UILogicGate* andGate = new UILogicGate(ui->canvas, "AND", 2, 1);
+    UILogicGate* andGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
 
     // Convert global cursor position to the canvas coordinate system
     QPoint cursorPos = ui->canvas->mapFromGlobal(QCursor::pos());
@@ -82,7 +83,7 @@ void MainWindow::addANDGate() {
 }
 
 void MainWindow::addORGate() {
-    UILogicGate* orGate = new UILogicGate(ui->canvas, "AND", 2, 1);
+    UILogicGate* orGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
 
     // Convert global cursor position to the canvas coordinate system
     QPoint cursorPos = ui->canvas->mapFromGlobal(QCursor::pos());
@@ -94,7 +95,7 @@ void MainWindow::addORGate() {
 }
 
 void MainWindow::addNOTGate() {
-    UILogicGate* notGate = new UILogicGate(ui->canvas, "AND", 2, 1);
+    UILogicGate* notGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
 
     // Convert global cursor position to the canvas coordinate system
     QPoint cursorPos = ui->canvas->mapFromGlobal(QCursor::pos());
@@ -147,13 +148,13 @@ void MainWindow::mousePressEvent(QMouseEvent* event) {
         // Switch statement to instantiate the correct gate type
         switch(currentGateType) {
         case 0:
-            newGate = new UILogicGate(ui->canvas, "AND", 2, 1);
+            newGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
             break;
         case 1:
-            newGate = new UILogicGate(ui->canvas, "OR", 2, 1);
+            newGate = new UILogicGate(ui->canvas, idCounter++, "OR", 2, 1);
             break;
         case 2:
-            newGate = new UILogicGate(ui->canvas, "NOT", 1, 1);
+            newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
             break;
         }
 

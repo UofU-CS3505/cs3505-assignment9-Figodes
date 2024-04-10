@@ -24,6 +24,7 @@ private:
     simulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
+    qint32 idCounter;
 
 public slots:
     void updateGateLocation(UILogicGate *gate, QMouseEvent *event);

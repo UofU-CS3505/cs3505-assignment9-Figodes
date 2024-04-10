@@ -28,6 +28,10 @@ public slots:
     /// \brief Called when startButton is clicked, just calls simulationStarted.
     void onStartClicked();
 
+    /// \brief Turns the 3 input buttons on and off to show the given inputs.
+    /// \param inputs: an array of 3 bools.
+    void showInputs(bool inputs[]);
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

@@ -14,7 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
-
+    bool startingInputs[3] = {false, false, false};
+    showInputs(startingInputs);
 }
 
 MainWindow::~MainWindow()
@@ -28,4 +29,21 @@ void MainWindow::setLevelDescription(QString text){
 
 void MainWindow::onStartClicked(){
     emit startSimulation();
+}
+
+void MainWindow::showInputs(bool inputs[]){
+    if(inputs[0])
+        ui->input1->setStyleSheet("background-color : lawngreen");
+    else
+        ui->input1->setStyleSheet("background-color : green");
+
+    if(inputs[1])
+        ui->input2->setStyleSheet("background-color : lawngreen");
+    else
+        ui->input2->setStyleSheet("background-color : green");
+
+    if(inputs[2])
+        ui->input3->setStyleSheet("background-color : lawngreen");
+    else
+        ui->input3->setStyleSheet("background-color : green");
 }

@@ -59,17 +59,7 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    if (pickedUpGate) {
-        QPoint newPos = event->pos() - dragStartPosition;
-        // Move the widget to the new position within its parent's coordinate system
-        pickedUpGate->move(newPos);
-    }
-}
 
-void MainWindow::mousePressEvent(QMouseEvent* event) {
-
-}
 
 void MainWindow::setLevelDescription(QString text){
     ui->levelDescription->setText(text);
@@ -136,7 +126,20 @@ void MainWindow::addNOTGate() {
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    QMainWindow::mouseMoveEvent(event);
+   // QMainWindow::mouseMoveEvent(event);
+    if (pickedUpGate) {
+        QPointF tempGlobalPos = event->globalPosition();
+
+        QPoint globalPos = tempGlobalPos.toPoint();
+
+        QPoint newPos = pickedUpGate->parentWidget()->mapFromGlobal(globalPos);
+
+        newPos -= QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
+
+        pickedUpGate->move(newPos);
+
+    }
+
     if (gatePlaceholder->isVisible()) {
         QPoint newPos = event->pos() - QPoint(gatePlaceholder->width() / 2, gatePlaceholder->height() / 2);
         gatePlaceholder->move(newPos);
@@ -160,6 +163,7 @@ void MainWindow::hidePlaceholder() {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* event) {
+    pickedUpGate = nullptr;
     if (gatePlaceholder->isVisible()) {
         QPoint gatePos = ui->canvas->mapFromGlobal(QCursor::pos());
 

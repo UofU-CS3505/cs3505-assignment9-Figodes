@@ -53,7 +53,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
-    pickedUpGate = gate;
+    if (!pickedUpGate)
+        pickedUpGate = gate;
+    else
+        pickedUpGate = nullptr;
     dragStartPosition = initialPosition;
     std::cout << "in slot" << std::endl;
 
@@ -146,6 +149,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
+void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
+
+}
+
 
 void MainWindow::prepareToAddGate(qint32 gateType) {
     currentGateType = gateType; // Save the gate type to be added
@@ -163,7 +170,6 @@ void MainWindow::hidePlaceholder() {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* event) {
-    pickedUpGate = nullptr;
     if (gatePlaceholder->isVisible()) {
         QPoint gatePos = ui->canvas->mapFromGlobal(QCursor::pos());
 

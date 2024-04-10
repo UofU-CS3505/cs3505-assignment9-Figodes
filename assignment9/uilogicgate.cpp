@@ -60,11 +60,12 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
        // dragStartPosition = event->pos();
         setStyleSheet("background-color : lime");
         QWidget::raise();
-        emit updatePickedUpGateLocation(this, event->pos());
     }
     else {
         setStyleSheet("background-color : green");
     }
+    emit updatePickedUpGateLocation(this, event->pos());
+
     std::cout << "clicked!" << std::endl;
 }
 

@@ -106,6 +106,7 @@ void MainWindow::addANDGate() {
     andGate->move(cursorPos.x() - (andGate->width() / 2), cursorPos.y() - (andGate->height() / 2));
 
     andGate->show();
+    gates.append(andGate);
 }
 
 void MainWindow::addORGate() {
@@ -118,6 +119,7 @@ void MainWindow::addORGate() {
     orGate->move(cursorPos.x() - (orGate->width() / 2), cursorPos.y() - (orGate->height() / 2));
 
     orGate->show();
+    gates.append(orGate);
 }
 
 void MainWindow::addNOTGate() {
@@ -130,6 +132,7 @@ void MainWindow::addNOTGate() {
     notGate->move(cursorPos.x() - (notGate->width() / 2), cursorPos.y() - (notGate->height() / 2));
 
     notGate->show();
+    gates.append(notGate);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
@@ -195,4 +198,6 @@ void MainWindow::mousePressEvent(QMouseEvent* event) {
     event->ignore();
 }
 
-
+void MainWindow::clearGates(){
+    gates.clear();
+}

@@ -25,10 +25,11 @@ private:
 
     QPoint dragStartPosition;
 
-    Ui::MainWindow* ui;
     simulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
+
+    QVector<UILogicGate*> gates;
 
 public slots:
 
@@ -53,6 +54,9 @@ public slots:
     void hidePlaceholder();
     void prepareToAddGate(qint32 gateType);
     void mousePressEvent(QMouseEvent* event);
+
+    /// \brief Clears all currently placed logic gates in UI.
+    void clearGates();
 
 
 signals:

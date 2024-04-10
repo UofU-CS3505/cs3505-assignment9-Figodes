@@ -45,6 +45,11 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
     if (pickedUp) {
         // Record the offset inside the widget at which it was clicked
         dragStartPosition = event->pos();
+        setStyleSheet("background-color : lime");
+        QWidget::raise();
+    }
+    else {
+        setStyleSheet("background-color : green");
     }
     std::cout << "clicked!" << std::endl;
 }

@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     UILogicGate* ex = new UILogicGate(ui->canvas);
+    UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
 

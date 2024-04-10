@@ -20,10 +20,12 @@ private:
     QPoint dragStartPosition;
     bool pickedUp;
 
+signals:
+    void updateLocation(UILogicGate *gate, QMouseEvent* event);
+
 public slots:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
-
 
 };
 

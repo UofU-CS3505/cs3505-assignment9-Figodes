@@ -8,9 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    UILogicGate* ex = new UILogicGate(ui->canvas, "DEF");
-    UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
-    UILogicGate* NotGate = new UILogicGate(ui->canvas, "NOT", 1, 1);
+     UILogicGate* ex = new UILogicGate(ui->canvas);
+     UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
 
@@ -21,7 +20,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateGateLocation(UILogicGate gate) {
+ void MainWindow::updateGateLocation(UILogicGate *gate, QMouseEvent *event) {
 
 
-}
+ }

@@ -22,12 +22,11 @@ private:
     Ui::MainWindow *ui;
 
 public slots:
+    void updateGateLocation(UILogicGate *gate, QMouseEvent *event);
 
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates
     void connectionDrawn();
-
-    void updateGateLocation(UILogicGate gate);
 };
 #endif // MAINWINDOW_H

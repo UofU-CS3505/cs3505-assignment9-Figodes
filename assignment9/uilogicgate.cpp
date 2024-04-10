@@ -51,7 +51,7 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
     else {
         setStyleSheet("background-color : green");
     }
-    std::cout << "clicked!" << std::endl;
+    //std::cout << "clicked!" << std::endl;
 }
 
 void UILogicGate::mouseMoveEvent(QMouseEvent* event)
@@ -61,7 +61,39 @@ void UILogicGate::mouseMoveEvent(QMouseEvent* event)
         // within the widget to the parent's coordinate system, and then applying the initial offset
         QPoint newPos = event->pos() - dragStartPosition;
         // Move the widget to the new position within its parent's coordinate system
+
+
+        // QRect widgetRect = this->rect();
+        // QPoint mousePos = parentWidget()->mapFromGlobal(QCursor::pos());
+        // if(parentWidget()->rect().contains(mousePos))
+        // {
+        //         std::cout << "in if statement!" << std::endl;
+        //         std::cout << std::endl;
+        //     }
+        //     else {
+        //          std::cout << "not in if statement!" << std::endl;
+        //         std::cout << std::endl;
+        // }
+
+        // if (this->rect().contains(event->pos())) {
+        //     std::cout << "in if statement!" << std::endl;
+        //     std::cout << std::endl;
+        // }
+        // else {
+        //      std::cout << "not in if statement!" << std::endl;
+        //     std::cout << std::endl;
+
+        // }
+
+        // if (parentWidget()->rect().contains(this->mapFromGlobal(QCursor::pos()))) {
+        //    std::cout << "in if statement!" << std::endl;
+        //    this->move(mapToParent(newPos));
+        // }
+        // else
+        //     std::cout << "not in if statement!" << std::endl;
+
         this->move(mapToParent(newPos));
     }
-    std::cout << "moved!" << std::endl;
+    //std::cout << "moved!" << std::endl;
 }
+

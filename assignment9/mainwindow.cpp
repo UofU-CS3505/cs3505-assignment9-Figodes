@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
-
-    UILogicGate* ex = new UILogicGate(ui->canvas);
+    
+    UILogicGate* ex = new UILogicGate(ui->canvas, "DEF");
     UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
+    UILogicGate* NotGate = new UILogicGate(ui->canvas, "NOT", 1, 1);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     bool startingInputs[3] = {false, false, false};

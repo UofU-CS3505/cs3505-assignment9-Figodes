@@ -24,6 +24,7 @@ public slots:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
 
+
 };
 
 #endif // UILOGICGATE_H

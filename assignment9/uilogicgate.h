@@ -25,6 +25,7 @@ private:
 signals:
     void updatePickedUpGateLocation(UILogicGate *gate, QPoint initialPosition);
     void startDrawingLine(QPoint location);
+    void inputOrOutputPressed(qint32 id, QString type, qint32 index);
 
 
 public slots:

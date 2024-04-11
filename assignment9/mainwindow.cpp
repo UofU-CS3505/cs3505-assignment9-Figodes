@@ -125,3 +125,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
     return false;
 }
+
+void MainWindow::connectionBeingMade(qint32 gate, QString type, qint32 index){
+    std::cout << gate << ", " << type.toStdString() << ", " << index << std::endl;
+}

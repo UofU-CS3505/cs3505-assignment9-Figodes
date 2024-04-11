@@ -19,6 +19,7 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         mainWindow = qobject_cast<MainWindow*>(currentParent);
     }
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
+    connect (this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
 
     pickedUp = false;
     setFixedSize(100, 75);
@@ -79,8 +80,17 @@ void UILogicGate::startLineDrawing()
 {
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     // After, go to the gate, do indexof sender pushbutton on the inputs/outputs
-    std::cout << this->inputs.indexOf(button);
-    std::cout << this->id << std::endl;
+    if(this->inputs.contains(button)){
+        qint32 indexOfPressedButton = this->inputs.indexOf(button);
+        emit inputOrOutputPressed(this->id, "input", indexOfPressedButton);
+
+    }
+    else {
+        qint32 indexOfPressedButton = this->outputs.indexOf(button);
+        emit inputOrOutputPressed(this->id, "output", indexOfPressedButton);
+    }
+
+
 }
 
 

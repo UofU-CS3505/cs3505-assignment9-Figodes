@@ -56,6 +56,8 @@ public slots:
     /// \brief Clears all currently placed logic gates in UI.
     void clearGates();
 
+    void connectionBeingMade(qint32 gate, QString type, qint32 index);
+
 
 signals:
 

@@ -79,7 +79,7 @@ void UILogicGate::startLineDrawing()
 {
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     // After, go to the gate, do indexof sender pushbutton on the inputs/outputs
-    std::cout << this->inputs.indexOf(button);
+    std::cout << this->inputs.indexOf(button) << std
     std::cout << this->id << std::endl;
 }
 

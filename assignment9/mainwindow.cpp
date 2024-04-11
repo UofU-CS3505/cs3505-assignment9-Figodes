@@ -119,7 +119,8 @@ void MainWindow::addGate(qint32 gateType) {
 }
 
 void MainWindow::clearGates(){
-    gates.clear();
+    for(QObject* o: ui->canvas->children())
+        delete o;
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

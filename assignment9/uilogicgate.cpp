@@ -41,6 +41,8 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         inputs.append( new QPushButton("+", this));
         inputs[c]->setFixedSize(buttonSize, buttonSize);
         inputs[c]->move(x() + edgeBuffer, y() + ((c + 1) * inputSpace) - (buttonSize / 2));
+        // Connect button press signals for inputs
+        connect(inputs[c], &QPushButton::pressed, this, &UILogicGate::startLineDrawing);
     }
 
     for (int c = 0; c < outputCount; c++)
@@ -48,17 +50,7 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         outputs.append( new QPushButton("+", this));
         outputs[c]->setFixedSize(buttonSize, buttonSize);
         outputs[c]->move(x() + (gateWidth - edgeBuffer - buttonSize), y() + edgeBuffer + ((c + 1) * outputSpace) - (buttonSize / 2));
-    }
-
-    // Connect button press signals for inputs
-    for (int c = 0; c < inputCount; c++)
-    {
-        connect(inputs[c], &QPushButton::pressed, this, &UILogicGate::startLineDrawing);
-    }
-
-    // Connect button press signals for outputs
-    for (int c = 0; c < outputCount; c++)
-    {
+        // Connect button press signals for outputs
         connect(outputs[c], &QPushButton::pressed, this, &UILogicGate::startLineDrawing);
     }
 }
@@ -76,8 +68,6 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
         setStyleSheet("background-color : green");
     }
     emit updatePickedUpGateLocation(this, event->pos());
-
-    std::cout << "clicked!" << std::endl;
 }
 
 void UILogicGate::updateLocation(QPoint newLocation) {

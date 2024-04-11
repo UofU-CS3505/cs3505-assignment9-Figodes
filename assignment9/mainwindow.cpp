@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new simulatorModel();
 
-
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(0); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(1); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(2); });
@@ -33,11 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     bool startingInputs[3] = {false, false, false};
     showInputs(startingInputs);
-
-    gatePlaceholder = new QLabel(this); // Parent to MainWindow
-    gatePlaceholder->setFixedSize(100, 75);
-    gatePlaceholder->setStyleSheet("border: 2px dashed #000; background-color: rgba(255, 255, 255, 0);");
-    gatePlaceholder->hide();
 }
 
 MainWindow::~MainWindow()

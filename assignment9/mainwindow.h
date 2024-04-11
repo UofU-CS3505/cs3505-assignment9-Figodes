@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "simulatorModel.h"
 #include "uilogicgate.h"
+#include <QSet>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,6 +23,8 @@ public:
 private:
     Ui::MainWindow *ui;
     UILogicGate *pickedUpGate;
+    QSet<QPushButton*> inputButtons;
+    QSet<QPushButton*> outputButtons;
 
     QPoint dragStartPosition;
 
@@ -32,6 +35,7 @@ private:
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
+    void trackButtonsOn(UILogicGate* quarry);
 
 public slots:
 

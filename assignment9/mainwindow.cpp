@@ -100,6 +100,7 @@ void MainWindow::addGate(qint32 gateType) {
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     }
+    trackButtonsOn(newGate);
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
@@ -113,6 +114,8 @@ void MainWindow::addGate(qint32 gateType) {
 void MainWindow::clearGates(){
     for(QObject* o: ui->canvas->children())
         delete o;
+    inputButtons.clear();
+    outputButtons.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -124,4 +127,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         mouseMoveEvent(mouseEvent);
     }
     return false;
+}
+
+void MainWindow::trackButtonsOn(UILogicGate* quarry)
+{
+    inputButtons.unite(*new QSet(quarry->inputs.begin(), quarry->inputs.end()));
+    outputButtons.unite(*new QSet(quarry->outputs.begin(), quarry->outputs.end()));
 }

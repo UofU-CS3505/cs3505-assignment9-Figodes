@@ -107,7 +107,11 @@ void MainWindow::addGate(qint32 gateType) {
         break;
     }
 
+    newGate->setStyleSheet("background-color : lime");
+    newGate->pickedUp = true;
+
     pickedUpGate = newGate;
+
     gates.append(newGate);
     newGate->show();
 }

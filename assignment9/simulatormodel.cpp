@@ -101,3 +101,18 @@ bool SimulatorModel::canBeSimulated()
     }
     return true;
 }
+
+QVector<bool> SimulatorModel::intToInputSequence(qint32 integer){
+    QVector<bool> sequence;
+    for(int i = 0; i < 3; i++)
+        sequence.append((integer >> i) & 1); //get ith bit of integer
+
+    return sequence;
+}
+
+void SimulatorModel::startSimulation(){
+    for(int i = 0; i < 8; i++)
+        simulateInput(intToInputSequence(i), levels[currentLevel].getExpectedOutput(i));
+
+    endSimulation();
+}

@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "qevent.h"
 #include "ui_mainwindow.h"
-#include <QDrag>
 #include <QMouseEvent>
 #include <iostream>
 #include "simulatorModel.h"
@@ -47,8 +46,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
-    pickedUpGate = gate;
-    dragStartPosition = initialPosition;
+    if (pickedUpGate == gate)
+        pickedUpGate = nullptr;
+    else
+        pickedUpGate = gate;
 }
 
 void MainWindow::setLevelDescription(QString text){
@@ -77,18 +78,11 @@ void MainWindow::showInputs(bool inputs[]){
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    QPoint pos = event->pos();
-    std::cout << "orig: " << pos.x() << ", " << pos.y() << std::endl;
-    pos = this->mapFromParent(pos);
-    std::cout << "from parent: " << pos.x() << ", " << pos.y() << std::endl;
-    pos = this->mapFromGlobal(pos);
-    std::cout << "from global: " << pos.x() << ", " << pos.y() << std::endl;
     if (pickedUpGate)
     {
         std::cout << "moved picked gate" << std::endl;
-        QPoint newPos = event->pos() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
-        //pickedUpGate->move(ui->canvas->mapFromParent(newPos));
-        pickedUpGate->move(newPos);
+        QPointF newPos = event->scenePosition() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
+        pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
         std::cout << newPos.x() << ", " << newPos.y() << std::endl;
     }
 }

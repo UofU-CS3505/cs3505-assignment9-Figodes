@@ -27,17 +27,15 @@ private:
 
 signals:
     void updatePickedUpGateLocation(UILogicGate *gate, QPoint initialPosition);
+    void startDrawingLine(QPoint location);
 
 
 public slots:
     void mousePressEvent(QMouseEvent* event);
     void startLineDrawing();
-    void endLineDrawing();
 
     void updateLocation(QPoint newLocation);
 
-protected:
-    void paintEvent(QPaintEvent* event);
 };
 
 #endif // UILOGICGATE_H

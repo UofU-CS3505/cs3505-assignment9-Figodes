@@ -96,23 +96,5 @@ void UILogicGate::startLineDrawing()
     }
 }
 
-void UILogicGate::endLineDrawing()
-{
-    if (drawingLine) {
-        drawingLine = false;
-        update(); // Calls paintEvent
-    }
-    drawingLine = !drawingLine;
-}
 
-void UILogicGate::paintEvent(QPaintEvent* event)
-{
-    QLabel::paintEvent(event);
-
-    if (drawingLine) {
-        QPainter painter(this);
-        painter.setPen(Qt::black);
-        painter.drawLine(lineStart, lineEnd);
-    }
-}
 

@@ -139,8 +139,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-void MainWindow::connectionBeingMade(qint32 gate, QString type, qint32 index){
-    std::cout << gate << ", " << type.toStdString() << ", " << index << std::endl;
+void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button){
+
+    // If connectionBeingDrawn is false, that means the button being sent is the source
+    // If connectionBeingDrawn is true, that means the button send is the destination
 }
 void MainWindow::trackButtonsOn(UILogicGate* quarry)
 {

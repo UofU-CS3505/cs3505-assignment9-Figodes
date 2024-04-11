@@ -81,17 +81,10 @@ void UILogicGate::updateLocation(QPoint newLocation) {
 
 void UILogicGate::startLineDrawing()
 {
+
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     // After, go to the gate, do indexof sender pushbutton on the inputs/outputs
-    if(this->inputs.contains(button)){
-        qint32 indexOfPressedButton = this->inputs.indexOf(button);
-        emit inputOrOutputPressed(this->id, "input", indexOfPressedButton);
-
-    }
-    else {
-        qint32 indexOfPressedButton = this->outputs.indexOf(button);
-        emit inputOrOutputPressed(this->id, "output", indexOfPressedButton);
-    }
+    emit inputOrOutputPressed(this->id, button);
 
 
 }

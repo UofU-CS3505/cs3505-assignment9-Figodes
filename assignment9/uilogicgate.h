@@ -36,6 +36,7 @@ public slots:
 
     void updateLocation(QPoint newLocation);
 
+
 };
 
 #endif // UILOGICGATE_H

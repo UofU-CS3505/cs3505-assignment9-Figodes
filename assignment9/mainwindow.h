@@ -56,6 +56,7 @@ public slots:
     void clearGates();
 
 
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates
@@ -63,5 +64,6 @@ signals:
 
     /// \brief Signal for when a level should start simulating.
     void startSimulation();
+
 };
 #endif // MAINWINDOW_H

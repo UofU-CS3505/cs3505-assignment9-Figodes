@@ -20,6 +20,7 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
     }
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
 
+
     pickedUp = false;
     setFixedSize(100, 75);
     setStyleSheet("background-color : green");
@@ -69,6 +70,8 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
     }
     emit updatePickedUpGateLocation(this, event->pos());
 }
+
+
 
 void UILogicGate::updateLocation(QPoint newLocation) {
     std::cout << newLocation.x() << newLocation.y() << std::endl;

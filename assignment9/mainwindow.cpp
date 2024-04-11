@@ -87,6 +87,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 
 void MainWindow::addGate(qint32 gateType) {
+
+    if (pickedUpGate){
+        pickedUpGate->setStyleSheet("background-color : green");
+        pickedUpGate->pickedUp = false;
+        pickedUpGate = nullptr;
+    }
     UILogicGate* newGate = nullptr;
     // Switch statement to instantiate the correct gate type
     switch(gateType) {
@@ -101,10 +107,11 @@ void MainWindow::addGate(qint32 gateType) {
         break;
     }
 
-    newGate->setStyleSheet("background-color : lime");
-    newGate->pickedUp = true;
 
     pickedUpGate = newGate;
+
+    newGate->setStyleSheet("background-color : lime");
+    newGate->pickedUp = true;
 
     gates.append(newGate);
     newGate->show();

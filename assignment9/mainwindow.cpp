@@ -138,6 +138,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::connectionBeingMade(qint32 gate, QString type, qint32 index){
     std::cout << gate << ", " << type.toStdString() << ", " << index << std::endl;
+}
 void MainWindow::trackButtonsOn(UILogicGate* quarry)
 {
     inputButtons.unite(*new QSet(quarry->inputs.begin(), quarry->inputs.end()));

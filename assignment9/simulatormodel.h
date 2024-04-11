@@ -20,7 +20,7 @@ private:
         /// \brief simulatorModel::gateNode::gateNode Creates a new node in the model for a gate, with the specified number of inputs and outputs
         /// \param evaluatorFunc A function pointer (I would recommend using a lambda) for a function that sets the elements of outputs based on the elements of inputs. This should represent the operation of this gate.
         ///
-        gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc);
+        gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, simulatorModel* parentModel);
         //The nodes that this node takes inputs from
         QVector<gateNode*> inputFromNodes;
         //The nodes that this node gives outputs to
@@ -71,6 +71,10 @@ public:
     /// \brief resetGateStates Resets the states of all inputs/outputs, essentially resets all on/off states.
     ///
     void resetGateStates();
+    ///
+    /// \brief canBeSimulated Checks whether the current model can be simulated. This could be because the current model contains a cycle.
+    ///
+    bool canBeSimulated();
 };
 
 #endif // SIMULATORMODEL_H

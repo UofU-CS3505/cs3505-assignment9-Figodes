@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QObject>
 #include "level.h"
+#include "gatetypes.h"
 
 class SimulatorModel : public QObject
 {
@@ -21,11 +22,11 @@ private:
         /// \brief SimulatorModel::gateNode::gateNode Creates a new node in the model for a gate, with the specified number of inputs and outputs
         /// \param evaluatorFunc A function pointer (I would recommend using a lambda) for a function that sets the elements of outputs based on the elements of inputs. This should represent the operation of this gate.
         ///
-        gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel);
-        //The nodes that this node takes inputs from
-        QVector<gateNode*> inputFromNodes;
-        //The nodes that this node gives outputs to
-        QVector<gateNode*> outputToNodes;
+        gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, simulatorModel* parentModel);
+        //The set of nodes that this node takes inputs from
+        QVector<QSet<gateNode*>> inputFromNodes;
+        //The set of nodes that this node gives outputs to
+        QVector<QSet<gateNode*>> outputToNodes;
         //Whether the input/output at a given position are receiving/giving a signal
         QVector<bool> inputStates;
         QVector<bool> outputStates;
@@ -84,6 +85,11 @@ public:
     void simulateInput();
     void simulateOneIteration();
     void endSimulation();
+
+    public slots:
+
+    void addNewGate(qint32 gateID, GateTypes gt);
+
 };
 
 #endif // SIMULATORMODEL_H

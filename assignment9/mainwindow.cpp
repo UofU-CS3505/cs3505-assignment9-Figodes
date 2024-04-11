@@ -25,9 +25,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new SimulatorModel();
 
-    connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(0); });
-    connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(1); });
-    connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(2); });
+    connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
+    connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
+    connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
+
+    connect(this, &MainWindow::newGateCreated, model, &simulatorModel::addNewGate);
+
 
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
@@ -87,25 +90,38 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 
-void MainWindow::addGate(qint32 gateType) {
+void MainWindow::addGate(GateTypes gateType) {
+
+    // if the user adds a new gate, disable the current one
+    if (pickedUpGate){
+        pickedUpGate->setStyleSheet("background-color : green");
+        pickedUpGate->pickedUp = false;
+        pickedUpGate = nullptr;
+    }
+
     UILogicGate* newGate = nullptr;
     // Switch statement to instantiate the correct gate type
     switch(gateType) {
-    case 0:
+    case GateTypes::AND:
         newGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
         break;
-    case 1:
+    case GateTypes::OR:
         newGate = new UILogicGate(ui->canvas, idCounter++, "OR", 2, 1);
         break;
-    case 2:
+    case GateTypes::NOT:
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     }
+    trackButtonsOn(newGate);
+
+    emit newGateCreated(newGate->id, gateType);
+
+    pickedUpGate = newGate;
+    // make the pickedUpGate initially be offscreen to avoid weird snapping effects
+    pickedUpGate->move(1000,1000);
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
-
-    pickedUpGate = newGate;
 
     gates.append(newGate);
     newGate->show();
@@ -114,6 +130,8 @@ void MainWindow::addGate(qint32 gateType) {
 void MainWindow::clearGates(){
     for(QObject* o: ui->canvas->children())
         delete o;
+    inputButtons.clear();
+    outputButtons.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -125,4 +143,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         mouseMoveEvent(mouseEvent);
     }
     return false;
+}
+
+void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button){
+
+    // If connectionBeingDrawn is false, that means the button being sent is the source
+    // If connectionBeingDrawn is true, that means the button send is the destination
+}
+void MainWindow::trackButtonsOn(UILogicGate* quarry)
+{
+    inputButtons.unite(*new QSet(quarry->inputs.begin(), quarry->inputs.end()));
+    outputButtons.unite(*new QSet(quarry->outputs.begin(), quarry->outputs.end()));
 }

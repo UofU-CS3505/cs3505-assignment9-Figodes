@@ -13,12 +13,9 @@ public:
     UILogicGate(QWidget* parent, qint32 id, QString operationName = "DEF", qint32 inputCount = 2, qint32 outputCount = 1);
     qint32 id;
     bool pickedUp;
-private:
     QVector<QPushButton*> inputs;
     QVector<QPushButton*> outputs;
-    QPushButton* input1;
-    QPushButton* input2;
-    QPushButton* output;
+private:
     QPoint dragStartPosition;
     bool drawingLine;
     QPoint lineStart;
@@ -28,6 +25,7 @@ private:
 signals:
     void updatePickedUpGateLocation(UILogicGate *gate, QPoint initialPosition);
     void startDrawingLine(QPoint location);
+    void inputOrOutputPressed(qint32 id, QPushButton* button);
 
 
 public slots:
@@ -35,6 +33,7 @@ public slots:
     void startLineDrawing();
 
     void updateLocation(QPoint newLocation);
+
 
 };
 

@@ -19,6 +19,8 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         mainWindow = qobject_cast<MainWindow*>(currentParent);
     }
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
+    connect (this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
+
 
     pickedUp = false;
     setFixedSize(100, 75);
@@ -70,6 +72,8 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
     emit updatePickedUpGateLocation(this, event->pos());
 }
 
+
+
 void UILogicGate::updateLocation(QPoint newLocation) {
     std::cout << newLocation.x() << newLocation.y() << std::endl;
     this->move(mapToParent(newLocation));
@@ -77,13 +81,12 @@ void UILogicGate::updateLocation(QPoint newLocation) {
 
 void UILogicGate::startLineDrawing()
 {
-    QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
-    if (senderButton) {
-        activeButton = senderButton;
-        drawingLine = true;
-        lineStart = mapToParent(activeButton->pos() + QPoint(activeButton->width() / 2, activeButton->height() / 2));
-        update(); // Calls paintEvent
-    }
+
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    // After, go to the gate, do indexof sender pushbutton on the inputs/outputs
+    emit inputOrOutputPressed(this->id, button);
+
+
 }
 
 

@@ -3,9 +3,12 @@
 
 #include <QVector>
 #include <QMap>
+#include <QObject>
 
-class simulatorModel
+class simulatorModel : public QObject
 {
+    Q_OBJECT
+
 private:
     ///
     /// \brief The gateNode class All lists of inputs and outputs are indexed based on height. 0 corresponds to the highest button of the inputs/outputs.

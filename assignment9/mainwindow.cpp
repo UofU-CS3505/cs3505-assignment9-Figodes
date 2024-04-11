@@ -50,10 +50,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
-    if (!pickedUpGate)
-        pickedUpGate = gate;
-    else
-        pickedUpGate = nullptr;
+    pickedUpGate = gate;
     dragStartPosition = initialPosition;
     std::cout << "in slot" << std::endl;
 

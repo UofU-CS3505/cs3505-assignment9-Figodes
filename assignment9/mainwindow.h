@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "simulatorModel.h"
 #include "uilogicgate.h"
+#include <QSet>
 #include "gatetypes.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,6 +24,8 @@ public:
 private:
     Ui::MainWindow *ui;
     UILogicGate *pickedUpGate;
+    QSet<QPushButton*> inputButtons;
+    QSet<QPushButton*> outputButtons;
 
     QPoint dragStartPosition;
 
@@ -33,6 +36,7 @@ private:
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
+    void trackButtonsOn(UILogicGate* quarry);
 
 public slots:
 
@@ -59,6 +63,7 @@ public slots:
     void connectionBeingMade(qint32 gate, QString type, qint32 index);
 
 
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates
@@ -66,5 +71,6 @@ signals:
 
     /// \brief Signal for when a level should start simulating.
     void startSimulation();
+
 };
 #endif // MAINWINDOW_H

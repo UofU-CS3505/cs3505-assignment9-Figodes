@@ -87,6 +87,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 
 void MainWindow::addGate(GateTypes gateType) {
+
+    if (pickedUpGate){
+        pickedUpGate->setStyleSheet("background-color : green");
+        pickedUpGate->pickedUp = false;
+        pickedUpGate = nullptr;
+    }
     UILogicGate* newGate = nullptr;
     // Switch statement to instantiate the correct gate type
     switch(gateType) {
@@ -100,11 +106,13 @@ void MainWindow::addGate(GateTypes gateType) {
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     }
+    trackButtonsOn(newGate);
+
+
+    pickedUpGate = newGate;
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
-
-    pickedUpGate = newGate;
 
     gates.append(newGate);
     newGate->show();
@@ -113,6 +121,8 @@ void MainWindow::addGate(GateTypes gateType) {
 void MainWindow::clearGates(){
     for(QObject* o: ui->canvas->children())
         delete o;
+    inputButtons.clear();
+    outputButtons.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -128,4 +138,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::connectionBeingMade(qint32 gate, QString type, qint32 index){
     std::cout << gate << ", " << type.toStdString() << ", " << index << std::endl;
+void MainWindow::trackButtonsOn(UILogicGate* quarry)
+{
+    inputButtons.unite(*new QSet(quarry->inputs.begin(), quarry->inputs.end()));
+    outputButtons.unite(*new QSet(quarry->outputs.begin(), quarry->outputs.end()));
 }

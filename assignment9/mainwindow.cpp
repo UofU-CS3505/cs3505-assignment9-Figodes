@@ -50,7 +50,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
-    pickedUpGate = gate;
+    if (!pickedUpGate)
+        pickedUpGate = gate;
+    else
+        pickedUpGate = nullptr;
     dragStartPosition = initialPosition;
     std::cout << "in slot" << std::endl;
 
@@ -91,6 +94,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
+void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
+
+}
+
 
 void MainWindow::addGate(qint32 gateType) {
     UILogicGate* newGate = nullptr;
@@ -111,4 +118,6 @@ void MainWindow::addGate(qint32 gateType) {
     newGate->show();
 }
 
-
+void MainWindow::clearGates(){
+    gates.clear();
+}

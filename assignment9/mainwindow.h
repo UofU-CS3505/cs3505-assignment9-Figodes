@@ -30,6 +30,8 @@ private:
     qint32 currentGateType;
     qint32 idCounter;
 
+    QVector<UILogicGate*> gates;
+
 public slots:
 
     void updatePickedUpGate(UILogicGate *gate, QPoint initialPosition);
@@ -47,6 +49,11 @@ public slots:
 
     void mouseMoveEvent(QMouseEvent* event);
     void addGate(qint32 gateType);
+    void mouseReleaseEvent(QMouseEvent* event);
+
+    /// \brief Clears all currently placed logic gates in UI.
+    void clearGates();
+
 
 signals:
 

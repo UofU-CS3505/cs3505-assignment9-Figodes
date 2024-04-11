@@ -20,6 +20,7 @@ private:
     private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
+
 public:
     simulatorModel();
     qint32 currentLevel;

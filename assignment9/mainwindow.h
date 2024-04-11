@@ -5,6 +5,7 @@
 #include "simulatorModel.h"
 #include "uilogicgate.h"
 #include <QSet>
+#include "gatetypes.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -53,11 +54,12 @@ public slots:
     void showInputs(bool inputs[]);
 
     void mouseMoveEvent(QMouseEvent* event);
-    void addGate(qint32 gateType);
+    void addGate(GateTypes gateType);
     void mouseReleaseEvent(QMouseEvent* event);
 
     /// \brief Clears all currently placed logic gates in UI.
     void clearGates();
+
 
 
 signals:
@@ -67,5 +69,6 @@ signals:
 
     /// \brief Signal for when a level should start simulating.
     void startSimulation();
+
 };
 #endif // MAINWINDOW_H

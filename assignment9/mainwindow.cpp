@@ -84,12 +84,20 @@ void MainWindow::showInputs(QVector<bool> inputs){
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
+
+    // Mouse move event for moving picked up gates
     if (pickedUpGate)
     {
         QPointF newPos = event->scenePosition() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
     }
     //if (buttonBeingConnected) then draw a line to the cursor
+
+    // Mouse move event for drawing lines between inputs/outputs
+    if(connectionBeingDrawn)
+    {
+        std::cout << "line being drawn at " << "mouse pos: (XD)" << std::endl;
+    }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {

@@ -24,9 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new simulatorModel();
 
-    connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(0); });
-    connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(1); });
-    connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(2); });
+    connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
+    connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
+    connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");

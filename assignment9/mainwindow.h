@@ -33,6 +33,7 @@ private:
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
     qint32 idCounter;
+    bool connectionBeingDrawn;
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
@@ -59,6 +60,8 @@ public slots:
 
     /// \brief Clears all currently placed logic gates in UI.
     void clearGates();
+
+    void connectionBeingMade(qint32 gate, QPushButton* button);
 
 
 

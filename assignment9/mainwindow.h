@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "simulatorModel.h"
+#include "SimulatorModel.h"
 #include "uilogicgate.h"
 #include <QSet>
 #include "gatetypes.h"
@@ -34,6 +34,7 @@ private:
     qint32 currentGateType;
     qint32 idCounter;
     bool connectionBeingDrawn;
+    QPushButton buttonBeingConnected;
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);

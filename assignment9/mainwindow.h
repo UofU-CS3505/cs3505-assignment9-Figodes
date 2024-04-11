@@ -25,7 +25,7 @@ private:
 
     QPoint dragStartPosition;
 
-    simulatorModel* model;
+    SimulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
     qint32 idCounter;

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <QQueue>
 
-simulatorModel::simulatorModel()
+SimulatorModel::SimulatorModel()
 {
     //testing example, remove later
     gateNode testNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -23,7 +23,7 @@ simulatorModel::simulatorModel()
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
 }
 
-simulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, simulatorModel* parentModel)
+SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel)
     : id(id)
     , evaluator(evaluatorFunc)
 {
@@ -41,19 +41,19 @@ simulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCo
     parentModel->allGates[id] = this;
 }
 
-void simulatorModel::gateNode::evaluate()
+void SimulatorModel::gateNode::evaluate()
 {
     evaluator(inputStates, outputStates);
 }
 
-void simulatorModel::connect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
+void SimulatorModel::connect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
     gateNode* giver = allGates.value(givingId);
     gateNode* reciever = allGates.value(receivingId);
     giver->outputToNodes[outputIndex] = reciever;
     reciever->inputFromNodes[inputIndex] = giver;
 }
-void simulatorModel::disconnect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
+void SimulatorModel::disconnect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
     gateNode* giver = allGates.value(givingId);
     gateNode* reciever = allGates.value(receivingId);
@@ -61,7 +61,7 @@ void simulatorModel::disconnect(qint32 givingId, qint32 outputIndex, qint32 rece
     reciever->inputFromNodes[inputIndex] = nullptr;
 }
 
-void simulatorModel::resetGateStates()
+void SimulatorModel::resetGateStates()
 {
     for (gateNode* g : allGates.values())
     {
@@ -72,7 +72,7 @@ void simulatorModel::resetGateStates()
     }
 }
 
-bool simulatorModel::canBeSimulated()
+bool SimulatorModel::canBeSimulated()
 {
     QMap<gateNode*, qint32> inDegrees;
     QQueue<gateNode*> frontier;

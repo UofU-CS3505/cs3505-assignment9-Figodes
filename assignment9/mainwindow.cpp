@@ -14,15 +14,16 @@ MainWindow::MainWindow(QWidget *parent)
     pickedUpGate = nullptr;
     ui->setupUi(this);
 
-    model = new simulatorModel();
+    model = new SimulatorModel();
     idCounter = 0;
 
     // Main issue: how should i make it so all uilogicgates are connected
     UILogicGate* logicGate = new UILogicGate(ui->canvas, idCounter++, "TEST");
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+    connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
 
-    model = new simulatorModel();
+    model = new SimulatorModel();
 
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(0); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(1); });

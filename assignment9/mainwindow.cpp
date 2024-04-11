@@ -88,11 +88,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 void MainWindow::addGate(GateTypes gateType) {
 
+    // if the user adds a new gate, disable the current one
     if (pickedUpGate){
         pickedUpGate->setStyleSheet("background-color : green");
         pickedUpGate->pickedUp = false;
         pickedUpGate = nullptr;
     }
+
     UILogicGate* newGate = nullptr;
     // Switch statement to instantiate the correct gate type
     switch(gateType) {
@@ -108,8 +110,9 @@ void MainWindow::addGate(GateTypes gateType) {
     }
     trackButtonsOn(newGate);
 
-
     pickedUpGate = newGate;
+    // make the pickedUpGate initially be offscreen to avoid weird snapping effects
+    pickedUpGate->move(1000,1000);
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;

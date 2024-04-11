@@ -96,13 +96,13 @@ void MainWindow::addGate(GateTypes gateType) {
     UILogicGate* newGate = nullptr;
     // Switch statement to instantiate the correct gate type
     switch(gateType) {
-    case 0:
+    case GateTypes::AND:
         newGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
         break;
-    case 1:
+    case GateTypes::OR:
         newGate = new UILogicGate(ui->canvas, idCounter++, "OR", 2, 1);
         break;
-    case 2:
+    case GateTypes::NOT:
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     }

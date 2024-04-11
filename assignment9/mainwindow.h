@@ -46,10 +46,7 @@ public slots:
     void showInputs(bool inputs[]);
 
     void mouseMoveEvent(QMouseEvent* event);
-    void hidePlaceholder();
-    void prepareToAddGate(qint32 gateType);
-    void mousePressEvent(QMouseEvent* event);
-
+    void addGate(qint32 gateType);
 
 signals:
 

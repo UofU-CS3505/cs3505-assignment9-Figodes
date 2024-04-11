@@ -75,6 +75,10 @@ public:
     /// \brief canBeSimulated Checks whether the current model can be simulated. This could be because the current model contains a cycle.
     ///
     bool canBeSimulated();
+    //since we want to make the simulation take time, I thinik we'll need to break it up like this. A bunch of these robably need to be slots
+    void startSimulation();
+    void simulateOneIteration();
+    void endSimulation();
 };
 
 #endif // SIMULATORMODEL_H

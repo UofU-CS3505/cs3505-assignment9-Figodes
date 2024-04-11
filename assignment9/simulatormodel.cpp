@@ -1,6 +1,7 @@
 #include "simulatormodel.h"
 #include <iostream>
 #include <QQueue>
+#include <QTimer>
 
 SimulatorModel::SimulatorModel()
 {
@@ -21,6 +22,8 @@ SimulatorModel::SimulatorModel()
     connect(1, 0, 2, 0); //testNode to levelout
     connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
+
+    currentInput = 0;
 }
 
 SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel)
@@ -111,8 +114,22 @@ QVector<bool> SimulatorModel::intToInputSequence(qint32 integer){
 }
 
 void SimulatorModel::startSimulation(){
-    for(int i = 0; i < 8; i++)
-        simulateInput(intToInputSequence(i), levels[currentLevel].getExpectedOutput(i));
-
-    endSimulation();
+    simulateInput();
 }
+
+void SimulatorModel::simulateInput(){
+    QVector<bool> inputs = intToInputSequence(currentInput);
+    QVector<bool> expectedOutputs = levels[currentLevel].getExpectedOutput(currentInput);
+
+    simulateOneIteration();
+}
+
+void SimulatorModel::simulateOneIteration(){
+    //if(not done)
+    QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
+    //else
+    currentInput++;
+    QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
+}
+
+void SimulatorModel::endSimulation(){}

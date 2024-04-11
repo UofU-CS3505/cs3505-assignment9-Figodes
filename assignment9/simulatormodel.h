@@ -42,6 +42,7 @@ private:
     };
 
     QVector<bool> intToInputSequence(qint32 integer);
+    qint32 currentInput;
 
 public:
     SimulatorModel();
@@ -80,7 +81,7 @@ public:
     bool canBeSimulated();
     //since we want to make the simulation take time, I thinik we'll need to break it up like this. A bunch of these robably need to be slots
     void startSimulation();
-    void simulateInput(QVector<bool> inputs, QVector<bool> expectedOutputs);
+    void simulateInput();
     void simulateOneIteration();
     void endSimulation();
 };

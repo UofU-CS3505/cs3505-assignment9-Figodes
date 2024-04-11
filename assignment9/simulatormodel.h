@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QMap>
 #include <QObject>
+#include "gatetypes.h"
 
 class simulatorModel : public QObject
 {

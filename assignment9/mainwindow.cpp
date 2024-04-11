@@ -24,9 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new simulatorModel();
 
-    connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(0); });
-    connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(1); });
-    connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(2); });
+    connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
+    connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
+    connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
@@ -93,16 +93,17 @@ void MainWindow::addGate(qint32 gateType) {
         pickedUpGate->pickedUp = false;
         pickedUpGate = nullptr;
     }
+
     UILogicGate* newGate = nullptr;
     // Switch statement to instantiate the correct gate type
     switch(gateType) {
-    case 0:
+    case GateTypes::AND:
         newGate = new UILogicGate(ui->canvas, idCounter++, "AND", 2, 1);
         break;
-    case 1:
+    case GateTypes::OR:
         newGate = new UILogicGate(ui->canvas, idCounter++, "OR", 2, 1);
         break;
-    case 2:
+    case GateTypes::NOT:
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     }

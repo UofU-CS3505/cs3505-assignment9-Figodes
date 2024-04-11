@@ -86,7 +86,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 
-void MainWindow::addGate(qint32 gateType) {
+void MainWindow::addGate(GateTypes gateType) {
 
     if (pickedUpGate){
         pickedUpGate->setStyleSheet("background-color : green");

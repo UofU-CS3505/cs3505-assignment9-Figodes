@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    qApp->installEventFilter(this);
+    setMouseTracking(true);
+    pickedUpGate = nullptr;
     ui->setupUi(this);
 
     model = new simulatorModel();
@@ -20,10 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
-
-    // UILogicGate* ex = new UILogicGate(ui->canvas, "DEF");
-    // UILogicGate* ex2 = new UILogicGate(ui->canvas, "DEF2");
-    // UILogicGate* NotGate = new UILogicGate(ui->canvas, "NOT", 1, 1);
     model = new simulatorModel();
 
 
@@ -40,8 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
     gatePlaceholder->setFixedSize(100, 75);
     gatePlaceholder->setStyleSheet("border: 2px dashed #000; background-color: rgba(255, 255, 255, 0);");
     gatePlaceholder->hide();
-
-    this->setMouseTracking(true);
 }
 
 MainWindow::~MainWindow()
@@ -52,8 +49,6 @@ MainWindow::~MainWindow()
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
     pickedUpGate = gate;
     dragStartPosition = initialPosition;
-    std::cout << "in slot" << std::endl;
-
 }
 
 void MainWindow::setLevelDescription(QString text){
@@ -82,12 +77,19 @@ void MainWindow::showInputs(bool inputs[]){
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    std::cout << "moved!" << std::endl;
+    QPoint pos = event->pos();
+    std::cout << "orig: " << pos.x() << ", " << pos.y() << std::endl;
+    pos = this->mapFromParent(pos);
+    std::cout << "from parent: " << pos.x() << ", " << pos.y() << std::endl;
+    pos = this->mapFromGlobal(pos);
+    std::cout << "from global: " << pos.x() << ", " << pos.y() << std::endl;
     if (pickedUpGate)
     {
         std::cout << "moved picked gate" << std::endl;
         QPoint newPos = event->pos() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
-        pickedUpGate->move(ui->canvas->mapFromParent(newPos));
+        //pickedUpGate->move(ui->canvas->mapFromParent(newPos));
+        pickedUpGate->move(newPos);
+        std::cout << newPos.x() << ", " << newPos.y() << std::endl;
     }
 }
 
@@ -112,9 +114,21 @@ void MainWindow::addGate(qint32 gateType) {
     }
 
     pickedUpGate = newGate;
+    gates.append(newGate);
     newGate->show();
 }
 
 void MainWindow::clearGates(){
     gates.clear();
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    //std::cout << obj->objectName().toStdString() << std::endl;
+    if (event->type() == QEvent::MouseMove)
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        mouseMoveEvent(mouseEvent);
+    }
+    return false;
 }

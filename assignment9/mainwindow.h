@@ -31,6 +31,7 @@ private:
     qint32 idCounter;
 
     QVector<UILogicGate*> gates;
+    bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
 

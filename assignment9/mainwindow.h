@@ -29,8 +29,6 @@ private:
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
 
-    QVector<UILogicGate*> gates;
-
 public slots:
 
     void updatePickedUpGate(UILogicGate *gate, QPoint initialPosition);

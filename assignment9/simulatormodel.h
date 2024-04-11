@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QMap>
 #include <QObject>
+#include "level.h"
 
 class SimulatorModel : public QObject
 {
@@ -43,7 +44,7 @@ private:
 public:
     SimulatorModel();
     qint32 currentLevel;
-    QVector<QString> levelDescriptions;
+    QVector<Level> levels;
     /// All the gates in the model, keyed by their id
     QMap<qint32, gateNode*> allGates;
     /// Right now I'm thinking of just making the level inputs special nodes that only have either outputs or inputs
@@ -77,6 +78,7 @@ public:
     bool canBeSimulated();
     //since we want to make the simulation take time, I thinik we'll need to break it up like this. A bunch of these robably need to be slots
     void startSimulation();
+    void simulateInput(bool inputs[], bool expectedOutputs[]);
     void simulateOneIteration();
     void endSimulation();
 };

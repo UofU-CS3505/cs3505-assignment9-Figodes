@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
-    bool startingInputs[3] = {false, false, false};
+    QVector<bool> startingInputs = {false, false, false};
     showInputs(startingInputs);
 }
 
@@ -55,7 +55,7 @@ void MainWindow::onStartClicked(){
     emit startSimulation();
 }
 
-void MainWindow::showInputs(bool inputs[]){
+void MainWindow::showInputs(QVector<bool> inputs){
     if(inputs[0])
         ui->input1->setStyleSheet("background-color : lawngreen");
     else

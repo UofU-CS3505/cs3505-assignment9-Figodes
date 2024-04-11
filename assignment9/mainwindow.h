@@ -46,7 +46,7 @@ public slots:
 
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
-    void showInputs(bool inputs[]);
+    void showInputs(QVector<bool> inputs);
 
     void mouseMoveEvent(QMouseEvent* event);
     void addGate(qint32 gateType);

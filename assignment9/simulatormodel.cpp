@@ -109,3 +109,32 @@ bool simulatorModel::canBeSimulated()
     }
     return true;
 }
+
+void simulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
+    // Temporarily declare a pointer to gateNode
+    gateNode* newNode = nullptr;
+
+    switch(gateType) {
+    case GateTypes::AND:
+        newNode = new gateNode(gateID, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                outputs[0] = inputs[0] && inputs[1];
+            }, this);
+        break;
+    case GateTypes::OR:
+        newNode = new gateNode(gateID, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                outputs[0] = inputs[0] || inputs[1];
+            }, this);
+        break;
+    case GateTypes::NOT:
+        newNode = new gateNode(gateID, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                outputs[0] = !inputs[0];
+            }, this);
+        break;
+    }
+
+    if (newNode) {
+        allGates.insert(gateID, newNode);
+        std::cout << "new node, " << gateID << ", added to model" << std::endl;
+    }
+}
+

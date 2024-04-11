@@ -73,5 +73,7 @@ signals:
     /// \brief Signal for when a level should start simulating.
     void startSimulation();
 
+    /// \brief Signal for when a new gate button is clicked, sends the new gate created to model
+    void newGateCreated(qint32 gateID, GateTypes gt);
 };
 #endif // MAINWINDOW_H

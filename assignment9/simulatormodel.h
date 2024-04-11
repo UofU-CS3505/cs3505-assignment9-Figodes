@@ -80,6 +80,11 @@ public:
     void startSimulation();
     void simulateOneIteration();
     void endSimulation();
+
+    public slots:
+
+    void addNewGate(qint32 gateID, GateTypes gt);
+
 };
 
 #endif // SIMULATORMODEL_H

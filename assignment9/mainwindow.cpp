@@ -28,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
+    connect(this, &MainWindow::newGateCreated, model, &simulatorModel::addNewGate);
+
+
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     bool startingInputs[3] = {false, false, false};
@@ -109,6 +112,8 @@ void MainWindow::addGate(GateTypes gateType) {
         break;
     }
     trackButtonsOn(newGate);
+
+    emit newGateCreated(newGate->id, gateType);
 
     pickedUpGate = newGate;
     // make the pickedUpGate initially be offscreen to avoid weird snapping effects

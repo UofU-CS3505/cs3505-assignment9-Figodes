@@ -1,6 +1,7 @@
 #include "simulatormodel.h"
 #include <iostream>
 #include <QQueue>
+#include <QSet>
 
 simulatorModel::simulatorModel()
 {
@@ -29,12 +30,12 @@ simulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCo
 {
     for (int c = 0; c < inputCount; c++)
     {
-        inputFromNodes.append(nullptr);
+        inputFromNodes.append(QSet<gateNode*>());
         inputStates.append(false);
     }
     for (int c = 0; c < outputCount; c++)
     {
-        outputToNodes.append(nullptr);
+        outputToNodes.append(QSet<gateNode*>());
         outputStates.append(false);
     }
 
@@ -49,16 +50,16 @@ void simulatorModel::gateNode::evaluate()
 void simulatorModel::connect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
     gateNode* giver = allGates.value(givingId);
-    gateNode* reciever = allGates.value(receivingId);
-    giver->outputToNodes[outputIndex] = reciever;
-    reciever->inputFromNodes[inputIndex] = giver;
+    gateNode* receiver = allGates.value(receivingId);
+    giver->outputToNodes[outputIndex].insert(receiver);
+    receiver->inputFromNodes[inputIndex].insert(giver);
 }
 void simulatorModel::disconnect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
     gateNode* giver = allGates.value(givingId);
-    gateNode* reciever = allGates.value(receivingId);
-    giver->outputToNodes[outputIndex] = nullptr;
-    reciever->inputFromNodes[inputIndex] = nullptr;
+    gateNode* receiver = allGates.value(receivingId);
+    giver->outputToNodes[outputIndex].remove(receiver);
+    receiver->inputFromNodes[inputIndex].remove(giver);
 }
 
 void simulatorModel::resetGateStates()
@@ -74,7 +75,7 @@ void simulatorModel::resetGateStates()
 
 bool simulatorModel::canBeSimulated()
 {
-    QMap<gateNode*, qint32> inDegrees;
+    QMap<gateNode*, qint32> timesVisited; //how many times this algorithm visits the key node by traversing forward through the model
     QQueue<gateNode*> frontier;
     for (gateNode* in : levelInputs)
         frontier.enqueue(in);
@@ -83,20 +84,27 @@ bool simulatorModel::canBeSimulated()
     {
         gateNode* currentGate = frontier.dequeue();
 
-        for (gateNode* outputGate : currentGate->outputToNodes)
+        for (QSet outputTerminal : currentGate->outputToNodes)
         {
-            if (!outputGate) //skip this output if it's not connected
-                continue;
+            for (gateNode* outputGate: outputTerminal) //all the gates that this particular output terminal outputs to
+            {
+                if (!outputGate) //skip this output if it's not connected
+                    continue;
 
-            if (inDegrees.contains(outputGate))
-                inDegrees[outputGate]++;
-            else
-                inDegrees[outputGate] = 0;
+                if (timesVisited.contains(outputGate))
+                    timesVisited[outputGate]++;
+                else
+                    timesVisited[outputGate] = 0;
 
-            if (inDegrees[outputGate] > outputGate->inputFromNodes.count()) //means this node has been visited more times than it has incoming connections, thus there must be some circularity
-                return false;
+                qint32 outputsInDegree = 0;
+                for (QSet outputsInput: outputGate->inputFromNodes) //find the in-degree of this gate we're outputting to, counting the number of connections on each terminal
+                    outputsInDegree += outputsInput.count();
 
-            frontier.enqueue(outputGate);
+                if (timesVisited[outputGate] > outputsInDegree) //means this node has been visited more times than it has incoming connections, thus there must be some circularity
+                    return false;
+
+                frontier.enqueue(outputGate);
+            }
         }
     }
     return true;

@@ -28,6 +28,7 @@ private:
     simulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
+    qint32 idCounter;
 
 public slots:
 
@@ -44,14 +45,8 @@ public slots:
     /// \param inputs: an array of 3 bools.
     void showInputs(bool inputs[]);
 
-    void addANDGate();
-    void addORGate();
-    void addNOTGate();
-
     void mouseMoveEvent(QMouseEvent* event);
-    void hidePlaceholder();
-    void prepareToAddGate(qint32 gateType);
-    void mousePressEvent(QMouseEvent* event);
+    void addGate(qint32 gateType);
     void mouseReleaseEvent(QMouseEvent* event);
 
     /// \brief Clears all currently placed logic gates in UI.

@@ -96,18 +96,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
     }
 
-    // Mouse move event for drawing lines between inputs/outputs
-    // if(connectionBeingDrawn)
-    // {
-    //     // Get the current mouse position as the end point of the line
-    //     QPointF endPos = event->scenePosition();
-
-    //     // Store the endPos for later use in paintEvent
-    //     this->endPos = endPos;
-
-    //     // Trigger a repaint to update the line
-    //     ui->canvas->repaint();
-    // }
+    update();
 }
 
 

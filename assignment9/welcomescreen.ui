@@ -13,17 +13,23 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="welcomeText">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>160</x>
      <y>130</y>
-     <width>41</width>
-     <height>14</height>
+     <width>151</width>
+     <height>31</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Ravie</family>
+     <pointsize>18</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>welcome</string>
+    <string>Welcome!</string>
    </property>
   </widget>
  </widget>

@@ -51,7 +51,7 @@ MainWindow::~MainWindow()
 void MainWindow::showWelcomeScreen() {
 
     // uncomment below line to make sure welcome screen stays on top
-    //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
+    welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
     welcomescreen.show();
 }
 

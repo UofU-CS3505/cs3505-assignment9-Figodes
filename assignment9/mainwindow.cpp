@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
-    connect(this, &MainWindow::newGateCreated, model, &simulatorModel::addNewGate);
+    connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
 
 
 
@@ -48,7 +48,7 @@ MainWindow::~MainWindow()
 void MainWindow::showWelcomeScreen() {
 
     // uncomment below line to make sure welcome screen stays on top
-    //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
+    welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
     welcomescreen.show();
 }
 

@@ -2,6 +2,8 @@
 #define WELCOMESCREEN_H
 
 #include <QDialog>
+#include <Box2D/Box2D.h>
+#include <QTimer>
 
 namespace Ui {
 class welcomeScreen;
@@ -15,8 +17,17 @@ public:
     explicit welcomeScreen(QWidget *parent = nullptr);
     ~welcomeScreen();
 
+private slots:
+    void updateWorld();
+
+signals:
+    void heightChanged(int height);
+
 private:
     Ui::welcomeScreen *ui;
+    b2World world;
+    b2Body* body;
+    QTimer timer;
 };
 
 #endif // WELCOMESCREEN_H

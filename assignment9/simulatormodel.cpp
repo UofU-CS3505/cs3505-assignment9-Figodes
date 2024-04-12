@@ -126,6 +126,10 @@ void SimulatorModel::startSimulation(){
 }
 
 void SimulatorModel::simulateInput(){
+    //if(currentInput == 8)
+    endSimulation();
+    return;
+
     QVector<bool> inputs = intToInputSequence(currentInput);
     QVector<bool> expectedOutputs = levels[currentLevel].getExpectedOutput(currentInput);
 
@@ -133,6 +137,7 @@ void SimulatorModel::simulateInput(){
 }
 
 void SimulatorModel::simulateOneIteration(){
+    //simulate iteration, update view
     //if(not done)
     QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     //else
@@ -140,7 +145,11 @@ void SimulatorModel::simulateOneIteration(){
     QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
 }
 
-void SimulatorModel::endSimulation(){}
+void SimulatorModel::endSimulation(){
+    currentInput = 0;
+    currentLevel++;
+    //move to next level: clear circuits and ui
+}
 
 void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
     // Temporarily declare a pointer to gateNode

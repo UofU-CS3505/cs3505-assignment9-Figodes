@@ -29,7 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
 
-
+    connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates);
+    connect(model, &SimulatorModel::newLevel, this, &MainWindow::setLevelDescription);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     QVector<bool> startingInputs = {false, false, false};

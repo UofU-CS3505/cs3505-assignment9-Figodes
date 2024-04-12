@@ -6,6 +6,7 @@
 #include "uilogicgate.h"
 #include <QSet>
 #include "gatetypes.h"
+#include <QPair>
 #include "welcomescreen.h"
 
 QT_BEGIN_NAMESPACE
@@ -35,7 +36,8 @@ private:
     qint32 currentGateType;
     qint32 idCounter;
     bool connectionBeingDrawn;
-    QPushButton buttonBeingConnected;
+    QPushButton* buttonBeingConnected;
+    QVector<QPair<QPushButton*, QPushButton*>> uiButtonConnections;
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);

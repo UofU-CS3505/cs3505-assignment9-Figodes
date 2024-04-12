@@ -113,34 +113,57 @@ bool SimulatorModel::canBeSimulated()
     return true;
 }
 
-QVector<bool> SimulatorModel::intToInputSequence(qint32 integer){
-    QVector<bool> sequence;
-    for(int i = 0; i < 3; i++)
-        sequence.append((integer >> i) & 1); //get ith bit of integer
+void SimulatorModel::setInputSequence(qint32 integer){
+    QVector<bool> inputs;
+    //assumes there are 3 level inputs, each with one output state
+    for(int i = 0; i < 3; i++){
+        bool bit = (integer >> i) & 1; //get ith bit of integer
+        levelInputs[i]->outputStates[0] = bit;
+        inputs.append(bit);
+    }
 
-    return sequence;
+    emit inputsSet(inputs);
 }
 
 void SimulatorModel::startSimulation(){
+    //lock ui for input testing
+
     simulateInput();
 }
 
 void SimulatorModel::simulateInput(){
-    QVector<bool> inputs = intToInputSequence(currentInput);
-    QVector<bool> expectedOutputs = levels[currentLevel].getExpectedOutput(currentInput);
+    if(currentInput == 8){
+        endSimulation();
+        return;
+    }
 
+    setInputSequence(currentInput);
     simulateOneIteration();
 }
 
 void SimulatorModel::simulateOneIteration(){
+    //simulate iteration, update view
+    for(gateNode*& gate: allGates)
+        gate->evaluate();
     //if(not done)
     QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     //else
+    for(int i = 0; i < 3; i++){
+        if(levelOutputs[i]->inputStates[1] == levels[currentLevel].getExpectedOutput(currentInput)[i])
+            std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?
+    }
     currentInput++;
     QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
 }
 
-void SimulatorModel::endSimulation(){}
+void SimulatorModel::endSimulation(){
+    currentInput = 0;
+    currentLevel++;
+    //move to next level, show level completed in ui?
+    allGates.clear();
+    emit gatesCleared();
+    emit newLevel(levels[currentLevel].getDescription());
+}
 
 void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
     // Temporarily declare a pointer to gateNode

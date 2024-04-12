@@ -42,7 +42,7 @@ private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
 
-    QVector<bool> intToInputSequence(qint32 integer);
+    void setInputSequence(qint32 integer);
     qint32 currentInput;
 
 public:
@@ -86,9 +86,13 @@ public:
     void simulateOneIteration();
     void endSimulation();
 
-    public slots:
-
+public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
+
+signals:
+    void gatesCleared();
+    void newLevel(QString description);
+    void inputsSet(QVector<bool> inputs);
 
 };
 

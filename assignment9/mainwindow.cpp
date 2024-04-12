@@ -17,8 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     model = new SimulatorModel();
     idCounter = 0;
 
-    // Main issue: how should i make it so all uilogicgates are connected
-    UILogicGate* logicGate = new UILogicGate(ui->canvas, idCounter++, "TEST");
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
@@ -88,10 +86,8 @@ void MainWindow::showInputs(QVector<bool> inputs){
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     if (pickedUpGate)
     {
-        std::cout << "moved picked gate" << std::endl;
         QPointF newPos = event->scenePosition() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
-        std::cout << newPos.x() << ", " << newPos.y() << std::endl;
     }
     //if (buttonBeingConnected) then draw a line to the cursor
 }
@@ -136,6 +132,7 @@ void MainWindow::addGate(GateTypes gateType) {
 
     gates.append(newGate);
     newGate->show();
+    std::cout << gates.size() << std::endl;
 }
 
 void MainWindow::clearGates(){
@@ -158,8 +155,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button){
 
+    if(gates[gate]->inputs.contains(button))
+        std::cout << "you clicked an input button" << std::endl;
     // If connectionBeingDrawn is false, that means the button being sent is the source, set buttonBeingConnected
+    if(!connectionBeingDrawn)
+    {
+        connectionBeingDrawn = !connectionBeingDrawn;
+        buttonBeingConnected = button;
+    }
     // If connectionBeingDrawn is true, that means the button send is the destination, connect to buttonBeingConnected and add connection to uiButtonConnections
+    if(connectionBeingDrawn){
+
+    }
+
 }
 void MainWindow::trackButtonsOn(UILogicGate* quarry)
 {

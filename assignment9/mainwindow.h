@@ -36,7 +36,7 @@ private:
     qint32 currentGateType;
     qint32 idCounter;
     bool connectionBeingDrawn;
-    QPushButton buttonBeingConnected;
+    QPushButton* buttonBeingConnected;
     QVector<QPair<QPushButton*, QPushButton*>> uiButtonConnections;
 
     QVector<UILogicGate*> gates;

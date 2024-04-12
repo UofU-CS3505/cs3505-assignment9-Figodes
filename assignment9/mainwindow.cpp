@@ -14,23 +14,27 @@ MainWindow::MainWindow(QWidget *parent)
     pickedUpGate = nullptr;
     ui->setupUi(this);
 
-    model = new simulatorModel();
+    model = new SimulatorModel();
     idCounter = 0;
 
     // Main issue: how should i make it so all uilogicgates are connected
     UILogicGate* logicGate = new UILogicGate(ui->canvas, idCounter++, "TEST");
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+    connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
 
-    model = new simulatorModel();
+    model = new SimulatorModel();
 
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
+    connect(this, &MainWindow::newGateCreated, model, &simulatorModel::addNewGate);
+
+
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
-    bool startingInputs[3] = {false, false, false};
+    QVector<bool> startingInputs = {false, false, false};
     showInputs(startingInputs);
 
     showWelcomeScreen();
@@ -64,7 +68,7 @@ void MainWindow::onStartClicked(){
     emit startSimulation();
 }
 
-void MainWindow::showInputs(bool inputs[]){
+void MainWindow::showInputs(QVector<bool> inputs){
     if(inputs[0])
         ui->input1->setStyleSheet("background-color : lawngreen");
     else
@@ -120,6 +124,8 @@ void MainWindow::addGate(GateTypes gateType) {
     }
     trackButtonsOn(newGate);
 
+    emit newGateCreated(newGate->id, gateType);
+
     pickedUpGate = newGate;
     // make the pickedUpGate initially be offscreen to avoid weird snapping effects
     pickedUpGate->move(1000,1000);
@@ -149,8 +155,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-void MainWindow::connectionBeingMade(qint32 gate, QString type, qint32 index){
-    std::cout << gate << ", " << type.toStdString() << ", " << index << std::endl;
+void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button){
+
+    // If connectionBeingDrawn is false, that means the button being sent is the source
+    // If connectionBeingDrawn is true, that means the button send is the destination
 }
 void MainWindow::trackButtonsOn(UILogicGate* quarry)
 {

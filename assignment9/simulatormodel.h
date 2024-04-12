@@ -4,9 +4,10 @@
 #include <QVector>
 #include <QMap>
 #include <QObject>
+#include "level.h"
 #include "gatetypes.h"
 
-class simulatorModel : public QObject
+class SimulatorModel : public QObject
 {
     Q_OBJECT
 
@@ -18,19 +19,19 @@ private:
     {
     public:
         ///
-        /// \brief simulatorModel::gateNode::gateNode Creates a new node in the model for a gate, with the specified number of inputs and outputs
+        /// \brief SimulatorModel::gateNode::gateNode Creates a new node in the model for a gate, with the specified number of inputs and outputs
         /// \param evaluatorFunc A function pointer (I would recommend using a lambda) for a function that sets the elements of outputs based on the elements of inputs. This should represent the operation of this gate.
         ///
-        gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, simulatorModel* parentModel);
-        //The nodes that this node takes inputs from
-        QVector<gateNode*> inputFromNodes;
-        //The nodes that this node gives outputs to
-        QVector<gateNode*> outputToNodes;
+        gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel);
+        //The set of nodes that this node takes inputs from
+        QVector<QSet<gateNode*>> inputFromNodes;
+        //The set of nodes that this node gives outputs to
+        QVector<QSet<gateNode*>> outputToNodes;
         //Whether the input/output at a given position are receiving/giving a signal
         QVector<bool> inputStates;
         QVector<bool> outputStates;
         ///
-        /// \brief simulatorModel::gateNode::evaluate Helper that uses a node's evaluation function to evaluate its outputs based on its inputs.
+        /// \brief SimulatorModel::gateNode::evaluate Helper that uses a node's evaluation function to evaluate its outputs based on its inputs.
         /// This will chnage the contents of outputStates.
         ///
         void evaluate();
@@ -41,10 +42,13 @@ private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
 
+    QVector<bool> intToInputSequence(qint32 integer);
+    qint32 currentInput;
+
 public:
-    simulatorModel();
+    SimulatorModel();
     qint32 currentLevel;
-    QVector<QString> levelDescriptions;
+    QVector<Level> levels;
     /// All the gates in the model, keyed by their id
     QMap<qint32, gateNode*> allGates;
     /// Right now I'm thinking of just making the level inputs special nodes that only have either outputs or inputs
@@ -78,8 +82,14 @@ public:
     bool canBeSimulated();
     //since we want to make the simulation take time, I thinik we'll need to break it up like this. A bunch of these robably need to be slots
     void startSimulation();
+    void simulateInput();
     void simulateOneIteration();
     void endSimulation();
+
+    public slots:
+
+    void addNewGate(qint32 gateID, GateTypes gt);
+
 };
 
 #endif // SIMULATORMODEL_H

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "simulatorModel.h"
+#include "SimulatorModel.h"
 #include "uilogicgate.h"
 #include <QSet>
 #include "gatetypes.h"
@@ -30,10 +30,12 @@ private:
 
     QPoint dragStartPosition;
 
-    simulatorModel* model;
+    SimulatorModel* model;
     QLabel* gatePlaceholder = nullptr;
     qint32 currentGateType;
     qint32 idCounter;
+    bool connectionBeingDrawn;
+    QPushButton buttonBeingConnected;
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
@@ -55,7 +57,7 @@ public slots:
 
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
-    void showInputs(bool inputs[]);
+    void showInputs(QVector<bool> inputs);
 
     void mouseMoveEvent(QMouseEvent* event);
     void addGate(GateTypes gateType);
@@ -64,7 +66,7 @@ public slots:
     /// \brief Clears all currently placed logic gates in UI.
     void clearGates();
 
-    void connectionBeingMade(qint32 gate, QString type, qint32 index);
+    void connectionBeingMade(qint32 gate, QPushButton* button);
 
 
 
@@ -76,5 +78,7 @@ signals:
     /// \brief Signal for when a level should start simulating.
     void startSimulation();
 
+    /// \brief Signal for when a new gate button is clicked, sends the new gate created to model
+    void newGateCreated(qint32 gateID, GateTypes gt);
 };
 #endif // MAINWINDOW_H

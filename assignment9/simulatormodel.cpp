@@ -52,6 +52,7 @@ void SimulatorModel::gateNode::evaluate()
 
 void SimulatorModel::connect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
+    std::cout << "connection made!" << std::endl;
     gateNode* giver = allGates.value(givingId);
     gateNode* receiver = allGates.value(receivingId);
     giver->outputToNodes[outputIndex].insert(receiver);

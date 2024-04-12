@@ -28,6 +28,7 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
 
+
     setText(operationName);
     setAlignment(Qt::AlignCenter);
 

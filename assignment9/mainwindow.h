@@ -37,7 +37,10 @@ private:
     qint32 idCounter;
     bool connectionBeingDrawn;
     QPushButton* buttonBeingConnected;
+    qint32 connectingGate;
+
     QVector<QPair<QPushButton*, QPushButton*>> uiButtonConnections;
+
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
@@ -45,6 +48,9 @@ private:
 
     welcomeScreen welcomescreen;
     void showWelcomeScreen();
+    bool isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2);
+    bool isConnectionValid(QPushButton* button1, QPushButton* button2, qint32 gate1, qint32 gate2);
+
 
 public slots:
 
@@ -70,12 +76,18 @@ public slots:
 
     void connectionBeingMade(qint32 gate, QPushButton* button);
 
+    void paintEvent(QPaintEvent* event);
+
+
+
+
+
 
 
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates
-    void connectionDrawn();
+    void connectionDrawn(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex);
 
     /// \brief Signal for when a level should start simulating.
     void startSimulation();

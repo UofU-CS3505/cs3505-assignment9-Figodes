@@ -59,7 +59,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     simulatormodel.cpp \
-    uilogicgate.cpp
+    uilogicgate.cpp \
+    welcomescreen.cpp
 
 HEADERS += \
     Box2D/Box2D.h \
@@ -113,10 +114,12 @@ HEADERS += \
     gatetypes.h \
     mainwindow.h \
     simulatormodel.h \
-    uilogicgate.h
+    uilogicgate.h \
+    welcomescreen.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    welcomescreen.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

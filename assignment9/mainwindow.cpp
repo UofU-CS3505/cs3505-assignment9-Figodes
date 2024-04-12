@@ -36,12 +36,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     QVector<bool> startingInputs = {false, false, false};
     showInputs(startingInputs);
+
+    showWelcomeScreen();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::showWelcomeScreen() {
+
+    // uncomment below line to make sure welcome screen stays on top
+    //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
+    welcomescreen.show();
+}
+
 
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
     if (pickedUpGate == gate)

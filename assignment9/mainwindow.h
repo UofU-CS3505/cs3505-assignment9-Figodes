@@ -7,6 +7,7 @@
 #include <QSet>
 #include "gatetypes.h"
 #include <QPair>
+#include "welcomescreen.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,6 +42,9 @@ private:
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
     void trackButtonsOn(UILogicGate* quarry);
+
+    welcomeScreen welcomescreen;
+    void showWelcomeScreen();
 
 public slots:
 

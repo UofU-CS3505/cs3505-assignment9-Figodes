@@ -92,6 +92,7 @@ public slots:
 signals:
     void gatesCleared();
     void newLevel(QString description);
+    void inputsSet(QVector<bool> inputs);
 
 };
 

@@ -142,7 +142,7 @@ void SimulatorModel::simulateOneIteration(){
 
 void SimulatorModel::endSimulation(){}
 
-void simulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
+void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
     // Temporarily declare a pointer to gateNode
     gateNode* newNode = nullptr;
 

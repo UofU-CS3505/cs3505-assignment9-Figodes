@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
-    connect(this, &MainWindow::newGateCreated, model, &simulatorModel::addNewGate);
+    connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
 
 
 
@@ -83,6 +83,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
         std::cout << newPos.x() << ", " << newPos.y() << std::endl;
     }
+    //if (buttonBeingConnected) then draw a line to the cursor
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
@@ -147,8 +148,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button){
 
-    // If connectionBeingDrawn is false, that means the button being sent is the source
-    // If connectionBeingDrawn is true, that means the button send is the destination
+    // If connectionBeingDrawn is false, that means the button being sent is the source, set buttonBeingConnected
+    // If connectionBeingDrawn is true, that means the button send is the destination, connect to buttonBeingConnected and add connection to uiButtonConnections
 }
 void MainWindow::trackButtonsOn(UILogicGate* quarry)
 {

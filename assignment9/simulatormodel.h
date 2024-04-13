@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QMap>
 #include <QObject>
+#include <QSet>
 #include "level.h"
 #include "gatetypes.h"
 
@@ -23,8 +24,8 @@ private:
         /// \param evaluatorFunc A function pointer (I would recommend using a lambda) for a function that sets the elements of outputs based on the elements of inputs. This should represent the operation of this gate.
         ///
         gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel);
-        //The set of nodes that this node takes inputs from
-        QVector<QSet<gateNode*>> inputFromNodes;
+        //The sets of nodes that this node takes inputs from -- each input having its own set -- and output terminal each input it connected to.
+        QVector<QSet<QPair<gateNode*, qint32>>> inputFromNodes;
         //The set of nodes that this node gives outputs to
         QVector<QSet<gateNode*>> outputToNodes;
         //Whether the input/output at a given position are receiving/giving a signal
@@ -37,6 +38,7 @@ private:
         void evaluate();
         // Not sure if gates actually need to know their ids
         qint32 id;
+        bool hasOutputted;
 
     private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
@@ -44,6 +46,7 @@ private:
 
     void setInputSequence(qint32 integer);
     qint32 currentInput;
+    QSet<gateNode*> activeGates;
 
 public:
     SimulatorModel();

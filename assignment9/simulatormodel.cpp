@@ -18,13 +18,14 @@ SimulatorModel::SimulatorModel()
     levelOutputs.append(new gateNode(2, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
         outputs[0] = inputs[0];
     }, this));
-
     connect(0, 0, 1, 0); //level in to testNode 0
     connect(1, 0, 2, 0); //testNode to levelout
     connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
+    //end of testing example
 
     currentInput = 0;
+    activeGates = QSet<gateNode*>();
 }
 
 SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel)
@@ -33,7 +34,7 @@ SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCo
 {
     for (int c = 0; c < inputCount; c++)
     {
-        inputFromNodes.append(QSet<gateNode*>());
+        inputFromNodes.append(QSet<QPair<gateNode*, qint32>>());
         inputStates.append(false);
     }
     for (int c = 0; c < outputCount; c++)
@@ -43,6 +44,7 @@ SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCo
     }
 
     parentModel->allGates[id] = this;
+    hasOutputted = false;
 }
 
 void SimulatorModel::gateNode::evaluate()
@@ -56,14 +58,14 @@ void SimulatorModel::connect(qint32 givingId, qint32 outputIndex, qint32 receivi
     gateNode* giver = allGates.value(givingId);
     gateNode* receiver = allGates.value(receivingId);
     giver->outputToNodes[outputIndex].insert(receiver);
-    receiver->inputFromNodes[inputIndex].insert(giver);
+    receiver->inputFromNodes[inputIndex].insert(QPair<gateNode*, qint32>(giver, outputIndex));
 }
 void SimulatorModel::disconnect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
     gateNode* giver = allGates.value(givingId);
     gateNode* receiver = allGates.value(receivingId);
     giver->outputToNodes[outputIndex].remove(receiver);
-    receiver->inputFromNodes[inputIndex].remove(giver);
+    receiver->inputFromNodes[inputIndex].remove(QPair<gateNode*, qint32>(giver, outputIndex));
 }
 
 void SimulatorModel::resetGateStates()
@@ -74,6 +76,7 @@ void SimulatorModel::resetGateStates()
             g->inputStates[i] = false;
         for (int i = 0; i < g->outputStates.count(); i++)
             g->outputStates[i] = false;
+        g->hasOutputted = false;
     }
 }
 
@@ -120,6 +123,7 @@ void SimulatorModel::setInputSequence(qint32 integer){
     for(int i = 0; i < 3; i++){
         bool bit = (integer >> i) & 1; //get ith bit of integer
         levelInputs[i]->outputStates[0] = bit;
+        levelInputs[i]->hasOutputted = true;
         inputs.append(bit);
     }
 
@@ -137,18 +141,55 @@ void SimulatorModel::simulateInput(){
         endSimulation();
         return;
     }
-
+    //set up activeGates
+    resetGateStates();
     setInputSequence(currentInput);
     simulateOneIteration();
 }
 
 void SimulatorModel::simulateOneIteration(){
     //simulate iteration, update view
-    for(gateNode*& gate: allGates)
-        gate->evaluate();
-    //if(not done)
-    QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
+    QSet<gateNode*> spentGates;
+    for (gateNode* activeGate : activeGates)
+    {
+        bool ready = true;
+        for (qint32 inputIndex = 0; inputIndex < activeGate->inputFromNodes.size(); inputIndex++)//check that all inputting nodes have evaluated, and take their inputs if they have
+        {
+            auto inputTerminalSet = activeGate->inputFromNodes[inputIndex];
+            for (QPair<gateNode*, qint32> connection : inputTerminalSet)
+            {
+                gateNode* inputtingGate = connection.first;
+                if (!inputtingGate->hasOutputted)
+                    ready = false;
+                else
+                {
+                    qint32 indexOfConnectedOutput = connection.second;
+                    if (inputtingGate->outputStates[indexOfConnectedOutput]) //the result of this is that if any of the inputs to this terminal are true, then the terminal state is true
+                        activeGate->inputStates[inputIndex] = true;
+                }
+            }
+        }
+        if (!ready) //if not all inputs have evaluated, skip this gate for this iteration
+            continue;
+
+        //by this point the active gate has all it inputs
+        activeGate->evaluate();
+        //this is where to signal the view to light up the wires coming out of this gate according to its output states
+        activeGate->hasOutputted = true;
+
+        spentGates.insert(activeGate);// queue this gate to be removed from the list of active gates
+        for (qint32 outputIndex = 0; outputIndex < activeGate->outputToNodes.size(); outputIndex++) //add this gate's outputs to the list of active gates
+        {
+            auto outputTerminalSet = activeGate->outputToNodes[outputIndex];
+            activeGates.unite(outputTerminalSet);
+        }
+    }
+    activeGates.subtract(spentGates); //removes the gates that were evaluated this iteration
+
+    //if(not done) //no gates left in activeGates, at this point, everything in levelOutputs should have evaluated, and their input/output states can be read
+        QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     //else
+
     for(int i = 0; i < 3; i++){
         if(levelOutputs[i]->inputStates[1] == levels[currentLevel].getExpectedOutput(currentInput)[i])
             std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?

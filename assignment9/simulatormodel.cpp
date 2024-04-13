@@ -3,25 +3,36 @@
 #include <QQueue>
 #include <QTimer>
 #include <QSet>
+#include <QtMath>
 
 SimulatorModel::SimulatorModel()
 {
     //testing example, remove later
     gateNode testNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-        outputs[0] = inputs[0] && inputs[1];
+        outputs[0] = inputs[0] || inputs[1];
     }, this);
-
-    levelInputs.append(new gateNode(0, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-        outputs[0] = inputs[0];
+    levelInputs.append(new gateNode(0, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+        outputs[0] = true;
     }, this));
-
-    levelOutputs.append(new gateNode(2, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-        outputs[0] = inputs[0];
+    levelOutputs.append(new gateNode(2, 1, 0, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+        //nothing
     }, this));
     connect(0, 0, 1, 0); //level in to testNode 0
     connect(1, 0, 2, 0); //testNode to levelout
-    connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
+    //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
+
+    activeGates = QSet<gateNode*>();
+    activeGates.insert(&testNode);
+    //activeGates.insert(levelInputs[0]);
+    simulateOneIteration();
+    std::cout << "level input's output: " << levelInputs[0]->outputStates[0] << std::endl;
+    std::cout << "level input hasOutputted: " << levelInputs[0]->hasOutputted << std::endl;
+    std::cout << "testNode outputs: " << testNode.outputStates[0] << std::endl;
+    std::cout << "testNode input[0]: " << testNode.inputStates[0] << std::endl;
+    std::cout << "testNode input[1]: " << testNode.inputStates[1] << std::endl;
+    std::cout << "testNode hasOutputted: " << testNode.hasOutputted << std::endl;
+    std::cout << "activeGates size: " << activeGates.size() << std::endl;
     //end of testing example
 
     currentInput = 0;
@@ -117,11 +128,11 @@ bool SimulatorModel::canBeSimulated()
     return true;
 }
 
-void SimulatorModel::setInputSequence(qint32 integer){
+void SimulatorModel::setNthInputSequence(qint32 n){
     QVector<bool> inputs;
-    //assumes there are 3 level inputs, each with one output state
-    for(int i = 0; i < 3; i++){
-        bool bit = (integer >> i) & 1; //get ith bit of integer
+    //assumes level inputs have one output state
+    for(int i = 0; i < levelInputs.size(); i++){
+        bool bit = (n >> i) & 1; //get ith bit of integer
         levelInputs[i]->outputStates[0] = bit;
         levelInputs[i]->hasOutputted = true;
         inputs.append(bit);
@@ -137,13 +148,17 @@ void SimulatorModel::startSimulation(){
 }
 
 void SimulatorModel::simulateInput(){
-    if(currentInput == 8){
+    if(currentInput == qPow(2, levelInputs.size())){
         endSimulation();
         return;
     }
-    //set up activeGates
+
+    activeGates.clear();
+    for (gateNode* levelInput : levelInputs)
+        activeGates.insert(levelInput);
+
     resetGateStates();
-    setInputSequence(currentInput);
+    setNthInputSequence(currentInput);
     simulateOneIteration();
 }
 
@@ -190,9 +205,9 @@ void SimulatorModel::simulateOneIteration(){
         QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     //else
 
-    for(int i = 0; i < 3; i++){
-        if(levelOutputs[i]->inputStates[1] == levels[currentLevel].getExpectedOutput(currentInput)[i])
-            std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?
+        for(int i = 0; i < levelOutputs.size(); i++){
+            if(levelOutputs[i]->inputStates[1] == levels[currentLevel].getExpectedOutput(currentInput)[i])
+                std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?
     }
     currentInput++;
     QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);

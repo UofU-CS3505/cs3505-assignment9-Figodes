@@ -44,7 +44,7 @@ private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
 
-    void setInputSequence(qint32 integer);
+    void setNthInputSequence(qint32 n);
     qint32 currentInput;
     QSet<gateNode*> activeGates;
 

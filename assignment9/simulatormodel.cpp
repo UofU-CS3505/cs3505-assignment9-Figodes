@@ -209,7 +209,7 @@ void SimulatorModel::simulateOneIteration(){
 
     if(!activeGates.empty())
         //simulateOneIteration();
-        QTimer::singleShot(1, this, &SimulatorModel::simulateOneIteration);
+        QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     else{
         for(int i = 0; i < levelOutputs.size(); i++){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])

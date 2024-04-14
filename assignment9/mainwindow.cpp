@@ -69,7 +69,11 @@ void MainWindow::setupLevel(Level level){
     for (int i = 0; i < ui->inputs->count(); i++) //clear input buttons
         previousInputs.append(ui->inputs->itemAt(i));
     for (QLayoutItem* item : previousInputs)
+    {
         ui->inputs->removeItem(item);
+        delete item->widget();
+        delete item;
+    }
     for (int i = 0; i < level.inputCount; i++) //create new inputs
     {
         QPushButton* newButton = new QPushButton();
@@ -82,7 +86,11 @@ void MainWindow::setupLevel(Level level){
     for (int i = 0; i < ui->outputs->count(); i++) //clear output buttons
         previousOutputs.append(ui->outputs->itemAt(i));
     for (QLayoutItem* item : previousOutputs)
+    {
         ui->outputs->removeItem(item);
+        delete item->widget();
+        delete item;
+    }
     for (int i = 0; i < level.outputCount; i++)//create new outputs
     {
         QPushButton* newButton = new QPushButton();

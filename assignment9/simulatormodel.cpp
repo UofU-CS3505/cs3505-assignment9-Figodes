@@ -90,8 +90,13 @@ void SimulatorModel::resetGateStates()
     {
         for (int i = 0; i < g->inputStates.size(); i++)
             g->inputStates[i] = false;
-        for (int i = 0; i < g->outputStates.size(); i++)
+        for (int i = 0; i < g->outputStates.size(); i++){
+            std::cout<<"outputStates size = "<<g->outputStates.size()<<", i = "<<i<<std::endl;
+            if(g->outputStates.size() == 192)
+                std::cout<<"reached mystery 192 case"<<std::endl;
+
             g->outputStates[i] = false;
+        }
         g->hasOutputted = false;
     }
 }
@@ -148,13 +153,13 @@ void SimulatorModel::setNthInputSequence(qint32 n){
 
 void SimulatorModel::startSimulation(){
     //lock ui for input testing
-    std::cout<<"in startSimulation"<<std::endl;
+    //std::cout<<"in startSimulation"<<std::endl;
 
     simulateInput();
 }
 
 void SimulatorModel::simulateInput(){
-    std::cout<<"in simulateInput"<<std::endl;
+    //std::cout<<"in simulateInput"<<std::endl;
     if(currentInput == qPow(2, levelInputs.size())){
         endSimulation();
         return;
@@ -170,7 +175,7 @@ void SimulatorModel::simulateInput(){
 }
 
 void SimulatorModel::simulateOneIteration(){
-    std::cout<<"in simulateOneIteration()"<<std::endl;
+    //std::cout<<"in simulateOneIteration()"<<std::endl;
     //simulate iteration, update view
     QSet<gateNode*> spentGates;
     for (gateNode* activeGate : activeGates)

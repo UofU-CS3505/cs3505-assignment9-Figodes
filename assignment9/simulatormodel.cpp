@@ -33,7 +33,7 @@ SimulatorModel::SimulatorModel()
     activeGates = QSet<gateNode*>();
     activeGates.insert(&testNode);
     //activeGates.insert(levelInputs[0]);
-    simulateOneIteration();
+    startSimulation();
     std::cout << "level input's output: " << levelInputs[0]->outputStates[0] << std::endl;
     std::cout << "level input hasOutputted: " << levelInputs[0]->hasOutputted << std::endl;
     std::cout << "testNode outputs: " << testNode.outputStates[0] << std::endl;
@@ -88,9 +88,9 @@ void SimulatorModel::resetGateStates()
 {
     for (gateNode* g : allGates.values())
     {
-        for (int i = 0; i < g->inputStates.count(); i++)
+        for (int i = 0; i < g->inputStates.size(); i++)
             g->inputStates[i] = false;
-        for (int i = 0; i < g->outputStates.count(); i++)
+        for (int i = 0; i < g->outputStates.size(); i++)
             g->outputStates[i] = false;
         g->hasOutputted = false;
     }
@@ -148,11 +148,13 @@ void SimulatorModel::setNthInputSequence(qint32 n){
 
 void SimulatorModel::startSimulation(){
     //lock ui for input testing
+    std::cout<<"in startSimulation"<<std::endl;
 
     simulateInput();
 }
 
 void SimulatorModel::simulateInput(){
+    std::cout<<"in simulateInput"<<std::endl;
     if(currentInput == qPow(2, levelInputs.size())){
         endSimulation();
         return;

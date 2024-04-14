@@ -17,12 +17,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connectionBeingDrawn = false;
     idCounter = 0;
-
+    model = new SimulatorModel();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-
-    model = new SimulatorModel();
 
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
@@ -31,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
 
-    connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates);
-    connect(model, &SimulatorModel::newLevel, this, &MainWindow::setLevelDescription);
+    //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
+    connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
@@ -62,8 +60,38 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
         pickedUpGate = gate;
 }
 
-void MainWindow::setLevelDescription(QString text){
-    ui->levelDescription->setText(text);
+void MainWindow::setupLevel(Level level){
+    clearGates();
+
+    ui->levelDescription->setText(level.getDescription());
+
+    QVector<QLayoutItem*> previousInputs;
+    for (int i = 0; i < ui->inputs->count(); i++) //clear input buttons
+        previousInputs.append(ui->inputs->itemAt(i));
+    for (QLayoutItem* item : previousInputs)
+        ui->inputs->removeItem(item);
+    for (int i = 0; i < level.inputCount; i++) //create new inputs
+    {
+        QPushButton* newButton = new QPushButton();
+        newButton->setStyleSheet("background-color : green");
+        outputButtons.insert(newButton); //technically are inputs
+        ui->inputs->addWidget(newButton);
+    }
+
+    QVector<QLayoutItem*> previousOutputs;
+    for (int i = 0; i < ui->outputs->count(); i++) //clear output buttons
+        previousOutputs.append(ui->outputs->itemAt(i));
+    for (QLayoutItem* item : previousOutputs)
+        ui->outputs->removeItem(item);
+    for (int i = 0; i < level.outputCount; i++)//create new outputs
+    {
+        QPushButton* newButton = new QPushButton();
+        newButton->setStyleSheet("background-color : green");
+        inputButtons.insert(newButton); //technically are outputs
+        ui->outputs->addWidget(newButton);
+    }
+
+    //display required inputs->outputs for level
 }
 
 void MainWindow::onStartClicked(){
@@ -71,20 +99,15 @@ void MainWindow::onStartClicked(){
 }
 
 void MainWindow::showInputs(QVector<bool> inputs){
-    if(inputs[0])
-        ui->input1->setStyleSheet("background-color : lawngreen");
-    else
-        ui->input1->setStyleSheet("background-color : green");
-
-    if(inputs[1])
-        ui->input2->setStyleSheet("background-color : lawngreen");
-    else
-        ui->input2->setStyleSheet("background-color : green");
-
-    if(inputs[2])
-        ui->input3->setStyleSheet("background-color : lawngreen");
-    else
-        ui->input3->setStyleSheet("background-color : green");
+    //iterate through ui->inputs->children (input buttons)
+    for (int i = 0; i < inputs.size(); i++)
+    {
+        QWidget* input = ui->inputs->itemAt(i)->widget();
+        if(inputs[i] && input)
+            input->setStyleSheet("background-color : lawngreen");
+        else
+            input->setStyleSheet("background-color : green");
+    }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {

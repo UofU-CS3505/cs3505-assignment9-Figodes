@@ -84,17 +84,31 @@ public:
     ///
     bool canBeSimulated();
     //since we want to make the simulation take time, I thinik we'll need to break it up like this. A bunch of these robably need to be slots
+    ///
+    /// \brief startSimulation Initializes values so the simluation can start
+    ///
     void startSimulation();
+    ///
+    /// \brief simulateInput Begins the simulaiton for one of the level's given inputs
+    ///
     void simulateInput();
+    ///
+    /// \brief simulateOneIteration Simulates one iteration of the simulation, updating view graphics as it goes and checking whether the simulaiton is complete
+    ///
     void simulateOneIteration();
+    ///
+    /// \brief endSimulation signals view that the simulation is over
+    ///
     void endSimulation();
 
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
+    void loadNextLevel();
 
 signals:
-    void gatesCleared();
-    void newLevel(QString description);
+    void levelComplete(); //triggers celebration or something
+    void levelFailed(); //re-enable view ui
+    void displayNewLevel(Level level);
     void inputsSet(QVector<bool> inputs);
 
 };

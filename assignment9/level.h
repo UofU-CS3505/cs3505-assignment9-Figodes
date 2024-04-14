@@ -7,7 +7,9 @@
 class Level
 {
 public:
-    Level(QString description, QVector<QVector<bool>> expectedOutputs);
+    Level(QString description, QVector<QVector<bool>> expectedOutputs, qint32 inputCount, qint32 outputCount);
+    qint32 inputCount;
+    qint32 outputCount;
     QString getDescription();
     QVector<bool> getExpectedOutput(qint32 input);
 

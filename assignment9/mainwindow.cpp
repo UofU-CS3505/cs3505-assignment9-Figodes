@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connectionBeingDrawn = false;
-    model = new SimulatorModel();
     idCounter = 0;
 
 

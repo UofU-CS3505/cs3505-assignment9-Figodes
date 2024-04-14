@@ -7,6 +7,11 @@
 
 SimulatorModel::SimulatorModel()
 {
+    std::cout<<"in constructor"<<std::endl;
+    currentLevel = 0;
+    currentInput = 0;
+    activeGates = QSet<gateNode*>();
+
     //testing example, remove later
     gateNode testNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
         outputs[0] = inputs[0] || inputs[1];
@@ -22,6 +27,9 @@ SimulatorModel::SimulatorModel()
     //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
 
+    levels.append(Level("example level",
+        QVector<QVector<bool>>{{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}}));
+
     activeGates = QSet<gateNode*>();
     activeGates.insert(&testNode);
     //activeGates.insert(levelInputs[0]);
@@ -34,9 +42,6 @@ SimulatorModel::SimulatorModel()
     std::cout << "testNode hasOutputted: " << testNode.hasOutputted << std::endl;
     std::cout << "activeGates size: " << activeGates.size() << std::endl;
     //end of testing example
-
-    currentInput = 0;
-    activeGates = QSet<gateNode*>();
 }
 
 SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel)
@@ -163,6 +168,7 @@ void SimulatorModel::simulateInput(){
 }
 
 void SimulatorModel::simulateOneIteration(){
+    std::cout<<"in simulateOneIteration()"<<std::endl;
     //simulate iteration, update view
     QSet<gateNode*> spentGates;
     for (gateNode* activeGate : activeGates)
@@ -202,15 +208,16 @@ void SimulatorModel::simulateOneIteration(){
     activeGates.subtract(spentGates); //removes the gates that were evaluated this iteration
 
     //if(not done) //no gates left in activeGates, at this point, everything in levelOutputs should have evaluated, and their input/output states can be read
+    if(activeGates.empty())
         QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
-    //else
-
+    else{
         for(int i = 0; i < levelOutputs.size(); i++){
-            if(levelOutputs[i]->inputStates[1] == levels[currentLevel].getExpectedOutput(currentInput)[i])
+            if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
                 std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?
+        }
+        currentInput++;
+        QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
     }
-    currentInput++;
-    QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
 }
 
 void SimulatorModel::endSimulation(){

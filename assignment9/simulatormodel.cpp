@@ -10,10 +10,9 @@ SimulatorModel::SimulatorModel()
     std::cout<<"in constructor"<<std::endl;
     currentLevel = 0;
     currentInput = 0;
-    activeGates = QSet<gateNode*>();
 
     //testing example, remove later
-    gateNode testNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+    gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
         outputs[0] = inputs[0] || inputs[1];
     }, this);
     levelInputs.append(new gateNode(0, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -27,7 +26,7 @@ SimulatorModel::SimulatorModel()
     //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
 
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}));
+    levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}));
     // levels.append(Level("example level",
     //     QVector<QVector<bool>>{{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}}));
     startSimulation();

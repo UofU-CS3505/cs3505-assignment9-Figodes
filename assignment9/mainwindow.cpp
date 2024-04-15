@@ -210,11 +210,19 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         connectingGate = gate;
 
         if (outputButtons.contains(buttonBeingConnected))
-            for (QPushButton* button : outputButtons)
-                button->setEnabled(false);
+        {
+            for (QPushButton* b : outputButtons)
+                b->setEnabled(false);
+            for (QPushButton* b : gates[gate]->inputs)
+                b->setEnabled(false);
+        }
         else
-            for (QPushButton* button : inputButtons)
-                button->setEnabled(false);
+        {
+            for (QPushButton* b : inputButtons)
+                b->setEnabled(false);
+            for (QPushButton* b : gates[gate]->outputs)
+                b->setEnabled(false);
+        }
     }
     else
     {
@@ -307,8 +315,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
         QPoint endPos = connection.second->mapToGlobal(QPoint(0,0));
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 5);
-        endPos.setY(endPos.y() + 5);
+        startPos.setY(startPos.y() + 15);
+        endPos.setY(endPos.y() + 15);
 
         // Draw a line between the buttons
         painter.drawLine(startPos, endPos);
@@ -320,7 +328,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
         QPoint endPos = QCursor::pos();
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 5);
+        startPos.setY(startPos.y() + 15);
 
         painter.drawLine(startPos, endPos);
     }

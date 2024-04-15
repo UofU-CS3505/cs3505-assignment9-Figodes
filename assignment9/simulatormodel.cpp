@@ -9,11 +9,9 @@ SimulatorModel::SimulatorModel()
 {
     std::cout<<"in constructor"<<std::endl;
     currentLevel = 0;
-    currentInput = 0;
-    activeGates = QSet<gateNode*>();
 
     //testing example, remove later
-    gateNode testNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+    gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
         outputs[0] = inputs[0] || inputs[1];
     }, this);
     levelInputs.append(new gateNode(0, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -27,9 +25,7 @@ SimulatorModel::SimulatorModel()
     //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     std::cout << "simulation check?: " << canBeSimulated() << std::endl;
 
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}));
-    // levels.append(Level("example level",
-    //     QVector<QVector<bool>>{{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}}));
+    levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}, 1, 1));
     startSimulation();
     //end of testing example
 }
@@ -140,10 +136,10 @@ void SimulatorModel::setNthInputSequence(qint32 n){
     emit inputsSet(inputs);
 }
 
-void SimulatorModel::startSimulation(){
+void SimulatorModel::startSimulation(){   
     //lock ui for input testing
     //std::cout<<"in startSimulation"<<std::endl;
-
+    currentInput = 0;
     simulateInput();
 }
 
@@ -212,12 +208,13 @@ void SimulatorModel::simulateOneIteration(){
     std::cout << "activeGates properly updated" << std::endl;
 
     if(!activeGates.empty())
-        simulateOneIteration();
-        //QTimer::singleShot(1, this, &SimulatorModel::simulateOneIteration);
+        QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     else{
         for(int i = 0; i < levelOutputs.size(); i++){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
                 std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?
+            else
+                emit levelFailed();
         }
         currentInput++;
         QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
@@ -225,12 +222,9 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(){
-    currentInput = 0;
-    currentLevel++;
-    //move to next level, show level completed in ui?
-    allGates.clear();
-    emit gatesCleared();
-    emit newLevel(levels[currentLevel].getDescription());
+    emit displayNewLevel(levels[0]); //for testing purposes, shouldn't be here normally
+    emit levelComplete();
+    // enable button to move to next level in view, maybe also a restart button?
 }
 
 void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
@@ -253,11 +247,30 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
                 outputs[0] = !inputs[0];
             }, this);
         break;
+    case GateTypes::LEVEL_IN:
+        newNode = new gateNode(gateID, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                ;
+            }, this);
+        levelInputs.append(newNode);
+        break;
+    case GateTypes::LEVEL_OUT:
+        newNode = new gateNode(gateID, 1, 0, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                ;
+            }, this);
+        levelOutputs.append(newNode);
+        break;
     }
 
     if (newNode) {
         allGates.insert(gateID, newNode);
         std::cout << "new node, " << gateID << ", added to model" << std::endl;
     }
+}
+
+void SimulatorModel::loadNextLevel()
+{
+    currentLevel++;
+    allGates.clear();
+    emit displayNewLevel(levels[currentLevel]);
 }
 

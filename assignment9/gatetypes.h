@@ -5,7 +5,9 @@ enum class GateTypes
 {
     AND,
     OR,
-    NOT
+    NOT,
+    LEVEL_IN,
+    LEVEL_OUT
 };
 
 #endif // GATETYPES_H

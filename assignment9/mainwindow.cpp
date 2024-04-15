@@ -17,12 +17,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connectionBeingDrawn = false;
     idCounter = 0;
-
+    model = new SimulatorModel();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-
-    model = new SimulatorModel();
 
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
@@ -31,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
 
-    connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates);
-    connect(model, &SimulatorModel::newLevel, this, &MainWindow::setLevelDescription);
+    //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
+    connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
@@ -62,8 +60,40 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
         pickedUpGate = gate;
 }
 
-void MainWindow::setLevelDescription(QString text){
-    ui->levelDescription->setText(text);
+void MainWindow::setupLevel(Level level){
+    clearGates();
+
+    ui->levelDescription->setText(level.getDescription());
+
+    QVector<QLayoutItem*> previousInputs;
+    for (int i = 0; i < ui->inputs->count(); i++) //clear input buttons
+        previousInputs.append(ui->inputs->itemAt(i));
+    for (QLayoutItem* item : previousInputs)
+    {
+        ui->inputs->removeItem(item);
+        delete item->widget();
+        delete item;
+    }
+    for (int i = 0; i < level.inputCount; i++) //create new inputs
+    {
+        addGate(GateTypes::LEVEL_IN);
+    }
+
+    QVector<QLayoutItem*> previousOutputs;
+    for (int i = 0; i < ui->outputs->count(); i++) //clear output buttons
+        previousOutputs.append(ui->outputs->itemAt(i));
+    for (QLayoutItem* item : previousOutputs)
+    {
+        ui->outputs->removeItem(item);
+        delete item->widget();
+        delete item;
+    }
+    for (int i = 0; i < level.outputCount; i++)//create new outputs
+    {
+        addGate(GateTypes::LEVEL_OUT);
+    }
+
+    //display required inputs->outputs for level
 }
 
 void MainWindow::onStartClicked(){
@@ -71,20 +101,15 @@ void MainWindow::onStartClicked(){
 }
 
 void MainWindow::showInputs(QVector<bool> inputs){
-    if(inputs[0])
-        ui->input1->setStyleSheet("background-color : lawngreen");
-    else
-        ui->input1->setStyleSheet("background-color : green");
-
-    if(inputs[1])
-        ui->input2->setStyleSheet("background-color : lawngreen");
-    else
-        ui->input2->setStyleSheet("background-color : green");
-
-    if(inputs[2])
-        ui->input3->setStyleSheet("background-color : lawngreen");
-    else
-        ui->input3->setStyleSheet("background-color : green");
+    //iterate through ui->inputs->children (input buttons)
+    for (int i = 0; i < inputs.size(); i++)
+    {
+        QWidget* input = ui->inputs->itemAt(i)->widget();
+        if(inputs[i] && input)
+            input->setStyleSheet("background-color : lawngreen");
+        else
+            input->setStyleSheet("background-color : green");
+    }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
@@ -105,7 +130,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 
 void MainWindow::addGate(GateTypes gateType) {
-
     // if the user adds a new gate, disable the current one
     if (pickedUpGate){
         pickedUpGate->setStyleSheet("background-color : green");
@@ -125,8 +149,27 @@ void MainWindow::addGate(GateTypes gateType) {
     case GateTypes::NOT:
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
+    case GateTypes::LEVEL_IN:
+        newGate = new UILogicGate(this, idCounter++, "IN", 0, 1);
+        break;
+    case GateTypes::LEVEL_OUT:
+        newGate = new UILogicGate(this, idCounter++, "OUT", 1, 0);
+        break;
     }
     trackButtonsOn(newGate);
+    gates.append(newGate);
+    newGate->show();
+
+    if (gateType == GateTypes::LEVEL_IN)
+    {
+        ui->inputs->addWidget(newGate);
+        return;
+    }
+    if (gateType == GateTypes::LEVEL_OUT)
+    {
+        ui->outputs->addWidget(newGate);
+        return;
+    }
 
     emit newGateCreated(newGate->id, gateType);
 
@@ -136,9 +179,6 @@ void MainWindow::addGate(GateTypes gateType) {
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
-
-    gates.append(newGate);
-    newGate->show();
 
 }
 
@@ -168,14 +208,32 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         buttonBeingConnected = button;
         connectionBeingDrawn = true;
         connectingGate = gate;
+
+        if (outputButtons.contains(buttonBeingConnected))
+        {
+            for (QPushButton* b : outputButtons)
+                b->setEnabled(false);
+            for (QPushButton* b : gates[gate]->inputs)
+                b->setEnabled(false);
+        }
+        else
+        {
+            for (QPushButton* b : inputButtons)
+                b->setEnabled(false);
+            for (QPushButton* b : gates[gate]->outputs)
+                b->setEnabled(false);
+        }
     }
     else
     {
-        // Second button clicked, end connection
+        // Second button clicked, end connection        
         if (isConnectionValid(buttonBeingConnected, button, connectingGate, gate)) // Check if the connection is valid
         {
             if (!isConnectionAlreadyExists(buttonBeingConnected, button)) // Check if the connection already exists
             {
+                qint32 giver;
+                qint32 receiver;
+
                 uiButtonConnections.append(qMakePair(buttonBeingConnected, button));
 
                 qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
@@ -183,15 +241,26 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
                 if (gates[connectingGate]->outputs.contains(buttonBeingConnected))
                 {
                     outputIndex = gates[connectingGate]->outputs.indexOf(buttonBeingConnected);
-                }
-                if (gates[gate]->inputs.contains(button))
-                {
                     inputIndex = gates[gate]->inputs.indexOf(button);
+                    giver = connectingGate;
+                    receiver = gate;
+                }
+                else
+                {
+                    outputIndex = gates[gate]->outputs.indexOf(button);
+                    inputIndex = gates[connectingGate]->inputs.indexOf(buttonBeingConnected);
+                    giver = gate;
+                    receiver = connectingGate;
                 }
 
-                emit connectionDrawn(connectingGate, outputIndex, gate, inputIndex);
+                emit connectionDrawn(giver, outputIndex, receiver, inputIndex);
             }
         }
+
+        for (QPushButton* button : outputButtons)
+            button->setEnabled(true);
+        for (QPushButton* button : inputButtons)
+            button->setEnabled(true);
 
         // Reset state for next connection
         buttonBeingConnected = nullptr;
@@ -246,12 +315,24 @@ void MainWindow::paintEvent(QPaintEvent *event)
         QPoint endPos = connection.second->mapToGlobal(QPoint(0,0));
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 5);
-        endPos.setY(endPos.y() + 5);
+        startPos.setY(startPos.y() + 15);
+        endPos.setY(endPos.y() + 15);
 
         // Draw a line between the buttons
         painter.drawLine(startPos, endPos);
     }
+
+    if (connectionBeingDrawn)
+    {
+        QPoint startPos = buttonBeingConnected->mapToGlobal(QPoint(0,0));
+        QPoint endPos = QCursor::pos();
+        startPos = this->mapFromGlobal(startPos);
+        endPos = this->mapFromGlobal(endPos);
+        startPos.setY(startPos.y() + 15);
+
+        painter.drawLine(startPos, endPos);
+    }
+
 }
 
 

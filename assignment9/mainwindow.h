@@ -56,9 +56,8 @@ public slots:
 
     void updatePickedUpGate(UILogicGate *gate, QPoint initialPosition);
 
-    /// \brief Sets the level description to display the given text.
-    /// \param text
-    void setLevelDescription(QString text);
+    /// \brief Sets up the given level
+    void setupLevel(Level level);
 
     /// \brief Called when startButton is clicked, just calls simulationStarted.
     void onStartClicked();
@@ -77,12 +76,6 @@ public slots:
     void connectionBeingMade(qint32 gate, QPushButton* button);
 
     void paintEvent(QPaintEvent* event);
-
-
-
-
-
-
 
 signals:
 

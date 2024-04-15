@@ -19,7 +19,7 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         mainWindow = qobject_cast<MainWindow*>(currentParent);
     }
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
-    connect (this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
+    connect(this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
 
 
     pickedUp = false;
@@ -28,9 +28,13 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
 
-
     setText(operationName);
     setAlignment(Qt::AlignCenter);
+
+    if (inputCount == 0 || outputCount == 0)
+    {
+        setFixedSize(width() - 30, height() - 30);
+    }
 
     qint32 edgeBuffer = 5;
     qint32 buttonSize = 20;

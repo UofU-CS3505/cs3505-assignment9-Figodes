@@ -9,8 +9,6 @@ welcomeScreen::welcomeScreen(QWidget *parent)
 {
     ui->setupUi(this);
 
-
-
     connect(&timer, &QTimer::timeout, this, &welcomeScreen::updateWorld);
     timer.start(1000 / 60);
 

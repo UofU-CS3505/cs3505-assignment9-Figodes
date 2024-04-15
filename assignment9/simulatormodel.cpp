@@ -208,7 +208,6 @@ void SimulatorModel::simulateOneIteration(){
     std::cout << "activeGates properly updated" << std::endl;
 
     if(!activeGates.empty())
-        //simulateOneIteration();
         QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     else{
         for(int i = 0; i < levelOutputs.size(); i++){
@@ -223,7 +222,7 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(){
-    //emit displayNewLevel(levels[0]); //for testing purposes, shouldn't be here normally
+    emit displayNewLevel(levels[0]); //for testing purposes, shouldn't be here normally
     emit levelComplete();
     // enable button to move to next level in view, maybe also a restart button?
 }
@@ -247,6 +246,18 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
         newNode = new gateNode(gateID, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
                 outputs[0] = !inputs[0];
             }, this);
+        break;
+    case GateTypes::LEVEL_IN:
+        newNode = new gateNode(gateID, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                ;
+            }, this);
+        levelInputs.append(newNode);
+        break;
+    case GateTypes::LEVEL_OUT:
+        newNode = new gateNode(gateID, 1, 0, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+                ;
+            }, this);
+        levelOutputs.append(newNode);
         break;
     }
 

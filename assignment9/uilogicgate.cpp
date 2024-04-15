@@ -19,7 +19,7 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         mainWindow = qobject_cast<MainWindow*>(currentParent);
     }
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
-    connect (this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
+    connect(this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
 
 
     pickedUp = false;

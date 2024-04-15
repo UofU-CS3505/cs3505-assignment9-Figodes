@@ -76,10 +76,7 @@ void MainWindow::setupLevel(Level level){
     }
     for (int i = 0; i < level.inputCount; i++) //create new inputs
     {
-        QPushButton* newButton = new QPushButton();
-        newButton->setStyleSheet("background-color : green");
-        outputButtons.insert(newButton); //technically are inputs
-        ui->inputs->addWidget(newButton);
+        addGate(GateTypes::LEVEL_IN);
     }
 
     QVector<QLayoutItem*> previousOutputs;
@@ -93,10 +90,7 @@ void MainWindow::setupLevel(Level level){
     }
     for (int i = 0; i < level.outputCount; i++)//create new outputs
     {
-        QPushButton* newButton = new QPushButton();
-        newButton->setStyleSheet("background-color : green");
-        inputButtons.insert(newButton); //technically are outputs
-        ui->outputs->addWidget(newButton);
+        addGate(GateTypes::LEVEL_OUT);
     }
 
     //display required inputs->outputs for level
@@ -136,7 +130,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 
 void MainWindow::addGate(GateTypes gateType) {
-
     // if the user adds a new gate, disable the current one
     if (pickedUpGate){
         pickedUpGate->setStyleSheet("background-color : green");
@@ -156,8 +149,27 @@ void MainWindow::addGate(GateTypes gateType) {
     case GateTypes::NOT:
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
+    case GateTypes::LEVEL_IN:
+        newGate = new UILogicGate(this, idCounter++, "IN", 0, 1);
+        break;
+    case GateTypes::LEVEL_OUT:
+        newGate = new UILogicGate(this, idCounter++, "OUT", 1, 0);
+        break;
     }
     trackButtonsOn(newGate);
+    gates.append(newGate);
+    newGate->show();
+
+    if (gateType == GateTypes::LEVEL_IN)
+    {
+        ui->inputs->addWidget(newGate);
+        return;
+    }
+    if (gateType == GateTypes::LEVEL_OUT)
+    {
+        ui->outputs->addWidget(newGate);
+        return;
+    }
 
     emit newGateCreated(newGate->id, gateType);
 
@@ -167,9 +179,6 @@ void MainWindow::addGate(GateTypes gateType) {
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
-
-    gates.append(newGate);
-    newGate->show();
 
 }
 

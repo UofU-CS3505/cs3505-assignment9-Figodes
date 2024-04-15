@@ -20,9 +20,9 @@
    <widget class="QLabel" name="canvas">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>110</x>
       <y>140</y>
-      <width>771</width>
+      <width>721</width>
       <height>581</height>
      </rect>
     </property>
@@ -74,7 +74,7 @@
      <rect>
       <x>840</x>
       <y>200</y>
-      <width>47</width>
+      <width>91</width>
       <height>521</height>
      </rect>
     </property>
@@ -159,7 +159,7 @@
      <rect>
       <x>10</x>
       <y>180</y>
-      <width>47</width>
+      <width>91</width>
       <height>541</height>
      </rect>
     </property>
@@ -213,7 +213,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

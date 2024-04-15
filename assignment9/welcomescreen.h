@@ -19,9 +19,15 @@ public:
 
 private slots:
     void updateWorld();
+    void continueButtonClicked();
 
 signals:
     void heightChanged(int height);
+    void windowClosed();
+
+protected:
+    void closeEvent(QCloseEvent *event); // Override close event
+
 
 private:
     Ui::welcomeScreen *ui;

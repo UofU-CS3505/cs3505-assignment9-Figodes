@@ -9,6 +9,8 @@ welcomeScreen::welcomeScreen(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(ui->continueButton, &QPushButton::clicked, this, &welcomeScreen::continueButtonClicked);
+
     connect(&timer, &QTimer::timeout, this, &welcomeScreen::updateWorld);
     timer.start(1000 / 60);
 
@@ -77,5 +79,15 @@ void welcomeScreen::updateWorld()
 
     QPoint labelPos((this->width() - ui->welcomeText->width())/2, (position.y * 100));
     ui->welcomeText->move(labelPos);
+}
+
+void welcomeScreen::continueButtonClicked() {
+    emit windowClosed();
+    accept();
+}
+
+void welcomeScreen::closeEvent(QCloseEvent *event) {
+    emit windowClosed();
+    accept();
 }
 

@@ -15,12 +15,16 @@ MainWindow::MainWindow(QWidget *parent)
     pickedUpGate = nullptr;
     ui->setupUi(this);
 
+    this->hide();
+
     connectionBeingDrawn = false;
     idCounter = 0;
     model = new SimulatorModel();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
+
+    connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
 
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
@@ -36,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     QVector<bool> startingInputs = {false, false, false};
     showInputs(startingInputs);
+    this->hide();
 
     showWelcomeScreen();
 }
@@ -47,9 +52,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::showWelcomeScreen() {
 
-    // uncomment below line to make sure welcome screen stays on top
+    // UNCOMMENT BELOW LINE TO
     //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
     welcomescreen.show();
+}
+
+void MainWindow::showWindow() {
+    this->show();
 }
 
 

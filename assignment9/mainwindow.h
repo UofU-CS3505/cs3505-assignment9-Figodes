@@ -47,6 +47,7 @@ private:
     void trackButtonsOn(UILogicGate* quarry);
 
     welcomeScreen welcomescreen;
+
     void showWelcomeScreen();
     bool isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2);
     bool isConnectionValid(QPushButton* button1, QPushButton* button2, qint32 gate1, qint32 gate2);
@@ -76,6 +77,8 @@ public slots:
     void connectionBeingMade(qint32 gate, QPushButton* button);
 
     void paintEvent(QPaintEvent* event);
+
+    void showWindow();
 
 signals:
 

@@ -223,7 +223,7 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(){
-    emit displayNewLevel(levels[0]); //for testing purposes
+    //emit displayNewLevel(levels[0]); //for testing purposes, shouldn't be here normally
     emit levelComplete();
     // enable button to move to next level in view, maybe also a restart button?
 }

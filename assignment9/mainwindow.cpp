@@ -199,14 +199,24 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         buttonBeingConnected = button;
         connectionBeingDrawn = true;
         connectingGate = gate;
+
+        if (outputButtons.contains(buttonBeingConnected))
+            for (QPushButton* button : outputButtons)
+                button->setEnabled(false);
+        else
+            for (QPushButton* button : inputButtons)
+                button->setEnabled(false);
     }
     else
     {
-        // Second button clicked, end connection
+        // Second button clicked, end connection        
         if (isConnectionValid(buttonBeingConnected, button, connectingGate, gate)) // Check if the connection is valid
         {
             if (!isConnectionAlreadyExists(buttonBeingConnected, button)) // Check if the connection already exists
             {
+                qint32 giver;
+                qint32 receiver;
+
                 uiButtonConnections.append(qMakePair(buttonBeingConnected, button));
 
                 qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
@@ -214,15 +224,26 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
                 if (gates[connectingGate]->outputs.contains(buttonBeingConnected))
                 {
                     outputIndex = gates[connectingGate]->outputs.indexOf(buttonBeingConnected);
-                }
-                if (gates[gate]->inputs.contains(button))
-                {
                     inputIndex = gates[gate]->inputs.indexOf(button);
+                    giver = connectingGate;
+                    receiver = gate;
+                }
+                else
+                {
+                    outputIndex = gates[gate]->outputs.indexOf(button);
+                    inputIndex = gates[connectingGate]->inputs.indexOf(buttonBeingConnected);
+                    giver = gate;
+                    receiver = connectingGate;
                 }
 
-                emit connectionDrawn(connectingGate, outputIndex, gate, inputIndex);
+                emit connectionDrawn(giver, outputIndex, receiver, inputIndex);
             }
         }
+
+        for (QPushButton* button : outputButtons)
+            button->setEnabled(true);
+        for (QPushButton* button : inputButtons)
+            button->setEnabled(true);
 
         // Reset state for next connection
         buttonBeingConnected = nullptr;
@@ -283,6 +304,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
         // Draw a line between the buttons
         painter.drawLine(startPos, endPos);
     }
+
+    if (connectionBeingDrawn)
+    {
+        QPoint startPos = buttonBeingConnected->mapToGlobal(QPoint(0,0));
+        QPoint endPos = QCursor::pos();
+        startPos = this->mapFromGlobal(startPos);
+        endPos = this->mapFromGlobal(endPos);
+        startPos.setY(startPos.y() + 5);
+
+        painter.drawLine(startPos, endPos);
+    }
+
 }
 
 

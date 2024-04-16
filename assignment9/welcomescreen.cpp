@@ -9,6 +9,8 @@ welcomeScreen::welcomeScreen(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->gameDescription->hide();
+
     connect(ui->continueButton, &QPushButton::clicked, this, &welcomeScreen::continueButtonClicked);
 
     connect(&timer, &QTimer::timeout, this, &welcomeScreen::updateWorld);
@@ -82,8 +84,16 @@ void welcomeScreen::updateWorld()
 }
 
 void welcomeScreen::continueButtonClicked() {
-    emit windowClosed();
-    accept();
+    if (ui->gameDescription->isHidden()) {
+        ui->welcomeText->hide();
+        ui->gameDescription->show();
+    }
+    else
+    {
+        emit windowClosed();
+        accept();
+    }
+
 }
 
 void welcomeScreen::closeEvent(QCloseEvent *event) {

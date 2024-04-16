@@ -72,6 +72,38 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 void MainWindow::setupLevel(Level level){
     clearGates();
 
+
+    ui->tableWidget->setRowCount(level.inputCount);
+    ui->tableWidget->setColumnCount(level.outputCount + level.outputCount);
+
+    // Set headers
+    QStringList headers;
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Input %1").arg(i);
+    }
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Output %1").arg(i);
+    }
+    ui->tableWidget->setHorizontalHeaderLabels(headers);
+
+
+    for (int i = 0; i < level.inputCount; ++i) {
+        QVector<bool> inputSet = level.getLevelInput(i);
+        for (int j = 0; j < level.inputCount; ++j) {
+            QTableWidgetItem* item = new QTableWidgetItem(inputSet[j] ? "1" : "0");
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            ui->tableWidget->setItem(i, j, item);
+        }
+        QVector<bool> outputSet = level.getExpectedOutput(i);
+        for (int j = 0; j < level.outputCount; ++j) {
+            QTableWidgetItem* item = new QTableWidgetItem(outputSet[j] ? "1" : "0");
+            ui->tableWidget->setItem(i, level.outputCount + j, item);
+        }
+    }
+
+    // Resize columns to fit content
+    ui->tableWidget->resizeColumnsToContents();
+
     ui->levelDescription->setText(level.getDescription());
 
     QVector<QLayoutItem*> previousInputs;

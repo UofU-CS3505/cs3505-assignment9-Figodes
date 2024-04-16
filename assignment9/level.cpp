@@ -15,11 +15,11 @@ Level::Level(QString description, QVector<QVector<bool>> expectedOutputs, qint32
             bool bit = (n >> i) & 1; //get ith bit of integer
             inputGroup.append(bit);
         }
-        expectedInputs.append(inputGroup);
+        levelInputs.append(inputGroup);
     }
 }
 
-Level::Level(QString description, std::function<void(QVector<bool> , QVector<bool>&)> levelFunction, qint32 inputCount, qint32 outputCount)
+Level::Level(QString description, std::function<void(QVector<bool> inputSet, QVector<bool>& outputSet)> levelFunction, qint32 inputCount, qint32 outputCount)
     : inputCount(inputCount)
     , outputCount(outputCount)
     , description(description)
@@ -32,7 +32,7 @@ Level::Level(QString description, std::function<void(QVector<bool> , QVector<boo
             bool bit = (n >> i) & 1; //get ith bit of integer
             inputGroup.append(bit);
         }
-        expectedInputs.append(inputGroup);
+        levelInputs.append(inputGroup);
     }
 
     for (qint32 i = 0; i < numberOfInputSets; i++) //initialize outputs
@@ -43,13 +43,18 @@ Level::Level(QString description, std::function<void(QVector<bool> , QVector<boo
     }
 
     for (qint32 i = 0; i < numberOfInputSets; i++)
-        levelFunction(expectedInputs[i], expectedOutputs[i]); //generate appropriate outputs
+        levelFunction(levelInputs[i], expectedOutputs[i]); //generate appropriate outputs
 }
 
 QString Level::getDescription(){
     return description;
 }
 
-QVector<bool> Level::getExpectedOutput(qint32 input){
-    return expectedOutputs[input];
+QVector<bool> Level::getExpectedOutput(qint32 inputIndex){
+    return expectedOutputs[inputIndex];
+}
+
+QVector<bool> Level::getLevelInput(qint32 inputIndex)
+{
+    return levelInputs[inputIndex];
 }

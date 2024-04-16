@@ -274,7 +274,8 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
 
 void SimulatorModel::loadNextLevel()
 {
-    currentLevel++;
+    if(currentLevel < levels.size() - 1)
+        currentLevel++;
     allGates.clear();
     emit displayNewLevel(levels[currentLevel]);
     emit enableEditing();

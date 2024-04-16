@@ -405,7 +405,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
     if (connectionBeingDrawn)
     {
-        painter.setPen(QPen(Qt::black, 2));
+        painter.setPen(QPen(Qt::black, 2)); //yes this is intentionally thinner
 
         QPoint startPos = buttonBeingConnected->mapToGlobal(QPoint(0,0));
         QPoint endPos = QCursor::pos();
@@ -440,6 +440,35 @@ void MainWindow::enableAllButtons() {
 
     for(UILogicGate* g : gates) {
         g->canBeMoved = true;
+    }
+}
+
+void MainWindow::colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor)
+{
+    UILogicGate* givingGate = nullptr;
+    UILogicGate* receivingGate = nullptr;;
+    for (UILogicGate* g : gates)
+    {
+        if (g->id == giverId)
+            givingGate = g;
+        if (g->id == receiverId)
+            receivingGate = g;
+    }
+    if (givingGate && receivingGate)
+    {
+        QPushButton* firstButton = givingGate->outputs[outputIndex];
+        QPushButton* secondButton = givingGate->outputs[inputIndex];
+        for (qint32 i = 0; i < uiButtonConnections.size(); i++)
+        {
+            if ((uiButtonConnections[i].first == firstButton && uiButtonConnections[i].second == secondButton)
+                || (uiButtonConnections[i].first == secondButton && uiButtonConnections[i].second == firstButton))
+            {
+                uiButtonConnections[i].color = newColor;
+                break;
+            }
+        }
+
+        update();
     }
 }
 

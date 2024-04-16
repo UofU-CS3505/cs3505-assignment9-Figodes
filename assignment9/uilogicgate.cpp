@@ -64,17 +64,19 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
 
 void UILogicGate::mousePressEvent(QMouseEvent* event)
 {
-    pickedUp = !pickedUp;
-    if (pickedUp) {
-        // Record the offset inside the widget at which it was clicked
-       // dragStartPosition = event->pos();
-        setStyleSheet("background-color : lime");
-        QWidget::raise();
+    if(canBeMoved){
+        pickedUp = !pickedUp;
+        if (pickedUp) {
+            // Record the offset inside the widget at which it was clicked
+            // dragStartPosition = event->pos();
+            setStyleSheet("background-color : lime");
+            QWidget::raise();
+        }
+        else {
+            setStyleSheet("background-color : green");
+        }
+        emit updatePickedUpGateLocation(this, event->pos());
     }
-    else {
-        setStyleSheet("background-color : green");
-    }
-    emit updatePickedUpGateLocation(this, event->pos());
 }
 
 

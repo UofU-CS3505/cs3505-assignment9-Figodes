@@ -26,10 +26,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
+    connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
-    connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
 
     connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
 

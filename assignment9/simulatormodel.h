@@ -39,6 +39,7 @@ private:
         // Not sure if gates actually need to know their ids
         qint32 id;
         bool hasOutputted;
+        bool recursiveDFSLoopDetected(QSet<qint32>* visitedIds);
 
     private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;

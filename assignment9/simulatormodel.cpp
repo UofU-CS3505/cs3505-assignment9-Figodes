@@ -91,39 +91,29 @@ void SimulatorModel::resetGateStates()
 
 bool SimulatorModel::canBeSimulated()
 {
-    QMap<gateNode*, qint32> timesVisited; //how many times this algorithm visits the key node by traversing forward through the model
-    QQueue<gateNode*> frontier;
-    for (gateNode* in : levelInputs)
-        frontier.enqueue(in);
-
-    while(!frontier.empty())
+    for (gateNode* levelIn : levelInputs)
     {
-        gateNode* currentGate = frontier.dequeue();
-
-        for (QSet outputTerminal : currentGate->outputToNodes)
-        {
-            for (gateNode* outputGate: outputTerminal) //all the gates that this particular output terminal outputs to
-            {
-                if (!outputGate) //skip this output if it's not connected
-                    continue;
-
-                if (timesVisited.contains(outputGate))
-                    timesVisited[outputGate]++;
-                else
-                    timesVisited[outputGate] = 0;
-
-                qint32 outputsInDegree = 0;
-                for (QSet outputsInput: outputGate->inputFromNodes) //find the in-degree of this gate we're outputting to, counting the number of connections on each terminal
-                    outputsInDegree += outputsInput.count();
-
-                if (timesVisited[outputGate] > outputsInDegree) //means this node has been visited more times than it has incoming connections, thus there must be some circularity
-                    return false;
-
-                frontier.enqueue(outputGate);
-            }
-        }
+        auto visited = new QSet<qint32>();
+        if (levelIn->recursiveDFSLoopDetected(visited))
+            return false;
     }
     return true;
+}
+
+bool SimulatorModel::gateNode::recursiveDFSLoopDetected(QSet<qint32>* visitedIds)
+{
+    visitedIds->insert(id); //mark this node as visited
+    for (auto outputToGroup : outputToNodes)
+        for (gateNode* outputtedTo : outputToGroup)
+        {
+            if (visitedIds->contains(outputtedTo->id)) //already visited
+                return true;
+            bool loopDownstream = outputtedTo->recursiveDFSLoopDetected(visitedIds);
+            if (loopDownstream)
+                return true;
+        }
+    visitedIds->remove(id); //unmark this node
+    return false;
 }
 
 void SimulatorModel::setNthInputSequence(qint32 n){

@@ -57,7 +57,6 @@ private:
     bool isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2);
     bool isConnectionValid(QPushButton* button1, QPushButton* button2, qint32 gate1, qint32 gate2);
 
-
 public slots:
 
     void updatePickedUpGate(UILogicGate *gate, QPoint initialPosition);
@@ -89,6 +88,7 @@ public slots:
     void disableAllButtons();
     void enableAllButtons();
 
+    void colorAllWires(QColor color);
     void colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
 
 signals:

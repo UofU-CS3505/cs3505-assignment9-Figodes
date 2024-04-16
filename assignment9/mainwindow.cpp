@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
+    connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -471,6 +472,12 @@ void MainWindow::colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId
     }
 }
 
-
+void MainWindow::colorAllWires(QColor color)
+{
+    std::cout << "coloring all" << std::endl;
+    for (qint32 i = 0; i < uiButtonConnections.size(); i++)
+        uiButtonConnections[i].color = color;
+    update();
+}
 
 

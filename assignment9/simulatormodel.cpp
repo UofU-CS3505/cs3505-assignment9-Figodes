@@ -152,6 +152,7 @@ void SimulatorModel::simulateInput(){
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
 
+    emit colorAllConnections(Qt::darkRed);
     resetGateStates();
     setNthInputSequence(currentInput);
     simulateOneIteration();

@@ -125,6 +125,7 @@ signals:
     void inputsSet(QVector<bool> inputs);
     void outputsSet(QVector<bool> outputs);
     void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
+    void colorAllConnections(QColor color);
 };
 
 #endif // SIMULATORMODEL_H

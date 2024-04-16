@@ -151,6 +151,8 @@ void MainWindow::setupLevel(Level level){
             gate->canBeMoved = false;
         }
     }
+
+    update();
 }
 
 void MainWindow::onStartClicked(){

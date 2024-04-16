@@ -108,7 +108,7 @@ void MainWindow::setupLevel(Level level){
 }
 
 void MainWindow::onStartClicked(){
-    //std::cout<<"start clicked"<<std::endl;
+    std::cout<<"start clicked"<<std::endl;
     emit startSimulation();
 }
 
@@ -207,10 +207,12 @@ void MainWindow::addGate(GateTypes gateType) {
 }
 
 void MainWindow::clearGates(){
+    std::cout<<"clearing gates"<<std::endl;
     for(QObject* o: ui->canvas->children())
         delete o;
     inputButtons.clear();
     outputButtons.clear();
+    uiButtonConnections.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

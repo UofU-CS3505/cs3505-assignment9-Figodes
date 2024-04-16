@@ -47,6 +47,7 @@ private:
     void setNthInputSequence(qint32 n);
     qint32 currentInput;
     QSet<gateNode*> activeGates;
+    QVector<bool> toBoolVector(QVector<gateNode*> gates);
 
 public:
     SimulatorModel();
@@ -110,7 +111,7 @@ signals:
     void levelFailed(); //re-enable view ui
     void displayNewLevel(Level level);
     void inputsSet(QVector<bool> inputs);
-
+    void outputsSet(QVector<bool> outputs);
 };
 
 #endif // SIMULATORMODEL_H

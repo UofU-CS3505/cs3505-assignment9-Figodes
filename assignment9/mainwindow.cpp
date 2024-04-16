@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
     connect(model, &SimulatorModel::levelFinished, model, &SimulatorModel::setupLevel); //temporary, start next level when current ends
+    connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
+    connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -72,6 +74,38 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 void MainWindow::setupLevel(Level level){
     clearGates();
 
+
+    ui->tableWidget->setRowCount(level.inputCount);
+    ui->tableWidget->setColumnCount(level.outputCount + level.outputCount);
+
+    // Set headers
+    QStringList headers;
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Input %1").arg(i);
+    }
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Output %1").arg(i);
+    }
+    ui->tableWidget->setHorizontalHeaderLabels(headers);
+
+
+    for (int i = 0; i < level.inputCount; ++i) {
+        QVector<bool> inputSet = level.getLevelInput(i);
+        for (int j = 0; j < level.inputCount; ++j) {
+            QTableWidgetItem* item = new QTableWidgetItem(inputSet[j] ? "1" : "0");
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            ui->tableWidget->setItem(i, j, item);
+        }
+        QVector<bool> outputSet = level.getExpectedOutput(i);
+        for (int j = 0; j < level.outputCount; ++j) {
+            QTableWidgetItem* item = new QTableWidgetItem(outputSet[j] ? "1" : "0");
+            ui->tableWidget->setItem(i, level.outputCount + j, item);
+        }
+    }
+
+    // Resize columns to fit content
+    ui->tableWidget->resizeColumnsToContents();
+
     ui->levelDescription->setText(level.getDescription());
 
     QVector<QLayoutItem*> previousInputs;
@@ -102,7 +136,25 @@ void MainWindow::setupLevel(Level level){
         addGate(GateTypes::LEVEL_OUT);
     }
 
-    //display required inputs->outputs for level
+    //Input and Output buttons can not be moved
+
+    for (int i = 0; i < ui->inputs->count(); ++i) {
+        QLayoutItem* item = ui->inputs->itemAt(i);
+        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
+        if (gate) {  // Check if the cast is successful
+            // Set the canBeMoved property to false
+            gate->canBeMoved = false;
+        }
+    }
+
+    for (int i = 0; i < ui->outputs->count(); ++i) {
+        QLayoutItem* item = ui->outputs->itemAt(i);
+        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
+        if (gate) {  // Check if the cast is successful
+            // Set the canBeMoved property to false
+            gate->canBeMoved = false;
+        }
+    }
 }
 
 void MainWindow::onStartClicked(){
@@ -327,14 +379,15 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    // Draw the background gradient first
+    // Set up a slight gradient for the charcoal gray background
     QLinearGradient gradient(QPointF(0, 0), QPointF(width(), height()));
-    gradient.setColorAt(0, QColor(102, 115, 140));
-    gradient.setColorAt(1, QColor(56, 63, 77));
+    gradient.setColorAt(0, QColor(51, 51, 51)); // Dark charcoal gray
+    gradient.setColorAt(1, QColor(41, 41, 41)); // Even darker shade of gray
     painter.fillRect(rect(), gradient);
 
-    // Set pen color and width for the lines
-    painter.setPen(QPen(Qt::black, 2));
+    // Set the pen to a very slight gray color for drawing
+    QColor slightGray(230, 230, 230); // Very light gray
+    painter.setPen(QPen(slightGray, 2)); // Using light gray for the pen with a thickness of 2
 
     // Iterate over all the connections
     for (const auto& connection : uiButtonConnections)
@@ -364,9 +417,29 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 }
 
+void MainWindow::disableAllButtons() {
+    ui->startButton->setDisabled(1);
 
+    ui->addANDGate->setDisabled(1);
+    ui->addORGate->setDisabled(1);
+    ui->addNOTGate->setDisabled(1);
 
+    for(UILogicGate* g : gates) {
+        g->canBeMoved = false;
+    }
 
+}
+void MainWindow::enableAllButtons() {
+    ui->startButton->setEnabled(1);
+
+    ui->addANDGate->setEnabled(1);
+    ui->addORGate->setEnabled(1);
+    ui->addNOTGate->setEnabled(1);
+
+    for(UILogicGate* g : gates) {
+        g->canBeMoved = true;
+    }
+}
 
 
 

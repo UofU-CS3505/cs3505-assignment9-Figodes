@@ -39,8 +39,13 @@ private:
     QPushButton* buttonBeingConnected;
     qint32 connectingGate;
 
-    QVector<QPair<QPushButton*, QPushButton*>> uiButtonConnections;
+    struct Wire
+    {
+        QPushButton* first, * second;
+        QColor color;
+    };
 
+    QVector<Wire> uiButtonConnections;
 
     QVector<UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);

@@ -72,7 +72,6 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 void MainWindow::setupLevel(Level level){
     clearGates();
 
-
     ui->tableWidget->setRowCount(level.inputCount);
     ui->tableWidget->setColumnCount(level.outputCount + level.outputCount);
 
@@ -289,7 +288,8 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
                 qint32 giver;
                 qint32 receiver;
 
-                uiButtonConnections.append(qMakePair(buttonBeingConnected, button));
+                Wire newWire = {.first = buttonBeingConnected, .second = button, .color = Qt::black};
+                uiButtonConnections.append(newWire);
 
                 qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
                 qint32 inputIndex = -1; // Initialize to -1 to indicate no match found
@@ -365,19 +365,19 @@ void MainWindow::paintEvent(QPaintEvent *event)
     gradient.setColorAt(1, QColor(56, 63, 77));
     painter.fillRect(rect(), gradient);
 
-    // Set pen color and width for the lines
-    painter.setPen(QPen(Qt::black, 2));
-
     // Iterate over all the connections
     for (const auto& connection : uiButtonConnections)
     {
+        // Set pen color and width for the lines
+        painter.setPen(QPen(connection.color, 4));
         // Get the positions of the connected buttons relative to the canvas
         QPoint startPos = connection.first->mapToGlobal(QPoint(0,0));
         QPoint endPos = connection.second->mapToGlobal(QPoint(0,0));
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 15);
-        endPos.setY(endPos.y() + 15);
+        //adjust positions to draw toward the middle of the buttons
+        startPos = startPos + QPoint(connection.first->width() / 2, connection.first->height() / 2);
+        endPos = endPos + QPoint(connection.second->width() / 2, connection.second->height() / 2);
 
         // Draw a line between the buttons
         painter.drawLine(startPos, endPos);
@@ -385,11 +385,14 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
     if (connectionBeingDrawn)
     {
+        painter.setPen(QPen(Qt::black, 2));
+
         QPoint startPos = buttonBeingConnected->mapToGlobal(QPoint(0,0));
         QPoint endPos = QCursor::pos();
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 15);
+        //adjust top draw from center of button
+        startPos = startPos + QPoint(buttonBeingConnected->width() / 2, buttonBeingConnected->height() / 2);
 
         painter.drawLine(startPos, endPos);
     }

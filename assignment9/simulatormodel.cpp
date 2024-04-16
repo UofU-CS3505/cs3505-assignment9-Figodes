@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QSet>
 #include <QtMath>
+#include <QColor>
 
 SimulatorModel::SimulatorModel()
 {
@@ -187,6 +188,21 @@ void SimulatorModel::simulateOneIteration(){
         activeGate->evaluate();
         //this is where to signal the view to light up the wires coming out of this gate according to its output states
         activeGate->hasOutputted = true;
+        //update wire colors
+        for (qint32 outputIndex = 0; outputIndex < activeGate->outputStates.size(); outputIndex++)
+        {
+            QColor wireColor = Qt::darkGreen;
+            if (activeGate->outputStates[outputIndex])
+                wireColor = Qt::green;
+            for (auto receivingGate : activeGate->outputToNodes[outputIndex])
+                for (qint32 inputIndex = 0; inputIndex < receivingGate->inputStates.size(); inputIndex++)
+                {
+                    auto receivingInputSet = receivingGate->inputFromNodes[inputIndex];
+                    for (auto incomingConnection : receivingInputSet)
+                        if (incomingConnection.first == activeGate) //selects all connections this gate is outputting on
+                            emit colorConnection(activeGate->id, outputIndex, receivingGate->id, inputIndex, wireColor);
+                }
+        }
 
         spentGates.insert(activeGate);// queue this gate to be removed from the list of active gates
         for (qint32 outputIndex = 0; outputIndex < activeGate->outputToNodes.size(); outputIndex++) //add this gate's outputs to the list of future active gates

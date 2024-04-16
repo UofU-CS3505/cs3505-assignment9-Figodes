@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QObject>
 #include <QSet>
+#include <QColor>
 #include "level.h"
 #include "gatetypes.h"
 
@@ -123,6 +124,7 @@ signals:
     void displayNewLevel(Level level);
     void inputsSet(QVector<bool> inputs);
     void outputsSet(QVector<bool> outputs);
+    void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
 };
 
 #endif // SIMULATORMODEL_H

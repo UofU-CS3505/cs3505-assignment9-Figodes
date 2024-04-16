@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::levelFinished, model, &SimulatorModel::setupLevel); //temporary, start next level when current ends
     connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
+    connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -113,8 +114,6 @@ void MainWindow::setupLevel(Level level){
     for (QLayoutItem* item : previousInputs)
     {
         ui->inputs->removeItem(item);
-        delete item->widget();
-        delete item;
     }
     for (int i = 0; i < level.inputCount; i++) //create new inputs
     {
@@ -127,8 +126,6 @@ void MainWindow::setupLevel(Level level){
     for (QLayoutItem* item : previousOutputs)
     {
         ui->outputs->removeItem(item);
-        delete item->widget();
-        delete item;
     }
     for (int i = 0; i < level.outputCount; i++)//create new outputs
     {
@@ -457,7 +454,7 @@ void MainWindow::colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId
     if (givingGate && receivingGate)
     {
         QPushButton* firstButton = givingGate->outputs[outputIndex];
-        QPushButton* secondButton = givingGate->outputs[inputIndex];
+        QPushButton* secondButton = receivingGate->inputs[inputIndex];
         for (qint32 i = 0; i < uiButtonConnections.size(); i++)
         {
             if ((uiButtonConnections[i].first == firstButton && uiButtonConnections[i].second == secondButton)

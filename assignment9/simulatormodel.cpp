@@ -140,8 +140,10 @@ void SimulatorModel::startSimulation(){
 
 void SimulatorModel::simulateInput(){
     std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
+
+    //TODO: pretty sure this doesnt need to be here, same thing happens somewhere else and this never gets used?
     if(currentInput == qPow(2, levelInputs.size())){
-        endSimulation();
+        endSimulation(true);
         return;
     }
 
@@ -205,12 +207,12 @@ void SimulatorModel::simulateOneIteration(){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
                 std::cout << "input " << i << " is correct" << std::endl; //what happens based on if inputs are right?
             else{
-                emit levelFailed();
+                emit endSimulation(false);
                 return; //end sim early if level failed at any point
             }
         }
         if (currentInput == qPow(2, levelInputs.size()) - 1) //last input finished simulating, no wrong outputs
-            endSimulation();
+            endSimulation(true);
         else //more input sets to simulate
         {
             currentInput++;
@@ -219,10 +221,10 @@ void SimulatorModel::simulateOneIteration(){
     }
 }
 
-void SimulatorModel::endSimulation(){
+void SimulatorModel::endSimulation(bool levelSucceeded){
     levelInputs.clear();
     levelOutputs.clear();
-    emit levelComplete();
+    emit levelFinished(levelSucceeded);
 }
 
 void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
@@ -241,6 +243,8 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
             }, this);
         break;
     case GateTypes::NOT:
+
+
         newNode = new gateNode(gateID, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
                 outputs[0] = !inputs[0];
             }, this);
@@ -265,10 +269,10 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
     }
 }
 
-void SimulatorModel::loadNextLevel()
+void SimulatorModel::setupLevel(bool moveToNext)
 {
     std::cout<<"loading next level"<<std::endl;
-    if(currentLevel < levels.size() - 1)
+    if(moveToNext && currentLevel < levels.size() - 1)
         currentLevel++;
     allGates.clear();
     emit displayNewLevel(levels[currentLevel]);

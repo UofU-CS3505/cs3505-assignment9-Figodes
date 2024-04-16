@@ -151,7 +151,7 @@ void SimulatorModel::startSimulation(){
 }
 
 void SimulatorModel::simulateInput(){
-    std::cout<<"in simulateInput"<<std::endl;
+    std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
     if(currentInput == qPow(2, levelInputs.size())){
         endSimulation();
         return;

@@ -27,7 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-    connect(model, &SimulatorModel::levelComplete, model, &SimulatorModel::loadNextLevel); //temporary, start next level when current ends
+    connect(model, &SimulatorModel::levelFinished, model, &SimulatorModel::setupLevel); //temporary, start next level when current ends
+    connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
+    connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -54,7 +56,7 @@ void MainWindow::showWelcomeScreen() {
 
     // UNCOMMENT BELOW LINE TO
     //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
-    welcomescreen.show();
+   // welcomescreen.show();
 }
 
 void MainWindow::showWindow() {
@@ -133,7 +135,25 @@ void MainWindow::setupLevel(Level level){
         addGate(GateTypes::LEVEL_OUT);
     }
 
-    //display required inputs->outputs for level
+    //Input and Output buttons can not be moved
+
+    for (int i = 0; i < ui->inputs->count(); ++i) {
+        QLayoutItem* item = ui->inputs->itemAt(i);
+        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
+        if (gate) {  // Check if the cast is successful
+            // Set the canBeMoved property to false
+            gate->canBeMoved = false;
+        }
+    }
+
+    for (int i = 0; i < ui->outputs->count(); ++i) {
+        QLayoutItem* item = ui->outputs->itemAt(i);
+        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
+        if (gate) {  // Check if the cast is successful
+            // Set the canBeMoved property to false
+            gate->canBeMoved = false;
+        }
+    }
 }
 
 void MainWindow::onStartClicked(){
@@ -359,10 +379,10 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    // Draw the background gradient first
+    // Set up a slight gradient for the charcoal gray background
     QLinearGradient gradient(QPointF(0, 0), QPointF(width(), height()));
-    gradient.setColorAt(0, QColor(102, 115, 140));
-    gradient.setColorAt(1, QColor(56, 63, 77));
+    gradient.setColorAt(0, QColor(51, 51, 51)); // Dark charcoal gray
+    gradient.setColorAt(1, QColor(41, 41, 41)); // Even darker shade of gray
     painter.fillRect(rect(), gradient);
 
     // Iterate over all the connections
@@ -399,9 +419,29 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 }
 
+void MainWindow::disableAllButtons() {
+    ui->startButton->setDisabled(1);
 
+    ui->addANDGate->setDisabled(1);
+    ui->addORGate->setDisabled(1);
+    ui->addNOTGate->setDisabled(1);
 
+    for(UILogicGate* g : gates) {
+        g->canBeMoved = false;
+    }
 
+}
+void MainWindow::enableAllButtons() {
+    ui->startButton->setEnabled(1);
+
+    ui->addANDGate->setEnabled(1);
+    ui->addORGate->setEnabled(1);
+    ui->addNOTGate->setEnabled(1);
+
+    for(UILogicGate* g : gates) {
+        g->canBeMoved = true;
+    }
+}
 
 
 

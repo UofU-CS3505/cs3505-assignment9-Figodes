@@ -16,6 +16,7 @@ public:
     bool pickedUp;
     QVector<QPushButton*> inputs;
     QVector<QPushButton*> outputs;
+    bool canBeMoved = true;
 private:
     QPoint dragStartPosition;
     bool drawingLine;

@@ -86,6 +86,9 @@ public slots:
 
     void showWindow();
 
+    void disableAllButtons();
+    void enableAllButtons();
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

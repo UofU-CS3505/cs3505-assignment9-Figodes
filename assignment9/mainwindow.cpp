@@ -180,6 +180,7 @@ void MainWindow::addGate(GateTypes gateType) {
     trackButtonsOn(newGate);
     gates.append(newGate);
     newGate->show();
+    emit newGateCreated(newGate->id, gateType);
 
     if (gateType == GateTypes::LEVEL_IN)
     {
@@ -191,8 +192,6 @@ void MainWindow::addGate(GateTypes gateType) {
         ui->outputs->addWidget(newGate);
         return;
     }
-
-    emit newGateCreated(newGate->id, gateType);
 
     pickedUpGate = newGate;
     // make the pickedUpGate initially be offscreen to avoid weird snapping effects

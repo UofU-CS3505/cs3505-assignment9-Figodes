@@ -11,10 +11,8 @@ SimulatorModel::SimulatorModel()
     currentLevel = 0;
 
     //load levels from file
-    //send first level to view
+    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
 
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
-    emit displayNewLevel(levels[currentLevel]);
 
     // //testing example, remove later
     // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -287,4 +285,9 @@ QVector<bool> SimulatorModel::toBoolVector(QVector<gateNode*> gates){
     for(gateNode* gate: gates)
         result.append(gate->inputStates[0]);
     return result;
+}
+
+void SimulatorModel::initializeView()
+{
+    emit displayNewLevel(levels[0]); //sends first level
 }

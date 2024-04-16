@@ -101,6 +101,10 @@ public:
     /// \brief endSimulation signals view that the simulation is over
     ///
     void endSimulation();
+    ///
+    /// \brief initializeView Sends necessary data likethe first level
+    ///
+    void initializeView();
 
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);

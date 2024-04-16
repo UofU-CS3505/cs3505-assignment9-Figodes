@@ -3,7 +3,7 @@
 #include "ui_mainwindow.h"
 #include <QMouseEvent>
 #include <iostream>
-#include "simulatorModel.h"
+#include "SimulatorModel.h"
 #include <QPainter>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -20,6 +20,13 @@ MainWindow::MainWindow(QWidget *parent)
     connectionBeingDrawn = false;
     idCounter = 0;
     model = new SimulatorModel();
+    connect(this, &MainWindow::connectionDrawn, model, &SimulatorModel::connect);
+    connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
+    //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
+    connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
+    connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
+    connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
+    model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
@@ -29,19 +36,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addANDGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::AND); });
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
-    connect(this, &MainWindow::connectionDrawn, model, &SimulatorModel::connect);
 
-    connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
-
-    //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
-    connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
-    connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
-    connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
-    QVector<bool> startingInOutStates = {false, false, false};
-    showInputs(startingInOutStates);
-    showOutputs(startingInOutStates);
     this->hide();
 
     showWelcomeScreen();

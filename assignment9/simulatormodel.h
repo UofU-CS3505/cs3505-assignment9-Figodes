@@ -44,6 +44,10 @@ private:
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
 
+    ///
+    /// \brief Gets the Nth input sequence of the current level, tells the model to display it, and prepares it for simulation in the model
+    /// Assumes level input nodes have one output state
+    ///
     void setNthInputSequence(qint32 n);
     qint32 currentInput;
     QSet<gateNode*> activeGates;
@@ -86,10 +90,6 @@ public:
     bool canBeSimulated();
     //since we want to make the simulation take time, I thinik we'll need to break it up like this. A bunch of these robably need to be slots
     ///
-    /// \brief startSimulation Initializes values so the simluation can start
-    ///
-    void startSimulation();
-    ///
     /// \brief simulateInput Begins the simulaiton for one of the level's given inputs
     ///
     void simulateInput();
@@ -105,9 +105,16 @@ public:
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
     void loadNextLevel();
+    ///
+    /// \brief startSimulation Initializes values so the simluation can start
+    ///
+    void startSimulation();
 
 signals:
-    void levelComplete(); //triggers celebration or something
+    void disableEditing();
+    void enableEditing();
+    void invalidLevel(); //indicates the circuit cannot be simulated
+    void levelComplete(); // enable button to move to next level in view, maybe also a restart button? Trigger celebration
     void levelFailed(); //re-enable view ui
     void displayNewLevel(Level level);
     void inputsSet(QVector<bool> inputs);

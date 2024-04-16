@@ -10,24 +10,27 @@ SimulatorModel::SimulatorModel()
     std::cout<<"in constructor"<<std::endl;
     currentLevel = 0;
 
-    //testing example, remove later
-    gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-        outputs[0] = inputs[0] || inputs[1];
-    }, this);
-    levelInputs.append(new gateNode(0, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-        outputs[0] = true;
-    }, this));
-    levelOutputs.append(new gateNode(2, 1, 0, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-        //nothing
-    }, this));
-    connect(0, 0, 1, 0); //level in to testNode 0
-    connect(1, 0, 2, 0); //testNode to levelout
-    //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
-    std::cout << "simulation check?: " << canBeSimulated() << std::endl;
+    //load levels from file
+    //send first level to view
 
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}, 1, 1));
-    startSimulation();
-    //end of testing example
+    // //testing example, remove later
+    // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+    //     outputs[0] = inputs[0] || inputs[1];
+    // }, this);
+    // levelInputs.append(new gateNode(0, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+    //     outputs[0] = true;
+    // }, this));
+    // levelOutputs.append(new gateNode(2, 1, 0, [=](QVector<bool> inputs, QVector<bool>& outputs) {
+    //     //nothing
+    // }, this));
+    // connect(0, 0, 1, 0); //level in to testNode 0
+    // connect(1, 0, 2, 0); //testNode to levelout
+    // //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
+    // std::cout << "simulation check?: " << canBeSimulated() << std::endl;
+
+    // levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}, 1, 1));
+    // startSimulation();
+    // //end of testing example
 }
 
 SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel)
@@ -125,22 +128,26 @@ bool SimulatorModel::canBeSimulated()
 }
 
 void SimulatorModel::setNthInputSequence(qint32 n){
-    QVector<bool> inputs;
-    //assumes level inputs have one output state
-    for(int i = 0; i < levelInputs.size(); i++){
-        bool bit = (n >> i) & 1; //get ith bit of integer
-        levelInputs[i]->outputStates[0] = bit;
-        inputs.append(bit);
-    }
+    QVector<bool> inputSet = levels[currentLevel].getLevelInput(n);
+    for(int i = 0; i < levelInputs.size(); i++)
+        levelInputs[i]->outputStates[0] = inputSet[i]; //prepare actual inputs in model
 
-    emit inputsSet(inputs);
+    emit inputsSet(inputSet);
 }
 
 void SimulatorModel::startSimulation(){   
     //lock ui for input testing
     //std::cout<<"in startSimulation"<<std::endl;
+    emit disableEditing();
     currentInput = 0;
-    simulateInput();
+    if (canBeSimulated())
+        simulateInput();
+    else
+    {
+        std::cout << "CANNOT SIMULATE" << std::endl;
+        emit invalidLevel();
+        emit enableEditing(); //may move this into the view as a response to invalidLevel
+    }
 }
 
 void SimulatorModel::simulateInput(){
@@ -185,15 +192,11 @@ void SimulatorModel::simulateOneIteration(){
         }
         if (!ready) //if not all inputs have evaluated, skip this gate for this iteration
             continue;
-        std::cout << "outputStates' size: " << activeGate->outputStates.size() << ", ";
-        std::cout << "is ready to evaluate; ";
 
         //by this point the active gate has all it inputs
         activeGate->evaluate();
         //this is where to signal the view to light up the wires coming out of this gate according to its output states
         activeGate->hasOutputted = true;
-        std::cout << "outputStates' size: " << activeGate->outputStates.size() << ", ";
-        std::cout << "finished evaluation; ";
 
         spentGates.insert(activeGate);// queue this gate to be removed from the list of active gates
         for (qint32 outputIndex = 0; outputIndex < activeGate->outputToNodes.size(); outputIndex++) //add this gate's outputs to the list of future active gates
@@ -201,31 +204,33 @@ void SimulatorModel::simulateOneIteration(){
             auto outputTerminalSet = activeGate->outputToNodes[outputIndex];
             futureGates.unite(outputTerminalSet);
         }
-        std::cout << "outputStates' size: " << activeGate->outputStates.size() << ", ";
     }
     activeGates.unite(futureGates);
     activeGates.subtract(spentGates); //removes the gates that were evaluated this iteration
-    std::cout << "activeGates properly updated" << std::endl;
 
     if(!activeGates.empty()) //not done with this input
         QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     else{
+        emit outputsSet(toBoolVector(levelOutputs));
+
         for(int i = 0; i < levelOutputs.size(); i++){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
-                std::cout << "input " << i << "is correct" << std::endl; //what happens based on if inputs are right?
+                std::cout << "input " << i << " is correct" << std::endl; //what happens based on if inputs are right?
             else
                 emit levelFailed();
         }
-        currentInput++;
-        emit outputsSet(toBoolVector(levelOutputs));
-        QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
+        if (currentInput == qPow(2, levelInputs.size()) - 1) //last input finished simulating, no wrong outputs
+            endSimulation();
+        else //more input sets to simulate
+        {
+            currentInput++;
+            QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
+        }
     }
 }
 
 void SimulatorModel::endSimulation(){
-    emit displayNewLevel(levels[0]); //for testing purposes, shouldn't be here normally
     emit levelComplete();
-    // enable button to move to next level in view, maybe also a restart button?
 }
 
 void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
@@ -274,6 +279,7 @@ void SimulatorModel::loadNextLevel()
         currentLevel++;
     allGates.clear();
     emit displayNewLevel(levels[currentLevel]);
+    emit enableEditing();
 }
 
 QVector<bool> SimulatorModel::toBoolVector(QVector<gateNode*> gates){

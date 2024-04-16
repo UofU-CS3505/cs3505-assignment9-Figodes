@@ -30,6 +30,8 @@ public:
     ///
     QVector<bool> getLevelInput(qint32 inputIndex);
 
+    static QVector<Level> getLevelList();
+
 private:
     QString description;
     QVector<QVector<bool>> expectedOutputs;

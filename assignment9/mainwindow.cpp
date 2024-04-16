@@ -54,7 +54,7 @@ void MainWindow::showWelcomeScreen() {
 
     // UNCOMMENT BELOW LINE TO
     //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
-    welcomescreen.show();
+   // welcomescreen.show();
 }
 
 void MainWindow::showWindow() {

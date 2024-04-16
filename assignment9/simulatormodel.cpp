@@ -11,8 +11,7 @@ SimulatorModel::SimulatorModel()
     currentLevel = 0;
 
     //load levels from file
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
-    levels.append(Level("testLevel2", QVector<QVector<bool>>{{0},{1}}, 1, 1));
+    levels = Level::getLevelList();
 
     // //testing example, remove later
     // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -205,8 +204,10 @@ void SimulatorModel::simulateOneIteration(){
         for(int i = 0; i < levelOutputs.size(); i++){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
                 std::cout << "input " << i << " is correct" << std::endl; //what happens based on if inputs are right?
-            else
+            else{
                 emit levelFailed();
+                return; //end sim early if level failed at any point
+            }
         }
         if (currentInput == qPow(2, levelInputs.size()) - 1) //last input finished simulating, no wrong outputs
             endSimulation();

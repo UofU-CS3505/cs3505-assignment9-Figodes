@@ -73,10 +73,8 @@ void welcomeScreen::updateWorld()
     int32 positionIterations = 2;
 
     // Instruct the world to perform a single step of simulation.
-    // It is generally best to keep the time step and iterations fixed.
     world.Step(timeStep, velocityIterations, positionIterations);
 
-    // Now print the position and angle of the body.
     b2Vec2 position = body->GetPosition();
 
     QPoint labelPos((this->width() - ui->welcomeText->width())/2, (position.y * 100));
@@ -84,6 +82,7 @@ void welcomeScreen::updateWorld()
 }
 
 void welcomeScreen::continueButtonClicked() {
+    // if the description is hidden, then show it. otherwise, show the game and close the window.
     if (ui->gameDescription->isHidden()) {
         ui->welcomeText->hide();
         ui->gameDescription->show();

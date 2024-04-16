@@ -207,7 +207,7 @@ void SimulatorModel::simulateOneIteration(){
     activeGates.subtract(spentGates); //removes the gates that were evaluated this iteration
     std::cout << "activeGates properly updated" << std::endl;
 
-    if(!activeGates.empty())
+    if(!activeGates.empty()) //not done with this input
         QTimer::singleShot(1000, this, &SimulatorModel::simulateOneIteration);
     else{
         for(int i = 0; i < levelOutputs.size(); i++){
@@ -217,6 +217,7 @@ void SimulatorModel::simulateOneIteration(){
                 emit levelFailed();
         }
         currentInput++;
+        emit outputsSet(toBoolVector(levelOutputs));
         QTimer::singleShot(1000, this, &SimulatorModel::simulateInput);
     }
 }
@@ -274,3 +275,9 @@ void SimulatorModel::loadNextLevel()
     emit displayNewLevel(levels[currentLevel]);
 }
 
+QVector<bool> SimulatorModel::toBoolVector(QVector<gateNode*> gates){
+    QVector<bool> result;
+    for(gateNode* gate: gates)
+        result.append(gate->inputStates[0]);
+    return result;
+}

@@ -36,10 +36,12 @@ MainWindow::MainWindow(QWidget *parent)
     //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
+    connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
-    QVector<bool> startingInputs = {false, false, false};
-    showInputs(startingInputs);
+    QVector<bool> startingInOutStates = {false, false, false};
+    showInputs(startingInOutStates);
+    showOutputs(startingInOutStates);
     this->hide();
 
     showWelcomeScreen();
@@ -106,6 +108,7 @@ void MainWindow::setupLevel(Level level){
 }
 
 void MainWindow::onStartClicked(){
+    //std::cout<<"start clicked"<<std::endl;
     emit startSimulation();
 }
 
@@ -118,6 +121,18 @@ void MainWindow::showInputs(QVector<bool> inputs){
             input->setStyleSheet("background-color : lawngreen");
         else
             input->setStyleSheet("background-color : green");
+    }
+}
+
+void MainWindow::showOutputs(QVector<bool> outputs){
+    //iterate through ui->inputs->children (input buttons)
+    for (int i = 0; i < outputs.size(); i++)
+    {
+        QWidget* output = ui->outputs->itemAt(i)->widget();
+        if(outputs[i] && output)
+            output->setStyleSheet("background-color : lawngreen");
+        else
+            output->setStyleSheet("background-color : green");
     }
 }
 

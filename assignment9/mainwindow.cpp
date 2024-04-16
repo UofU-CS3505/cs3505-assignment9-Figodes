@@ -326,6 +326,12 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
+    // Draw the background gradient first
+    QLinearGradient gradient(QPointF(0, 0), QPointF(width(), height()));
+    gradient.setColorAt(0, QColor(102, 115, 140));
+    gradient.setColorAt(1, QColor(56, 63, 77));
+    painter.fillRect(rect(), gradient);
+
     // Set pen color and width for the lines
     painter.setPen(QPen(Qt::black, 2));
 

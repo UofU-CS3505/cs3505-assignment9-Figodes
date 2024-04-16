@@ -1,5 +1,6 @@
 #include "welcomescreen.h"
 #include "ui_welcomescreen.h"
+#include <QPainter>
 
 welcomeScreen::welcomeScreen(QWidget *parent)
     : QDialog(parent)
@@ -58,6 +59,8 @@ welcomeScreen::welcomeScreen(QWidget *parent)
 
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);
+
+
 
 }
 

@@ -12,7 +12,7 @@ SimulatorModel::SimulatorModel()
 
     //load levels from file
     levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
-
+    levels.append(Level("testLevel2", QVector<QVector<bool>>{{0},{1}}, 1, 1));
 
     // //testing example, remove later
     // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -274,6 +274,7 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
 
 void SimulatorModel::loadNextLevel()
 {
+    std::cout<<"loading next level"<<std::endl;
     if(currentLevel < levels.size() - 1)
         currentLevel++;
     allGates.clear();

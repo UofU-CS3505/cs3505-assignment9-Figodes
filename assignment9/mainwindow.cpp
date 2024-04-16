@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
+    connect(model, &SimulatorModel::levelComplete, model, &SimulatorModel::loadNextLevel); //temporary, start next level when current ends
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);

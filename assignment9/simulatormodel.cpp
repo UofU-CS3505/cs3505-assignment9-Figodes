@@ -229,6 +229,8 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(){
+    levelInputs.clear();
+    levelOutputs.clear();
     emit levelComplete();
 }
 

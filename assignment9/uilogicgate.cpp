@@ -93,6 +93,10 @@ void UILogicGate::startLineDrawing()
 
 
 }
+UILogicGate::~UILogicGate(){
+    inputs.clear();
+    outputs.clear();
+}
 
 
 

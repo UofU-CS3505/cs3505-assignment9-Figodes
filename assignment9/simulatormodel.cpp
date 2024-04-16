@@ -11,7 +11,7 @@ SimulatorModel::SimulatorModel()
     currentLevel = 0;
 
     //load levels from file
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
+    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT, 0 for first output, 1 for first input (solution is a not gate)
     levels.append(Level("testLevel2", QVector<QVector<bool>>{{0},{1}}, 1, 1));
 
     // //testing example, remove later

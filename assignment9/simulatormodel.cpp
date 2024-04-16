@@ -13,6 +13,9 @@ SimulatorModel::SimulatorModel()
     //load levels from file
     //send first level to view
 
+    levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
+    emit displayNewLevel(levels[currentLevel]);
+
     // //testing example, remove later
     // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
     //     outputs[0] = inputs[0] || inputs[1];
@@ -27,8 +30,6 @@ SimulatorModel::SimulatorModel()
     // connect(1, 0, 2, 0); //testNode to levelout
     // //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
     // std::cout << "simulation check?: " << canBeSimulated() << std::endl;
-
-    // levels.append(Level("testLevel", QVector<QVector<bool>>{{1},{1},{1},{1},{1},{1},{1},{1}}, 1, 1));
     // startSimulation();
     // //end of testing example
 }

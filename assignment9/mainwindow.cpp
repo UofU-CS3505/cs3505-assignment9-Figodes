@@ -296,7 +296,7 @@ void MainWindow::addGate(GateTypes gateType) {
         break;
     }
     trackButtonsOn(newGate);
-    gates.append(newGate);
+    gates.insert(newGate->id, newGate);
     newGate->show();
     emit newGateCreated(newGate->id, gateType);
 

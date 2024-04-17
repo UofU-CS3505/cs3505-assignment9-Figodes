@@ -48,7 +48,7 @@ private:
 
     QVector<Wire> uiButtonConnections;
 
-    QVector<UILogicGate*> gates;
+    QMap<qint32, UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
     void trackButtonsOn(UILogicGate* quarry);
 

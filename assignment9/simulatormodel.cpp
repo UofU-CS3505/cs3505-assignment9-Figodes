@@ -138,17 +138,11 @@ void SimulatorModel::startSimulation(){
 void SimulatorModel::simulateInput(){
     std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
 
-    //TODO: pretty sure this doesnt need to be here, same thing happens somewhere else and this never gets used?
-    if(currentInput == qPow(2, levelInputs.size())){
-        endSimulation(true);
-        return;
-    }
-
     activeGates.clear();
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
 
-    emit colorAllConnections(Qt::darkRed);
+    emit colorAllConnections(Qt::black);
     resetGateStates();
     setNthInputSequence(currentInput);
     simulateOneIteration();
@@ -188,7 +182,7 @@ void SimulatorModel::simulateOneIteration(){
         //update wire colors
         for (qint32 outputIndex = 0; outputIndex < activeGate->outputStates.size(); outputIndex++)
         {
-            QColor wireColor = Qt::darkGreen;
+            QColor wireColor = Qt::darkRed;
             if (activeGate->outputStates[outputIndex])
                 wireColor = Qt::green;
             for (auto receivingGate : activeGate->outputToNodes[outputIndex])
@@ -240,6 +234,15 @@ void SimulatorModel::endSimulation(bool levelSucceeded){
     if(levelSucceeded){
         levelInputs.clear();
         levelOutputs.clear();
+    }
+    else{
+        QVector<bool> actualOutputs;
+        for(gateNode* output: levelOutputs)
+            actualOutputs.append(output->inputStates[0]);
+
+        emit incorrectCircuit(levels[currentLevel].getLevelInput(currentInput),
+            levels[currentLevel].getExpectedOutput(currentInput),
+            actualOutputs);
     }
     emit levelFinished(levelSucceeded);
 }

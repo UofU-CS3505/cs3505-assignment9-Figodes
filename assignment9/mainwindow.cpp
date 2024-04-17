@@ -177,15 +177,17 @@ void MainWindow::setupLevel(Level level){
     clearGates();
 
     ui->tableWidget->setRowCount(qPow(2, level.inputCount));
-    ui->tableWidget->setColumnCount(level.inputCount + level.outputCount);
+    ui->tableWidget->setColumnCount(level.inputCount + 2 * level.outputCount);
 
-    // Set headers
     QStringList headers;
-    for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Input %1").arg(i);
+    for (int i = 0; i < level.inputCount; ++i) {
+        headers << QString("Input %1").arg(i + 1);
     }
     for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Output %1").arg(i);
+        headers << QString("Expected Output %1").arg(i + 1);
+    }
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Actual Output %1").arg(i + 1);
     }
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
@@ -249,7 +251,7 @@ void MainWindow::showInputs(const QVector<bool>& inputs){
         if(inputs.at(i) && input)
             input->setStyleSheet("background-color : lawngreen");
         else if(input)
-            input->setStyleSheet("background-color : green");
+            input->setStyleSheet("background-color : darkred");
     }
 }
 

@@ -75,6 +75,7 @@ void MainWindow::levelEndAnimation() {
 
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
     b2BodyDef* wallBodyDef = new b2BodyDef();
+    wallBodyDef->type = b2_staticBody;
     wallBodyDef->position.Set(ui->canvas->width() / 2, ui->canvas->height()); //defines position of floor
     b2Body* wallsBody = world->CreateBody(wallBodyDef); //adds to world
     b2PolygonShape* wallBox = new b2PolygonShape();
@@ -112,18 +113,16 @@ void MainWindow::levelEndAnimation() {
     }
 
     // Define another box shape for our dynamic body.
-    b2PolygonShape* dynamicBox = new b2PolygonShape();
     UILogicGate* sampleGate = gates.values()[0];
+    b2PolygonShape* dynamicBox = new b2PolygonShape();
     dynamicBox->SetAsBox(sampleGate->width() * 0.7, sampleGate->height()  * 0.7);
 
     // Define the dynamic body fixture.
     b2FixtureDef* fixtureDef = new b2FixtureDef();
     fixtureDef->shape = dynamicBox;
-
-    // Set the box density to be non-zero, so it will be dynamic.
     fixtureDef->density = 100.0f;
     fixtureDef->friction = 0.0f;
-    fixtureDef->restitution = 2.05f;
+    fixtureDef->restitution = 2.00f;
 
     // Add the shape to the body.
     QRandomGenerator rng;
@@ -143,7 +142,6 @@ void MainWindow::updateFinishGates() {
 
     for (UILogicGate* gate: gates) {
         if (!levelInOutGates.contains(gate)) {
-
             b2Vec2 position = bodies[gate->id]->GetPosition();
 
             std::cout << "moved " << gate->id << " to: " << position.x << ", " << position.y << std::endl;

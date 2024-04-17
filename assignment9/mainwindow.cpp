@@ -269,6 +269,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     // Mouse move event for moving picked up gates
     if (pickedUpGate)
     {
+        disableAllButtons();
         QPointF newPos = event->scenePosition() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
     }
@@ -278,7 +279,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
 
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-
 }
 
 
@@ -313,6 +313,7 @@ void MainWindow::addGate(GateTypes gateType) {
     }
     trackButtonsOn(newGate);
     gates.insert(newGate->id, newGate);
+
     newGate->show();
     emit newGateCreated(newGate->id, gateType);
 
@@ -510,16 +511,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
 }
 
 void MainWindow::disableAllButtons() {
+    std::cout << "disabling" << std::endl;
     ui->startButton->setDisabled(1);
 
     ui->addANDGate->setDisabled(1);
     ui->addORGate->setDisabled(1);
     ui->addNOTGate->setDisabled(1);
 
-    for(UILogicGate* g : gates) {
-        g->canBeMoved = false;
+    if(pickedUpGate == nullptr) {
+        for(UILogicGate* g : gates) {
+            g->canBeMoved = false;
+        }
     }
-
 }
 void MainWindow::enableAllButtons() {
     ui->startButton->setEnabled(1);

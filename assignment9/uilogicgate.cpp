@@ -18,6 +18,13 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         currentParent = currentParent->parent();
         mainWindow = qobject_cast<MainWindow*>(currentParent);
     }
+
+    if (mainWindow) {
+        connect(this, &UILogicGate::enableButtons, mainWindow, &MainWindow::enableAllButtons);
+        connect(this, &UILogicGate::disableButtons, mainWindow, &MainWindow::disableAllButtons);
+
+    }
+
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
     connect(this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
     connect(this, &UILogicGate::deleteGate, mainWindow, &MainWindow::deleteGate);
@@ -91,6 +98,8 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
             emit updatePickedUpGateLocation(this, event->pos());
         }
 
+        emit updatePickedUpGateLocation(this, event->pos());
+        emit enableButtons();
     }
 }
 

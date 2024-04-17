@@ -301,11 +301,13 @@ void MainWindow::addGate(GateTypes gateType) {
 
     if (gateType == GateTypes::LEVEL_IN)
     {
+        levelInOutGates.insert(newGate);
         ui->inputs->addWidget(newGate);
         return;
     }
     if (gateType == GateTypes::LEVEL_OUT)
     {
+        levelInOutGates.insert(newGate);
         ui->outputs->addWidget(newGate);
         return;
     }
@@ -326,6 +328,7 @@ void MainWindow::clearGates(){
     inputButtons.clear();
     outputButtons.clear();
     uiButtonConnections.clear();
+    levelInOutGates.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -504,7 +507,8 @@ void MainWindow::enableAllButtons() {
     ui->addNOTGate->setEnabled(1);
 
     for(UILogicGate* g : gates) {
-        g->canBeMoved = true;
+        if (!levelInOutGates.contains(g)) //if not an level-in/out
+            g->canBeMoved = true;
     }
 }
 

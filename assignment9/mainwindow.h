@@ -28,6 +28,7 @@ private:
     UILogicGate *pickedUpGate;
     QSet<QPushButton*> inputButtons;
     QSet<QPushButton*> outputButtons;
+    QSet<UILogicGate*> levelInOutGates;
 
     QPoint dragStartPosition;
 

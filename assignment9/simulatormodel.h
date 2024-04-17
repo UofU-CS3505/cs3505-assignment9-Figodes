@@ -110,7 +110,7 @@ public:
 
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
-    void setupLevel(bool moveToNext);
+    void setupNextLevel();
     ///
     /// \brief startSimulation Initializes values so the simluation can start
     ///

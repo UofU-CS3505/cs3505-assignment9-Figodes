@@ -79,10 +79,6 @@ void SimulatorModel::resetGateStates()
         for (int i = 0; i < g->inputStates.size(); i++)
             g->inputStates[i] = false;
         for (int i = 0; i < g->outputStates.size(); i++){
-            std::cout<<"outputStates size = "<<g->outputStates.size()<<", i = "<<i<<std::endl;
-            if(g->outputStates.size() == 192)
-                std::cout<<"reached mystery 192 case"<<std::endl;
-
             g->outputStates[i] = false;
         }
         g->hasOutputted = false;
@@ -222,7 +218,7 @@ void SimulatorModel::simulateOneIteration(){
 
         for(int i = 0; i < levelOutputs.size(); i++){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
-                std::cout << "input " << i << " is correct" << std::endl; //what happens based on if inputs are right?
+                std::cout << "input " << i << " is correct" << std::endl;
             else{
                 endSimulation(false);
                 return; //end sim early if level failed at any point
@@ -288,10 +284,10 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
     }
 }
 
-void SimulatorModel::setupLevel(bool moveToNext)
+void SimulatorModel::setupNextLevel()
 {
     std::cout<<"loading next level"<<std::endl;
-    if(moveToNext && currentLevel < levels.size() - 1)
+    if(currentLevel < levels.size() - 1)
         currentLevel++;
     allGates.clear();
     emit displayNewLevel(levels[currentLevel]);

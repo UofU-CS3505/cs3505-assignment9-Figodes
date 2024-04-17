@@ -26,12 +26,11 @@ MainWindow::MainWindow(QWidget *parent)
     model = new SimulatorModel();
     connect(this, &MainWindow::connectionDrawn, model, &SimulatorModel::connect);
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
-    //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-    connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupLevel);
+    connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupNextLevel);
     connect(model, &SimulatorModel::levelFinished, this, &MainWindow::simulationEnd);
     connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
@@ -49,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
+    connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     this->hide();
@@ -71,13 +71,10 @@ void MainWindow::showWelcomeScreen() {
 void MainWindow::levelEndAnimation(bool success) {
     std::cout << "in victory animation" << std::endl;
 
-    //TODO: disable and enable appropraite buttons
-
-
     connect(&timer, &QTimer::timeout, this, [this, success]() { updateFinishGates(success); });
     timer.start(1000 / 60);
 
-  //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
+    //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
 
         // Define the ground body.
     b2BodyDef groundBodyDef;

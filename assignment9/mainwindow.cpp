@@ -335,6 +335,7 @@ void MainWindow::clearGates(){
     outputButtons.clear();
     uiButtonConnections.clear();
     levelInOutGates.clear();
+    gates.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -359,6 +360,7 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
 
         if (outputButtons.contains(buttonBeingConnected))
         {
+            if(gate >= gates.size()) return; //incredibly sketchy fix
             for (QPushButton* b : outputButtons)
                 b->setEnabled(false);
             for (QPushButton* b : gates[gate]->inputs)
@@ -366,6 +368,7 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         }
         else
         {
+            if(gate >= gates.size()) return; //incredibly sketchy fix
             for (QPushButton* b : inputButtons)
                 b->setEnabled(false);
             for (QPushButton* b : gates[gate]->outputs)
@@ -421,6 +424,7 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
 
 bool MainWindow::isConnectionValid(QPushButton* button1, QPushButton* button2, qint32 gate1, qint32 gate2)
 {
+    if(gate1 >= gates.size() || gate2 >= gates.size()) return false;
     // Check if both buttons are not inputs or both are not outputs
     if ((gates[gate1]->inputs.contains(button1) && gates[gate2]->inputs.contains(button2)) ||
         (gates[gate1]->outputs.contains(button1) && gates[gate2]->outputs.contains(button2)))

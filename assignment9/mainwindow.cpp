@@ -251,7 +251,7 @@ void MainWindow::showInputs(const QVector<bool>& inputs){
         if(inputs.at(i) && input)
             input->setStyleSheet("background-color : lawngreen");
         else if(input)
-            input->setStyleSheet("background-color : green");
+            input->setStyleSheet("background-color : darkred");
     }
 }
 

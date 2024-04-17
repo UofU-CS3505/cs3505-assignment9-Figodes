@@ -142,7 +142,7 @@ void SimulatorModel::simulateInput(){
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
 
-    emit colorAllConnections(Qt::darkRed);
+    emit colorAllConnections(Qt::black);
     resetGateStates();
     setNthInputSequence(currentInput);
     simulateOneIteration();
@@ -182,7 +182,7 @@ void SimulatorModel::simulateOneIteration(){
         //update wire colors
         for (qint32 outputIndex = 0; outputIndex < activeGate->outputStates.size(); outputIndex++)
         {
-            QColor wireColor = Qt::darkGreen;
+            QColor wireColor = Qt::darkRed;
             if (activeGate->outputStates[outputIndex])
                 wireColor = Qt::green;
             for (auto receivingGate : activeGate->outputToNodes[outputIndex])

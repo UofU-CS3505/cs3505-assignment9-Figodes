@@ -11,11 +11,11 @@ class UILogicGate : public QLabel
 
 public:
     UILogicGate(QWidget* parent, qint32 id, QString operationName = "DEF", qint32 inputCount = 2, qint32 outputCount = 1);
-    ~UILogicGate();
     qint32 id;
     bool pickedUp;
     QVector<QPushButton*> inputs;
     QVector<QPushButton*> outputs;
+    bool canBeMoved = true;
 private:
     QPoint dragStartPosition;
     bool drawingLine;

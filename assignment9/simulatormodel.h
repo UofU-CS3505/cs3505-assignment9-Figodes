@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QObject>
 #include <QSet>
+#include <QColor>
 #include "level.h"
 #include "gatetypes.h"
 
@@ -101,7 +102,7 @@ public:
     ///
     /// \brief endSimulation signals view that the simulation is over
     ///
-    void endSimulation();
+    void endSimulation(bool levelSucceeded);
     ///
     /// \brief initializeView Sends necessary data likethe first level
     ///
@@ -109,7 +110,7 @@ public:
 
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
-    void loadNextLevel();
+    void setupLevel(bool moveToNext);
     ///
     /// \brief startSimulation Initializes values so the simluation can start
     ///
@@ -119,11 +120,12 @@ signals:
     void disableEditing();
     void enableEditing();
     void invalidLevel(); //indicates the circuit cannot be simulated
-    void levelComplete(); // enable button to move to next level in view, maybe also a restart button? Trigger celebration
-    void levelFailed(); //re-enable view ui
+    void levelFinished(bool succeeded); // enable button to move to next level in view, maybe also a restart button? Trigger celebration
     void displayNewLevel(Level level);
     void inputsSet(QVector<bool> inputs);
     void outputsSet(QVector<bool> outputs);
+    void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
+    void colorAllConnections(QColor color);
 };
 
 #endif // SIMULATORMODEL_H

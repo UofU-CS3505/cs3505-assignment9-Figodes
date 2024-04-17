@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->hide();
+    ui->nextLevelButton->hide();
 
     connectionBeingDrawn = false;
     idCounter = 0;
@@ -30,7 +31,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-    connect(model, &SimulatorModel::levelComplete, model, &SimulatorModel::loadNextLevel); //temporary, start next level when current ends
+    connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupLevel);
+    connect(model, &SimulatorModel::levelFinished, this, &MainWindow::simulationEnd);
+    connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
+    connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
+    connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
+    connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
 
    // connect(model, &SimulatorModel::levelComplete, this, &MainWindow::victoryAnimation);
@@ -59,7 +65,7 @@ void MainWindow::showWelcomeScreen() {
 
     // UNCOMMENT BELOW LINE TO
     //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
-    welcomescreen.show();
+   // welcomescreen.show();
 }
 
 void MainWindow::victoryAnimation() {
@@ -150,7 +156,39 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 }
 
 void MainWindow::setupLevel(Level level){
+    ui->nextLevelButton->hide();
     clearGates();
+
+    ui->tableWidget->setRowCount(qPow(2, level.inputCount));
+    ui->tableWidget->setColumnCount(level.inputCount + level.outputCount);
+
+    // Set headers
+    QStringList headers;
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Input %1").arg(i);
+    }
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Output %1").arg(i);
+    }
+    ui->tableWidget->setHorizontalHeaderLabels(headers);
+
+
+    for (int i = 0; i < qPow(2, level.inputCount); ++i) {
+        QVector<bool> inputSet = level.getLevelInput(i);
+        for (int j = 0; j < level.inputCount; ++j) {
+            QTableWidgetItem* item = new QTableWidgetItem(inputSet[j] ? "1" : "0");
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            ui->tableWidget->setItem(i, j, item);
+        }
+        QVector<bool> outputSet = level.getExpectedOutput(i);
+        for (int j = 0; j < level.outputCount; ++j) {
+            QTableWidgetItem* item = new QTableWidgetItem(outputSet[j] ? "1" : "0");
+            ui->tableWidget->setItem(i, level.outputCount + j, item);
+        }
+    }
+
+    // Resize columns to fit content
+    ui->tableWidget->resizeColumnsToContents();
 
     ui->levelDescription->setText(level.getDescription());
 
@@ -160,8 +198,6 @@ void MainWindow::setupLevel(Level level){
     for (QLayoutItem* item : previousInputs)
     {
         ui->inputs->removeItem(item);
-        delete item->widget();
-        delete item;
     }
     for (int i = 0; i < level.inputCount; i++) //create new inputs
     {
@@ -174,15 +210,33 @@ void MainWindow::setupLevel(Level level){
     for (QLayoutItem* item : previousOutputs)
     {
         ui->outputs->removeItem(item);
-        delete item->widget();
-        delete item;
     }
     for (int i = 0; i < level.outputCount; i++)//create new outputs
     {
         addGate(GateTypes::LEVEL_OUT);
     }
 
-    //display required inputs->outputs for level
+    //Input and Output buttons can not be moved
+
+    for (int i = 0; i < ui->inputs->count(); ++i) {
+        QLayoutItem* item = ui->inputs->itemAt(i);
+        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
+        if (gate) {  // Check if the cast is successful
+            // Set the canBeMoved property to false
+            gate->canBeMoved = false;
+        }
+    }
+
+    for (int i = 0; i < ui->outputs->count(); ++i) {
+        QLayoutItem* item = ui->outputs->itemAt(i);
+        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
+        if (gate) {  // Check if the cast is successful
+            // Set the canBeMoved property to false
+            gate->canBeMoved = false;
+        }
+    }
+
+    update();
 }
 
 void MainWindow::onStartClicked(){
@@ -337,7 +391,8 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
                 qint32 giver;
                 qint32 receiver;
 
-                uiButtonConnections.append(qMakePair(buttonBeingConnected, button));
+                Wire newWire = {.first = buttonBeingConnected, .second = button, .color = Qt::black};
+                uiButtonConnections.append(newWire);
 
                 qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
                 qint32 inputIndex = -1; // Initialize to -1 to indicate no match found
@@ -407,25 +462,25 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    // Draw the background gradient first
+    // Set up a slight gradient for the charcoal gray background
     QLinearGradient gradient(QPointF(0, 0), QPointF(width(), height()));
-    gradient.setColorAt(0, QColor(102, 115, 140));
-    gradient.setColorAt(1, QColor(56, 63, 77));
+    gradient.setColorAt(0, QColor(51, 51, 51)); // Dark charcoal gray
+    gradient.setColorAt(1, QColor(41, 41, 41)); // Even darker shade of gray
     painter.fillRect(rect(), gradient);
-
-    // Set pen color and width for the lines
-    painter.setPen(QPen(Qt::black, 2));
 
     // Iterate over all the connections
     for (const auto& connection : uiButtonConnections)
     {
+        // Set pen color and width for the lines
+        painter.setPen(QPen(connection.color, 4));
         // Get the positions of the connected buttons relative to the canvas
         QPoint startPos = connection.first->mapToGlobal(QPoint(0,0));
         QPoint endPos = connection.second->mapToGlobal(QPoint(0,0));
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 15);
-        endPos.setY(endPos.y() + 15);
+        //adjust positions to draw toward the middle of the buttons
+        startPos = startPos + QPoint(connection.first->width() / 2, connection.first->height() / 2);
+        endPos = endPos + QPoint(connection.second->width() / 2, connection.second->height() / 2);
 
         // Draw a line between the buttons
         painter.drawLine(startPos, endPos);
@@ -433,21 +488,90 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
     if (connectionBeingDrawn)
     {
+        painter.setPen(QPen(Qt::black, 2)); //yes this is intentionally thinner
+
         QPoint startPos = buttonBeingConnected->mapToGlobal(QPoint(0,0));
         QPoint endPos = QCursor::pos();
         startPos = this->mapFromGlobal(startPos);
         endPos = this->mapFromGlobal(endPos);
-        startPos.setY(startPos.y() + 15);
+        //adjust top draw from center of button
+        startPos = startPos + QPoint(buttonBeingConnected->width() / 2, buttonBeingConnected->height() / 2);
 
         painter.drawLine(startPos, endPos);
     }
 
 }
 
+void MainWindow::disableAllButtons() {
+    ui->startButton->setDisabled(1);
 
+    ui->addANDGate->setDisabled(1);
+    ui->addORGate->setDisabled(1);
+    ui->addNOTGate->setDisabled(1);
 
+    for(UILogicGate* g : gates) {
+        g->canBeMoved = false;
+    }
 
+}
+void MainWindow::enableAllButtons() {
+    ui->startButton->setEnabled(1);
 
+    ui->addANDGate->setEnabled(1);
+    ui->addORGate->setEnabled(1);
+    ui->addNOTGate->setEnabled(1);
 
+    for(UILogicGate* g : gates) {
+        g->canBeMoved = true;
+    }
+}
+
+void MainWindow::colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor)
+{
+    UILogicGate* givingGate = nullptr;
+    UILogicGate* receivingGate = nullptr;;
+    for (UILogicGate* g : gates)
+    {
+        if (g->id == giverId)
+            givingGate = g;
+        if (g->id == receiverId)
+            receivingGate = g;
+    }
+    if (givingGate && receivingGate)
+    {
+        QPushButton* firstButton = givingGate->outputs[outputIndex];
+        QPushButton* secondButton = receivingGate->inputs[inputIndex];
+        for (qint32 i = 0; i < uiButtonConnections.size(); i++)
+        {
+            if ((uiButtonConnections[i].first == firstButton && uiButtonConnections[i].second == secondButton)
+                || (uiButtonConnections[i].first == secondButton && uiButtonConnections[i].second == firstButton))
+            {
+                uiButtonConnections[i].color = newColor;
+                break;
+            }
+        }
+
+        update();
+    }
+}
+
+void MainWindow::colorAllWires(QColor color)
+{
+    std::cout << "coloring all" << std::endl;
+    for (qint32 i = 0; i < uiButtonConnections.size(); i++)
+        uiButtonConnections[i].color = color;
+    update();
+}
+
+void MainWindow::simulationEnd(bool success)
+{
+    if (success)
+       ui->nextLevelButton->show();
+    else
+    {
+        enableAllButtons();
+        colorAllWires(Qt::black);
+    }
+}
 
 

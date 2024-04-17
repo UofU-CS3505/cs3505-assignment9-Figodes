@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QSet>
 #include <QtMath>
+#include <QColor>
 
 SimulatorModel::SimulatorModel()
 {
@@ -11,8 +12,7 @@ SimulatorModel::SimulatorModel()
     currentLevel = 0;
 
     //load levels from file
-    levels.append(Level("testLevel", QVector<QVector<bool>>{{0},{1}}, 1, 1)); //FOR TESTING, NOT PERMANENT
-    levels.append(Level("testLevel2", QVector<QVector<bool>>{{0},{1}}, 1, 1));
+    levels = Level::getLevelList();
 
     // //testing example, remove later
     // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
@@ -141,8 +141,10 @@ void SimulatorModel::startSimulation(){
 
 void SimulatorModel::simulateInput(){
     std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
+
+    //TODO: pretty sure this doesnt need to be here, same thing happens somewhere else and this never gets used?
     if(currentInput == qPow(2, levelInputs.size())){
-        endSimulation();
+        endSimulation(true);
         return;
     }
 
@@ -150,6 +152,7 @@ void SimulatorModel::simulateInput(){
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
 
+    emit colorAllConnections(Qt::darkRed);
     resetGateStates();
     setNthInputSequence(currentInput);
     simulateOneIteration();
@@ -186,6 +189,21 @@ void SimulatorModel::simulateOneIteration(){
         activeGate->evaluate();
         //this is where to signal the view to light up the wires coming out of this gate according to its output states
         activeGate->hasOutputted = true;
+        //update wire colors
+        for (qint32 outputIndex = 0; outputIndex < activeGate->outputStates.size(); outputIndex++)
+        {
+            QColor wireColor = Qt::darkGreen;
+            if (activeGate->outputStates[outputIndex])
+                wireColor = Qt::green;
+            for (auto receivingGate : activeGate->outputToNodes[outputIndex])
+                for (qint32 inputIndex = 0; inputIndex < receivingGate->inputStates.size(); inputIndex++)
+                {
+                    auto receivingInputSet = receivingGate->inputFromNodes[inputIndex];
+                    for (auto incomingConnection : receivingInputSet)
+                        if (incomingConnection.first == activeGate) //selects all connections this gate is outputting on
+                            emit colorConnection(activeGate->id, outputIndex, receivingGate->id, inputIndex, wireColor);
+                }
+        }
 
         spentGates.insert(activeGate);// queue this gate to be removed from the list of active gates
         for (qint32 outputIndex = 0; outputIndex < activeGate->outputToNodes.size(); outputIndex++) //add this gate's outputs to the list of future active gates
@@ -205,11 +223,15 @@ void SimulatorModel::simulateOneIteration(){
         for(int i = 0; i < levelOutputs.size(); i++){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
                 std::cout << "input " << i << " is correct" << std::endl; //what happens based on if inputs are right?
-            else
-                emit levelFailed();
+            else{
+                endSimulation(false);
+                return; //end sim early if level failed at any point
+            }
         }
+
+        std::cout << currentInput << " of " << qPow(2, levelInputs.size()) - 1 << std::endl;
         if (currentInput == qPow(2, levelInputs.size()) - 1) //last input finished simulating, no wrong outputs
-            endSimulation();
+            endSimulation(true);
         else //more input sets to simulate
         {
             currentInput++;
@@ -218,10 +240,8 @@ void SimulatorModel::simulateOneIteration(){
     }
 }
 
-void SimulatorModel::endSimulation(){
-    levelInputs.clear();
-    levelOutputs.clear();
-    emit levelComplete();
+void SimulatorModel::endSimulation(bool levelSucceeded){
+    emit levelFinished(levelSucceeded);
 }
 
 void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
@@ -240,6 +260,8 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
             }, this);
         break;
     case GateTypes::NOT:
+
+
         newNode = new gateNode(gateID, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
                 outputs[0] = !inputs[0];
             }, this);
@@ -264,10 +286,10 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
     }
 }
 
-void SimulatorModel::loadNextLevel()
+void SimulatorModel::setupLevel(bool moveToNext)
 {
     std::cout<<"loading next level"<<std::endl;
-    if(currentLevel < levels.size() - 1)
+    if(moveToNext && currentLevel < levels.size() - 1)
         currentLevel++;
     allGates.clear();
    // emit displayNewLevel(levels[currentLevel]);

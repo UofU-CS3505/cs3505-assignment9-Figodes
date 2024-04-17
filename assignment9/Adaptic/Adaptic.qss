@@ -180,15 +180,13 @@ QToolButton::disabled
 /*-----QPushButton-----*/
 QPushButton
 {
-        background-color: qlineargradient(spread:repeat, x1:0.486, y1:0, x2:0.505, y2:1, stop:0.00480769 rgba(170, 0, 0, 255),stop:1 rgba(122, 0, 0, 255));
-        color: #ffffff;
+        background-color: qlineargradient(spread:repeat, x1:0.486, y1:0, x2:0.505, y2:1, stop:0 rgba(0, 128, 0, 255), stop:1 rgba(0, 85, 0, 255));        color: #ffffff;
         font-weight: bold;
         border-style: solid;
         border-width: 1px;
         border-radius: 3px;
         border-color: #051a39;
         padding: 5px;
-
 }
 
 
@@ -203,7 +201,7 @@ QPushButton::disabled
 
 QPushButton::hover
 {
-        background-color: #9c0000;
+        background-color: rgb(50, 205, 50);
         color: #ffffff;
         border-style: solid;
         border-width: 1px;
@@ -216,7 +214,7 @@ QPushButton::hover
 
 QPushButton::pressed
 {
-        background-color: #880000;
+        background-color: qlineargradient(spread:repeat, x1:0.486, y1:0, x2:0.505, y2:1, stop:0 rgba(0, 128, 0, 255), stop:1 rgba(0, 85, 0, 255));        color: #ffffff;
         color: #ffffff;
         border-style: solid;
         border-width: 2px;
@@ -382,7 +380,7 @@ QSpinBox::up-button:hover, QSpinBox::down-button:hover,
 QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover,
 QDateTimeEdit::up-button:hover, QDateTimeEdit::down-button:hover
 {
-        background-color: #646464;
+    background-color: #646464;
     border: 1px solid #333333;
 
 
@@ -1044,13 +1042,13 @@ QSlider::handle:vertical:disabled
 
 
 /*-----QDial-----*/
-QDial
+QDialog
 {
- background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(102, 115, 140, 255),stop:1 rgba(56, 63, 77, 255));
+background-color: qlineargradient(spread:repeat, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(51, 51, 51, 255), stop:1 rgba(41, 41, 41, 255));
 }
 
 
-QDial::disabled
+QDialog::disabled
 {
      background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(102, 115, 140, 255),stop:1 rgba(56, 63, 77, 255));
 

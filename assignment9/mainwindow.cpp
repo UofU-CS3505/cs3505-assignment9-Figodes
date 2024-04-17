@@ -154,6 +154,10 @@ void MainWindow::updateFinishGates() {
     update();
 }
 
+void MainWindow::stopTimer() {
+    playFinishAnimation = false;
+
+}
 void MainWindow::showWindow() {
     this->show();
 }
@@ -167,7 +171,6 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 }
 
 void MainWindow::setupLevel(Level level){
-    timer.stop();
 
     ui->nextLevelButton->hide();
     clearGates();

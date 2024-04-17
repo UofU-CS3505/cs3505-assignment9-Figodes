@@ -10,6 +10,11 @@
     <height>800</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Source Code Pro</family>
+   </font>
+  </property>
   <property name="mouseTracking">
    <bool>true</bool>
   </property>
@@ -17,6 +22,11 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>Source Code Pro</family>
+    </font>
+   </property>
    <widget class="QLabel" name="canvas">
     <property name="geometry">
      <rect>
@@ -38,6 +48,11 @@
       <width>101</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Source Code Pro</family>
+     </font>
     </property>
     <property name="text">
      <string>New AND Gate</string>
@@ -108,6 +123,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Source Code Pro</family>
       <pointsize>8</pointsize>
      </font>
     </property>
@@ -126,6 +142,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Source Code Pro</family>
       <pointsize>8</pointsize>
      </font>
     </property>

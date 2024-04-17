@@ -107,6 +107,8 @@ public slots:
     void colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
 
     void stopTimer();
+
+    void deleteGate(UILogicGate *gate);
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

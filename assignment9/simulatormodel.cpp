@@ -237,8 +237,10 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(bool levelSucceeded){
-    levelInputs.clear();
-    levelOutputs.clear();
+    if(levelSucceeded){
+        levelInputs.clear();
+        levelOutputs.clear();
+    }
     emit levelFinished(levelSucceeded);
 }
 

@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
 
+
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     this->hide();
 
@@ -69,9 +70,6 @@ void MainWindow::showWelcomeScreen() {
 void MainWindow::levelEndAnimation() {
     world = new b2World(b2Vec2(0.0f, 20.0f)); //reset world
     std::cout << "in victory animation" << std::endl;
-
-    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
-    timer.start(1000 / 60);
 
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
     b2BodyDef* wallBodyDef = new b2BodyDef();
@@ -129,12 +127,16 @@ void MainWindow::levelEndAnimation() {
     for (auto body : bodies)
     {
         body->CreateFixture(fixtureDef);
-        body->SetLinearVelocity(b2Vec2(rng.bounded(-50, 50), rng.bounded(-50, 50)));
+        body->SetLinearVelocity(b2Vec2(rng.bounded(-100, 100), rng.bounded(-100, 100)));
     }
+
+    //start simulating
+    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
+    timer.start(1000 / 60);
 }
 
 void MainWindow::updateFinishGates() {
-    float32 timeStep = 1.0f / 60.0f;
+    float32 timeStep = 1.0f / (60.0f);
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
 
@@ -267,6 +269,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     // Mouse move event for moving picked up gates
     if (pickedUpGate)
     {
+        disableAllButtons();
         QPointF newPos = event->scenePosition() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
     }
@@ -276,7 +279,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
 
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-
 }
 
 
@@ -311,6 +313,7 @@ void MainWindow::addGate(GateTypes gateType) {
     }
     trackButtonsOn(newGate);
     gates.insert(newGate->id, newGate);
+
     newGate->show();
     emit newGateCreated(newGate->id, gateType);
 
@@ -333,6 +336,10 @@ void MainWindow::addGate(GateTypes gateType) {
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
+
+}
+
+void MainWindow::deleteGate(UILogicGate *gate) {
 
 }
 
@@ -504,16 +511,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
 }
 
 void MainWindow::disableAllButtons() {
+    std::cout << "disabling" << std::endl;
     ui->startButton->setDisabled(1);
 
     ui->addANDGate->setDisabled(1);
     ui->addORGate->setDisabled(1);
     ui->addNOTGate->setDisabled(1);
 
-    for(UILogicGate* g : gates) {
-        g->canBeMoved = false;
+    if(pickedUpGate == nullptr) {
+        for(UILogicGate* g : gates) {
+            g->canBeMoved = false;
+        }
     }
-
 }
 void MainWindow::enableAllButtons() {
     ui->startButton->setEnabled(1);

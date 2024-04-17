@@ -307,3 +307,8 @@ void SimulatorModel::initializeView()
 {
     emit displayNewLevel(levels[0]); //sends first level
 }
+
+void SimulatorModel::removeGate(qint32 gateID)
+{
+
+}

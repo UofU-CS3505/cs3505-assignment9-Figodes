@@ -110,6 +110,10 @@ public:
 
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
+    ///
+    /// \brief removeGate Removes a gate and all its connections
+    ///
+    void removeGate(qint32 gateID);
     void setupNextLevel();
     ///
     /// \brief startSimulation Initializes values so the simluation can start

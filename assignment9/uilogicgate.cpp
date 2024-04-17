@@ -18,8 +18,16 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
         currentParent = currentParent->parent();
         mainWindow = qobject_cast<MainWindow*>(currentParent);
     }
+
+    if (mainWindow) {
+        connect(this, &UILogicGate::enableButtons, mainWindow, &MainWindow::enableAllButtons);
+        connect(this, &UILogicGate::disableButtons, mainWindow, &MainWindow::disableAllButtons);
+
+    }
+
     connect(this, &UILogicGate::updatePickedUpGateLocation, mainWindow, &MainWindow::updatePickedUpGate);
     connect(this, &UILogicGate::inputOrOutputPressed, mainWindow, &MainWindow::connectionBeingMade);
+    connect(this, &UILogicGate::deleteGate, mainWindow, &MainWindow::deleteGate);
 
 
     pickedUp = false;
@@ -71,18 +79,27 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
 
 void UILogicGate::mousePressEvent(QMouseEvent* event)
 {
+
     if(canBeMoved){
-        pickedUp = !pickedUp;
-        if (pickedUp) {
-            // Record the offset inside the widget at which it was clicked
-            // dragStartPosition = event->pos();
-            setStyleSheet("background-color : lime");
-            QWidget::raise();
+        if (event->button() == Qt::RightButton) {
+            emit deleteGate(this);
         }
-        else {
-            setStyleSheet("background-color : green");
+        else{
+            pickedUp = !pickedUp;
+            if (pickedUp) {
+                // Record the offset inside the widget at which it was clicked
+                // dragStartPosition = event->pos();
+                setStyleSheet("background-color : lime");
+                QWidget::raise();
+            }
+            else {
+                setStyleSheet("background-color : green");
+            }
+            emit updatePickedUpGateLocation(this, event->pos());
         }
+
         emit updatePickedUpGateLocation(this, event->pos());
+        emit enableButtons();
     }
 }
 

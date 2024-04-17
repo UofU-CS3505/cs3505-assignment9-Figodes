@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->hide();
+    ui->nextLevelButton->hide();
 
     connectionBeingDrawn = false;
     idCounter = 0;
@@ -27,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-    connect(model, &SimulatorModel::levelFinished, model, &SimulatorModel::setupLevel); //temporary, start next level when current ends
+    connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupLevel);
+    connect(model, &SimulatorModel::levelFinished, this, &MainWindow::simulationEnd);
     connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
@@ -74,10 +76,11 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 }
 
 void MainWindow::setupLevel(Level level){
+    ui->nextLevelButton->hide();
     clearGates();
 
-    ui->tableWidget->setRowCount(level.inputCount);
-    ui->tableWidget->setColumnCount(level.outputCount + level.outputCount);
+    ui->tableWidget->setRowCount(qPow(2, level.inputCount));
+    ui->tableWidget->setColumnCount(level.inputCount + level.outputCount);
 
     // Set headers
     QStringList headers;
@@ -90,7 +93,7 @@ void MainWindow::setupLevel(Level level){
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
 
-    for (int i = 0; i < level.inputCount; ++i) {
+    for (int i = 0; i < qPow(2, level.inputCount); ++i) {
         QVector<bool> inputSet = level.getLevelInput(i);
         for (int j = 0; j < level.inputCount; ++j) {
             QTableWidgetItem* item = new QTableWidgetItem(inputSet[j] ? "1" : "0");
@@ -478,6 +481,17 @@ void MainWindow::colorAllWires(QColor color)
     for (qint32 i = 0; i < uiButtonConnections.size(); i++)
         uiButtonConnections[i].color = color;
     update();
+}
+
+void MainWindow::simulationEnd(bool success)
+{
+    if (success)
+       ui->nextLevelButton->show();
+    else
+    {
+        enableAllButtons();
+        colorAllWires(Qt::black);
+    }
 }
 
 

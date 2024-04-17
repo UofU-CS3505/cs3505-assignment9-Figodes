@@ -87,6 +87,7 @@ public slots:
 
     void disableAllButtons();
     void enableAllButtons();
+    void simulationEnd(bool success);
 
     void colorAllWires(QColor color);
     void colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);

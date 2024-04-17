@@ -224,10 +224,12 @@ void SimulatorModel::simulateOneIteration(){
             if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
                 std::cout << "input " << i << " is correct" << std::endl; //what happens based on if inputs are right?
             else{
-                emit endSimulation(false);
+                endSimulation(false);
                 return; //end sim early if level failed at any point
             }
         }
+
+        std::cout << currentInput << " of " << qPow(2, levelInputs.size()) - 1 << std::endl;
         if (currentInput == qPow(2, levelInputs.size()) - 1) //last input finished simulating, no wrong outputs
             endSimulation(true);
         else //more input sets to simulate
@@ -239,8 +241,6 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(bool levelSucceeded){
-    levelInputs.clear();
-    levelOutputs.clear();
     emit levelFinished(levelSucceeded);
 }
 

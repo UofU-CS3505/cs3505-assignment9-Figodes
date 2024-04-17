@@ -53,8 +53,8 @@ private:
     void trackButtonsOn(UILogicGate* quarry);
 
     welcomeScreen welcomescreen;
-    b2World world;
-    b2Body* body;
+    b2World* world;
+    QMap<qint32, b2Body*> bodies;
     QTimer timer;
 
 

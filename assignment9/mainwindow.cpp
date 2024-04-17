@@ -10,8 +10,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow),
-    world(b2Vec2(0.0f, -10.0f)),
-    body(nullptr)
+    world(new b2World(b2Vec2(0.0f, 10.0f)))
 {
     qApp->installEventFilter(this);
     setMouseTracking(true);
@@ -75,47 +74,52 @@ void MainWindow::levelEndAnimation() {
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
 
         // Define the ground body.
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -10.0f);
+    b2BodyDef* groundBodyDef = new b2BodyDef();
+    groundBodyDef->position.Set(0.0f, ui->canvas->height());
 
     // Call the body factory which allocates memory for the ground body
     // from a pool and creates the ground box shape (also from a pool).
     // The body is also added to the world.
-    b2Body* groundBody = world.CreateBody(&groundBodyDef);
+    b2Body* groundBody = world->CreateBody(groundBodyDef);
 
     // Define the ground box shape.
-    b2PolygonShape groundBox;
+    b2PolygonShape* groundBox = new b2PolygonShape();
 
     // The extents are the half-widths of the box.
-    groundBox.SetAsBox(50.0f, 10.0f);
+    groundBox->SetAsBox(800.0f, 10.0f);
 
     // Add the ground fixture to the ground body.
-    groundBody->CreateFixture(&groundBox, 0.0f);
+    groundBody->CreateFixture(groundBox, 0.0f);
 
     // Define the dynamic body. We set its position and call the body factory.
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 4.0f);
-    body = world.CreateBody(&bodyDef);
+    b2BodyDef* bodyDef = new b2BodyDef();
+    bodyDef->type = b2_dynamicBody;
+    for (UILogicGate* g : gates.values())
+    {
+        bodyDef->position.Set(g->pos().x(), g->pos().y());
+        bodies.insert(g->id, world->CreateBody(bodyDef));
+    }
 
     // Define another box shape for our dynamic body.
-    b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(1.0f, 1.0f);
+    b2PolygonShape* dynamicBox = new b2PolygonShape();
+    UILogicGate* sampleGate = gates.values()[0];
+    dynamicBox->SetAsBox(sampleGate->width(), sampleGate->height());
 
     // Define the dynamic body fixture.
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &dynamicBox;
+    b2FixtureDef* fixtureDef = new b2FixtureDef();
+    fixtureDef->shape = dynamicBox;
 
     // Set the box density to be non-zero, so it will be dynamic.
-    fixtureDef.density = 1.0f;
+    fixtureDef->density = 1.0f;
 
     // Override the default friction.
-    fixtureDef.friction = 0.3f;
+    fixtureDef->friction = 0.3f;
 
-    fixtureDef.restitution = 0.9f;
+    fixtureDef->restitution = 0.9f;
 
     // Add the shape to the body.
-    body->CreateFixture(&fixtureDef);
+    for (auto body : bodies)
+        body->CreateFixture(fixtureDef);
 
 }
 
@@ -124,14 +128,14 @@ void MainWindow::updateFinishGates() {
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
 
-    world.Step(timeStep, velocityIterations, positionIterations);
+    world->Step(timeStep, velocityIterations, positionIterations);
 
     for (UILogicGate* gate: gates) {
         if (!levelInOutGates.contains(gate)) {
 
-            b2Vec2 position = body->GetPosition();
+            b2Vec2 position = bodies[gate->id]->GetPosition();
 
-            QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
+            QPoint gatePos(position.x, position.y);
             gate->move(gatePos);
 
             std::cout << "moved gate" << std::endl;

@@ -280,6 +280,25 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     update();
 }
 
+void MainWindow::mousePressEvent(QMouseEvent* event) {
+    // Check if connection is being drawn
+    if (connectionBeingDrawn) {
+        // Enable all input and output buttons
+        for (QPushButton* button : outputButtons) {
+            button->setEnabled(true);
+        }
+        for (QPushButton* button : inputButtons) {
+            button->setEnabled(true);
+        }
+        // Stop drawing the connection
+        connectionBeingDrawn = false;
+        update(); // Update the UI
+    }
+    // Call the base class implementation
+    QMainWindow::mousePressEvent(event);
+}
+
+
 void MainWindow::addGate(GateTypes gateType) {
     // if the user adds a new gate, disable the current one
     if (pickedUpGate){

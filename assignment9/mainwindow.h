@@ -82,6 +82,7 @@ public slots:
     void showOutputs(const QVector<bool>& outputs);
 
     void mouseMoveEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event);
     void addGate(GateTypes gateType);
 
     /// \brief Clears all currently placed logic gates in UI.

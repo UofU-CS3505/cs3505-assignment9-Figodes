@@ -106,6 +106,9 @@ public slots:
     void stopTimer();
 
     void deleteGate(UILogicGate *gate);
+
+    void displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput);
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates
@@ -116,5 +119,7 @@ signals:
 
     /// \brief Signal for when a new gate button is clicked, sends the new gate created to model
     void newGateCreated(qint32 gateID, GateTypes gt);
+
+    void removeGateFromModel(qint32 gateID);
 };
 #endif // MAINWINDOW_H

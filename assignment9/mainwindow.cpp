@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
+    connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -337,6 +338,51 @@ void MainWindow::addGate(GateTypes gateType) {
 }
 
 void MainWindow::deleteGate(UILogicGate *gate) {
+    emit removeGateFromModel(gate->id);
+
+    QVector<int> wiresToRemove;
+    for (int i = 0; i < uiButtonConnections.size(); i++) {
+
+        for (QPushButton* button: gate->inputs) {
+            if (uiButtonConnections[i].first == button || uiButtonConnections[i].second == button) {
+                wiresToRemove.append(i);
+
+                }
+
+            }
+
+        for (QPushButton* button: gate->outputs) {
+            if (uiButtonConnections[i].first == button || uiButtonConnections[i].second == button) {
+                wiresToRemove.append(i);
+            }
+        }
+
+    }
+
+
+    int numWiresRemoved = 0;
+    for (int index : wiresToRemove) {
+        uiButtonConnections.removeAt(index - numWiresRemoved);
+       // numWiresRemoved++;
+        numWiresRemoved++;
+    }
+
+    gates.remove(gate->id);
+
+
+    for (QPushButton* button : gate->inputs) {
+        inputButtons.remove(button);
+
+    }
+
+    for (QPushButton* button : gate->outputs) {
+        outputButtons.remove(button);
+
+    }
+
+    delete gate;
+
+    update();
 
 }
 
@@ -582,6 +628,10 @@ void MainWindow::simulationEnd(bool success)
         enableAllButtons();
         colorAllWires(Qt::black);
     }
+}
+
+void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput){
+
 }
 
 

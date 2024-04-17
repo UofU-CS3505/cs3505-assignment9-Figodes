@@ -6,11 +6,12 @@
 #include "SimulatorModel.h"
 #include <QPainter>
 #include <QTimer>
+#include <QRandomGenerator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow),
-    world(new b2World(b2Vec2(0.0f, 10.0f)))
+    world(new b2World(b2Vec2(0.0f, 20.0f)))
 {
     qApp->installEventFilter(this);
     setMouseTracking(true);
@@ -66,61 +67,71 @@ void MainWindow::showWelcomeScreen() {
 }
 
 void MainWindow::levelEndAnimation() {
+    world = new b2World(b2Vec2(0.0f, 20.0f)); //reset world
     std::cout << "in victory animation" << std::endl;
 
     connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
     timer.start(1000 / 60);
 
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
+    b2BodyDef* wallBodyDef = new b2BodyDef();
+    wallBodyDef->position.Set(ui->canvas->width() / 2, ui->canvas->height()); //defines position of floor
+    b2Body* wallsBody = world->CreateBody(wallBodyDef); //adds to world
+    b2PolygonShape* wallBox = new b2PolygonShape();
+    wallBox->SetAsBox(ui->canvas->width() / 2, 5.0f); //defines dimensions of ground, for some reason the argument here is half its dimension in each direction
+    wallsBody->CreateFixture(wallBox, 0.0f); //applies dimensions to floor
 
-        // Define the ground body.
-    b2BodyDef* groundBodyDef = new b2BodyDef();
-    groundBodyDef->position.Set(0.0f, ui->canvas->height());
+    wallBodyDef->position.Set(ui->canvas->width() / 2, 0); //reuse and modify definer for position, now for ceiling
+    wallsBody = world->CreateBody(wallBodyDef); //adds to world
+    wallBox->SetAsBox(ui->canvas->width() / 2, 5.0f); //redefines dimensions for ceiling
+    wallsBody->CreateFixture(wallBox, 0.0f); //applies dimensions to ceiling
 
-    // Call the body factory which allocates memory for the ground body
-    // from a pool and creates the ground box shape (also from a pool).
-    // The body is also added to the world.
-    b2Body* groundBody = world->CreateBody(groundBodyDef);
+    wallBodyDef->position.Set(0, ui->canvas->height() / 2); //same as before but for horizontal walls
+    wallsBody = world->CreateBody(wallBodyDef);
+    wallBox->SetAsBox(5.0f, ui->canvas->height() / 2);
+    wallsBody->CreateFixture(wallBox, 0.0f);
 
-    // Define the ground box shape.
-    b2PolygonShape* groundBox = new b2PolygonShape();
-
-    // The extents are the half-widths of the box.
-    groundBox->SetAsBox(800.0f, 10.0f);
-
-    // Add the ground fixture to the ground body.
-    groundBody->CreateFixture(groundBox, 0.0f);
+    wallBodyDef->position.Set(ui->canvas->width(), ui->canvas->height() / 2); //same as before but for horizontal walls
+    wallsBody = world->CreateBody(wallBodyDef);
+    wallBox->SetAsBox(5.0f, ui->canvas->height() / 2);
+    wallsBody->CreateFixture(wallBox, 0.0f);
 
     // Define the dynamic body. We set its position and call the body factory.
+    //can set fixedRotation = true at bodyDef if we need them not to rotate
     b2BodyDef* bodyDef = new b2BodyDef();
     bodyDef->type = b2_dynamicBody;
+    bodyDef->fixedRotation = true;
+    bodyDef->linearDamping = 0;
     for (UILogicGate* g : gates.values())
     {
-        bodyDef->position.Set(g->pos().x(), g->pos().y());
+        if (levelInOutGates.contains(g)) //ignore level-in/outs
+            continue;
+        bodyDef->position.Set(g->pos().x() + g->width()/2, g->pos().y() + g->height()/2);
+        std::cout << "set " << g->id << " at: " << g->pos().x() << ", " << g->pos().y() << std::endl;
         bodies.insert(g->id, world->CreateBody(bodyDef));
     }
 
     // Define another box shape for our dynamic body.
     b2PolygonShape* dynamicBox = new b2PolygonShape();
     UILogicGate* sampleGate = gates.values()[0];
-    dynamicBox->SetAsBox(sampleGate->width(), sampleGate->height());
+    dynamicBox->SetAsBox(sampleGate->width() * 0.7, sampleGate->height()  * 0.7);
 
     // Define the dynamic body fixture.
     b2FixtureDef* fixtureDef = new b2FixtureDef();
     fixtureDef->shape = dynamicBox;
 
     // Set the box density to be non-zero, so it will be dynamic.
-    fixtureDef->density = 1.0f;
-
-    // Override the default friction.
-    fixtureDef->friction = 0.3f;
-
-    fixtureDef->restitution = 0.9f;
+    fixtureDef->density = 100.0f;
+    fixtureDef->friction = 0.0f;
+    fixtureDef->restitution = 2.05f;
 
     // Add the shape to the body.
+    QRandomGenerator rng;
     for (auto body : bodies)
+    {
         body->CreateFixture(fixtureDef);
-
+        body->SetLinearVelocity(b2Vec2(rng.bounded(-50, 50), rng.bounded(-50, 50)));
+    }
 }
 
 void MainWindow::updateFinishGates() {
@@ -135,11 +146,9 @@ void MainWindow::updateFinishGates() {
 
             b2Vec2 position = bodies[gate->id]->GetPosition();
 
-            QPoint gatePos(position.x, position.y);
+            std::cout << "moved " << gate->id << " to: " << position.x << ", " << position.y << std::endl;
+            QPoint gatePos(position.x - gate->width()/2, position.y - gate->height()/2);
             gate->move(gatePos);
-
-            std::cout << "moved gate" << std::endl;
-            std::cout << gate->y() << std::endl;
         }
     }
 

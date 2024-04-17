@@ -36,7 +36,6 @@ QLabel
         background-color: transparent;
         color: #ffffff;
         font-weight: bold;
-
 }
 
 
@@ -44,7 +43,6 @@ QLabel::disabled
 {
         background-color: transparent;
         color: #898988;
-
 }
 
 

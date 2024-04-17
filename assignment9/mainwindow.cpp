@@ -511,7 +511,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
 }
 
 void MainWindow::disableAllButtons() {
-    std::cout << "disabling" << std::endl;
     ui->startButton->setDisabled(1);
 
     ui->addANDGate->setDisabled(1);

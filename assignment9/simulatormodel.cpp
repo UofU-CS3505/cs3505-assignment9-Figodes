@@ -317,7 +317,38 @@ void SimulatorModel::initializeView()
     emit displayNewLevel(levels[0]); //sends first level
 }
 
-void SimulatorModel::removeGate(qint32 gateID)
+void SimulatorModel::removeGate(qint32 gateId)
 {
+    if (!allGates.contains(gateId))
+        return;
+    //disconnect before deleting
+    gateNode* toDelete = allGates[gateId];
 
+    for (qint32 inputIndex = 0; inputIndex < toDelete->inputFromNodes.size(); inputIndex++) //remove input connections
+    {
+        auto inputSet = toDelete->inputFromNodes[inputIndex];
+        for (auto inputter : inputSet)
+        {
+            disconnect(inputter.first->id, inputter.second, gateId, inputIndex);
+        }
+    }
+
+    for (qint32 outputIndex = 0; outputIndex < toDelete->outputToNodes.size(); outputIndex++)
+    {
+        auto outputSet = toDelete->outputToNodes[outputIndex];
+    }
+
+    for (auto outputSet : toDelete->outputToNodes)
+        for (gateNode* receiverFrom : outputSet)
+            for (qint32 receiverInputIndex = 0; receiverInputIndex < receiverFrom->inputFromNodes.size(); receiverInputIndex++) //remove input connections
+            {
+                auto inputSet = receiverFrom->inputFromNodes[receiverInputIndex];
+                for (auto inputter : inputSet)
+                {
+                    if (inputter.first == toDelete) //this connection is from the deleted node
+                        disconnect(inputter.first->id, inputter.second, receiverFrom->id, receiverInputIndex);
+                }
+            }
+
+    allGates.remove(gateId);
 }

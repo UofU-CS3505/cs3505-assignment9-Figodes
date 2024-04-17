@@ -270,7 +270,7 @@ void SimulatorModel::loadNextLevel()
     if(currentLevel < levels.size() - 1)
         currentLevel++;
     allGates.clear();
-    emit displayNewLevel(levels[currentLevel]);
+   // emit displayNewLevel(levels[currentLevel]);
     emit enableEditing();
 }
 

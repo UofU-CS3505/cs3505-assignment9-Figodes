@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
 
-   // connect(model, &SimulatorModel::levelComplete, this, &MainWindow::victoryAnimation);
+    connect(model, &SimulatorModel::levelFinished, this, &MainWindow::levelEndAnimation);
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
@@ -68,13 +68,13 @@ void MainWindow::showWelcomeScreen() {
    // welcomescreen.show();
 }
 
-void MainWindow::victoryAnimation() {
+void MainWindow::levelEndAnimation(bool success) {
     std::cout << "in victory animation" << std::endl;
 
     //TODO: disable and enable appropraite buttons
 
 
-    connect(&timer, &QTimer::timeout, this, &MainWindow::updateVictoryGates);
+    connect(&timer, &QTimer::timeout, this, [this, success]() { updateFinishGates(success); });
     timer.start(1000 / 60);
 
   //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
@@ -124,7 +124,7 @@ void MainWindow::victoryAnimation() {
 
 }
 
-void MainWindow::updateVictoryGates() {
+void MainWindow::updateFinishGates(bool success) {
     float32 timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
@@ -132,13 +132,29 @@ void MainWindow::updateVictoryGates() {
     world.Step(timeStep, velocityIterations, positionIterations);
 
     for (UILogicGate* gate: gates) {
-        b2Vec2 position = body->GetPosition();
+        QString tempGateText = gate->text();
 
-        QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
-        gate->move(gatePos);
+        std::string gateText = tempGateText.toStdString();
 
-        std::cout << "moved gate" << std::endl;
-        std::cout << gate->y() << std::endl;
+        if (gateText != "IN" && gateText != "OUT") {
+            std::cout << "in move statement for gate with text " << gateText << std::endl;
+
+            b2Vec2 position = body->GetPosition();
+
+
+            if (success) {
+                QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
+                gate->move(gatePos);
+            }
+
+            else {
+                QPoint gatePos(gate->x() + position.x, gate->y() + position.y);
+                gate->move(gatePos);
+            }
+            std::cout << "moved gate" << std::endl;
+            std::cout << gate->y() << std::endl;
+        }
+
     }
 
 }
@@ -156,6 +172,8 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 }
 
 void MainWindow::setupLevel(Level level){
+    timer.stop();
+
     ui->nextLevelButton->hide();
     clearGates();
 

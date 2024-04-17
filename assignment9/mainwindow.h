@@ -90,9 +90,10 @@ public slots:
 
     void showWindow();
 
-    void victoryAnimation();
+    void levelEndAnimation(bool success);
 
-    void updateVictoryGates();
+    void updateFinishGates(bool success);
+
     void disableAllButtons();
     void enableAllButtons();
     void simulationEnd(bool success);

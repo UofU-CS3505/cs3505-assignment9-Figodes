@@ -5,10 +5,13 @@
 #include <iostream>
 #include "SimulatorModel.h"
 #include <QPainter>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow),
+    world(b2Vec2(0.0f, -10.0f)),
+    body(nullptr)
 {
     qApp->installEventFilter(this);
     setMouseTracking(true);
@@ -36,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
 
+   // connect(model, &SimulatorModel::levelComplete, this, &MainWindow::victoryAnimation);
+
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
     connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
@@ -61,6 +66,81 @@ void MainWindow::showWelcomeScreen() {
     // UNCOMMENT BELOW LINE TO
     //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
    // welcomescreen.show();
+}
+
+void MainWindow::victoryAnimation() {
+    std::cout << "in victory animation" << std::endl;
+
+    //TODO: disable and enable appropraite buttons
+
+
+    connect(&timer, &QTimer::timeout, this, &MainWindow::updateVictoryGates);
+    timer.start(1000 / 60);
+
+  //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
+
+        // Define the ground body.
+    b2BodyDef groundBodyDef;
+    groundBodyDef.position.Set(0.0f, -10.0f);
+
+    // Call the body factory which allocates memory for the ground body
+    // from a pool and creates the ground box shape (also from a pool).
+    // The body is also added to the world.
+    b2Body* groundBody = world.CreateBody(&groundBodyDef);
+
+    // Define the ground box shape.
+    b2PolygonShape groundBox;
+
+    // The extents are the half-widths of the box.
+    groundBox.SetAsBox(50.0f, 10.0f);
+
+    // Add the ground fixture to the ground body.
+    groundBody->CreateFixture(&groundBox, 0.0f);
+
+    // Define the dynamic body. We set its position and call the body factory.
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(0.0f, 4.0f);
+    body = world.CreateBody(&bodyDef);
+
+    // Define another box shape for our dynamic body.
+    b2PolygonShape dynamicBox;
+    dynamicBox.SetAsBox(1.0f, 1.0f);
+
+    // Define the dynamic body fixture.
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &dynamicBox;
+
+    // Set the box density to be non-zero, so it will be dynamic.
+    fixtureDef.density = 1.0f;
+
+    // Override the default friction.
+    fixtureDef.friction = 0.3f;
+
+    fixtureDef.restitution = 0.9f;
+
+    // Add the shape to the body.
+    body->CreateFixture(&fixtureDef);
+
+}
+
+void MainWindow::updateVictoryGates() {
+    float32 timeStep = 1.0f / 60.0f;
+    int32 velocityIterations = 6;
+    int32 positionIterations = 2;
+
+    world.Step(timeStep, velocityIterations, positionIterations);
+
+    for (UILogicGate* gate: gates) {
+        b2Vec2 position = body->GetPosition();
+
+        QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
+        gate->move(gatePos);
+
+        std::cout << "moved gate" << std::endl;
+        std::cout << gate->y() << std::endl;
+    }
+
 }
 
 void MainWindow::showWindow() {

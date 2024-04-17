@@ -52,6 +52,10 @@ private:
     void trackButtonsOn(UILogicGate* quarry);
 
     welcomeScreen welcomescreen;
+    b2World world;
+    b2Body* body;
+    QTimer timer;
+
 
     void showWelcomeScreen();
     bool isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2);
@@ -85,6 +89,9 @@ public slots:
 
     void showWindow();
 
+    void victoryAnimation();
+
+    void updateVictoryGates();
     void disableAllButtons();
     void enableAllButtons();
     void simulationEnd(bool success);

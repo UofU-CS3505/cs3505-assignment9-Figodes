@@ -138,17 +138,11 @@ void SimulatorModel::startSimulation(){
 void SimulatorModel::simulateInput(){
     std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
 
-    //TODO: pretty sure this doesnt need to be here, same thing happens somewhere else and this never gets used?
-    if(currentInput == qPow(2, levelInputs.size())){
-        endSimulation(true);
-        return;
-    }
-
     activeGates.clear();
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
 
-    emit colorAllConnections(Qt::darkRed);
+    emit colorAllConnections(Qt::black);
     resetGateStates();
     setNthInputSequence(currentInput);
     simulateOneIteration();
@@ -188,7 +182,7 @@ void SimulatorModel::simulateOneIteration(){
         //update wire colors
         for (qint32 outputIndex = 0; outputIndex < activeGate->outputStates.size(); outputIndex++)
         {
-            QColor wireColor = Qt::darkGreen;
+            QColor wireColor = Qt::darkRed;
             if (activeGate->outputStates[outputIndex])
                 wireColor = Qt::green;
             for (auto receivingGate : activeGate->outputToNodes[outputIndex])
@@ -237,8 +231,19 @@ void SimulatorModel::simulateOneIteration(){
 }
 
 void SimulatorModel::endSimulation(bool levelSucceeded){
-    levelInputs.clear();
-    levelOutputs.clear();
+    if(levelSucceeded){
+        levelInputs.clear();
+        levelOutputs.clear();
+    }
+    else{
+        QVector<bool> actualOutputs;
+        for(gateNode* output: levelOutputs)
+            actualOutputs.append(output->inputStates[0]);
+
+        emit incorrectCircuit(levels[currentLevel].getLevelInput(currentInput),
+            levels[currentLevel].getExpectedOutput(currentInput),
+            actualOutputs);
+    }
     emit levelFinished(levelSucceeded);
 }
 
@@ -306,7 +311,33 @@ void SimulatorModel::initializeView()
     emit displayNewLevel(levels[0]); //sends first level
 }
 
-void SimulatorModel::removeGate(qint32 gateID)
+void SimulatorModel::removeGate(qint32 gateId)
 {
+    if (!allGates.contains(gateId))
+        return;
+    //disconnect before deleting
+    gateNode* toDelete = allGates[gateId];
 
+    for (qint32 inputIndex = 0; inputIndex < toDelete->inputFromNodes.size(); inputIndex++) //remove input connections
+    {
+        auto inputSet = toDelete->inputFromNodes[inputIndex];
+        for (auto inputter : inputSet)
+        {
+            disconnect(inputter.first->id, inputter.second, gateId, inputIndex);
+        }
+    }
+
+    for (auto outputSet : toDelete->outputToNodes)
+        for (gateNode* receiverFrom : outputSet)
+            for (qint32 receiverInputIndex = 0; receiverInputIndex < receiverFrom->inputFromNodes.size(); receiverInputIndex++) //remove input connections
+            {
+                auto inputSet = receiverFrom->inputFromNodes[receiverInputIndex];
+                for (auto inputter : inputSet)
+                {
+                    if (inputter.first == toDelete) //this connection is from the deleted node
+                        disconnect(inputter.first->id, inputter.second, receiverFrom->id, receiverInputIndex);
+                }
+            }
+
+    allGates.remove(gateId);
 }

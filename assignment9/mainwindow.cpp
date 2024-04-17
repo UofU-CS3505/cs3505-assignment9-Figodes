@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
+    connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -177,15 +178,17 @@ void MainWindow::setupLevel(Level level){
     clearGates();
 
     ui->tableWidget->setRowCount(qPow(2, level.inputCount));
-    ui->tableWidget->setColumnCount(level.inputCount + level.outputCount);
+    ui->tableWidget->setColumnCount(level.inputCount + 2 * level.outputCount);
 
-    // Set headers
     QStringList headers;
-    for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Input %1").arg(i);
+    for (int i = 0; i < level.inputCount; ++i) {
+        headers << QString("Input %1").arg(i + 1);
     }
     for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Output %1").arg(i);
+        headers << QString("Expected Output %1").arg(i + 1);
+    }
+    for (int i = 0; i < level.outputCount; ++i) {
+        headers << QString("Actual Output %1").arg(i + 1);
     }
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
@@ -249,7 +252,7 @@ void MainWindow::showInputs(const QVector<bool>& inputs){
         if(inputs.at(i) && input)
             input->setStyleSheet("background-color : lawngreen");
         else if(input)
-            input->setStyleSheet("background-color : green");
+            input->setStyleSheet("background-color : darkred");
     }
 }
 
@@ -269,6 +272,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     // Mouse move event for moving picked up gates
     if (pickedUpGate)
     {
+        disableAllButtons();
         QPointF newPos = event->scenePosition() - QPoint(pickedUpGate->width() / 2, pickedUpGate->height() / 2);
         pickedUpGate->move(ui->canvas->mapFromParent(newPos).toPoint());
     }
@@ -278,7 +282,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
 
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-
 }
 
 
@@ -313,6 +316,7 @@ void MainWindow::addGate(GateTypes gateType) {
     }
     trackButtonsOn(newGate);
     gates.insert(newGate->id, newGate);
+
     newGate->show();
     emit newGateCreated(newGate->id, gateType);
 
@@ -561,10 +565,11 @@ void MainWindow::disableAllButtons() {
     ui->addORGate->setDisabled(1);
     ui->addNOTGate->setDisabled(1);
 
-    for(UILogicGate* g : gates) {
-        g->canBeMoved = false;
+    if(pickedUpGate == nullptr) {
+        for(UILogicGate* g : gates) {
+            g->canBeMoved = false;
+        }
     }
-
 }
 void MainWindow::enableAllButtons() {
     ui->startButton->setEnabled(1);
@@ -628,6 +633,10 @@ void MainWindow::simulationEnd(bool success)
         enableAllButtons();
         colorAllWires(Qt::black);
     }
+}
+
+void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput){
+
 }
 
 

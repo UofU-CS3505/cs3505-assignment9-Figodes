@@ -29,6 +29,8 @@ signals:
     void startDrawingLine(QPoint location);
     void inputOrOutputPressed(qint32 id, QPushButton* button);
     void deleteGate(UILogicGate *gate);
+    void enableButtons();
+    void disableButtons();
 
 
 public slots:

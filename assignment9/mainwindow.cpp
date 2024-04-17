@@ -154,9 +154,9 @@ void MainWindow::updateFinishGates(bool success) {
             std::cout << "moved gate" << std::endl;
             std::cout << gate->y() << std::endl;
         }
-
     }
 
+    update();
 }
 
 void MainWindow::showWindow() {

@@ -584,7 +584,10 @@ void MainWindow::colorAllWires(QColor color)
 void MainWindow::simulationEnd(bool success)
 {
     if (success)
+    {
        ui->nextLevelButton->show();
+       //kick off celebraiton code here
+    }
     else
     {
         enableAllButtons();

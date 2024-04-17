@@ -62,7 +62,10 @@ QVector<bool> Level::getLevelInput(qint32 inputIndex)
 QVector<Level> Level::getLevelList(){
     QVector<Level> levels;
     levels.append(Level("Basics: Welcome to the basics. Let's do something nice and easy. Try to make an output by using one and gate.",
-                        QVector<QVector<bool>>{{0},{0},{0},{1}}, 2, 1));
-    levels.append(Level("or gate and not gate :)", QVector<QVector<bool>>{{1},{0},{0},{0}}, 2, 1));
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
+        2, 1));
+    levels.append(Level("or gate and not gate :)",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
+        2, 1));
     return levels;
 }

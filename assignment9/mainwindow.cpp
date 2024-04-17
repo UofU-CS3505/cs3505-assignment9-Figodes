@@ -127,12 +127,7 @@ void MainWindow::updateFinishGates() {
     world.Step(timeStep, velocityIterations, positionIterations);
 
     for (UILogicGate* gate: gates) {
-        QString tempGateText = gate->text();
-
-        std::string gateText = tempGateText.toStdString();
-
-        if (gateText != "IN" && gateText != "OUT") {
-            std::cout << "in move statement for gate with text " << gateText << std::endl;
+        if (!levelInOutGates.contains(gate)) {
 
             b2Vec2 position = body->GetPosition();
 
@@ -331,6 +326,7 @@ void MainWindow::clearGates(){
     std::cout<<"clearing gates"<<std::endl;
     for(QObject* o: ui->canvas->children())
         delete o;
+    gates.clear();
     inputButtons.clear();
     outputButtons.clear();
     uiButtonConnections.clear();

@@ -381,9 +381,7 @@ void MainWindow::deleteGate(UILogicGate *gate) {
     }
 
     delete gate;
-
     update();
-
 }
 
 void MainWindow::clearGates(){

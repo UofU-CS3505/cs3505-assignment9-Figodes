@@ -70,9 +70,6 @@ void MainWindow::levelEndAnimation() {
     world = new b2World(b2Vec2(0.0f, 20.0f)); //reset world
     std::cout << "in victory animation" << std::endl;
 
-    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
-    timer.start(1000 / 60);
-
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
     b2BodyDef* wallBodyDef = new b2BodyDef();
     wallBodyDef->type = b2_staticBody;
@@ -129,12 +126,16 @@ void MainWindow::levelEndAnimation() {
     for (auto body : bodies)
     {
         body->CreateFixture(fixtureDef);
-        body->SetLinearVelocity(b2Vec2(rng.bounded(-50, 50), rng.bounded(-50, 50)));
+        body->SetLinearVelocity(b2Vec2(rng.bounded(-100, 100), rng.bounded(-100, 100)));
     }
+
+    //start simulating
+    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
+    timer.start(1000 / 60);
 }
 
 void MainWindow::updateFinishGates() {
-    float32 timeStep = 1.0f / 60.0f;
+    float32 timeStep = 1.0f / (60.0f);
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
 

@@ -6,6 +6,7 @@
 #include "SimulatorModel.h"
 #include <QPainter>
 #include <QTimer>
+#include <mutex>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
     connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupLevel);
+    connect(ui->nextLevelButton, &QPushButton::clicked, this, &MainWindow::stopTimer);
     connect(model, &SimulatorModel::levelFinished, this, &MainWindow::simulationEnd);
     connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
@@ -49,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
+    connect(&timer, &QTimer::timeout, this, &MainWindow::updateFinishGates);
+    timer.start(1000/60);
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     this->hide();
@@ -69,13 +73,14 @@ void MainWindow::showWelcomeScreen() {
 }
 
 void MainWindow::levelEndAnimation(bool success) {
+    levelSuccess = success;
     std::cout << "in victory animation" << std::endl;
 
     //TODO: disable and enable appropraite buttons
 
 
-    connect(&timer, &QTimer::timeout, this, [this, success]() { updateFinishGates(success); });
-    timer.start(1000 / 60);
+    // connect(&timer, &QTimer::timeout, this, [this, success]() { updateFinishGates(success); });
+    // timer.start(1000 / 60);
 
   //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
 
@@ -122,43 +127,59 @@ void MainWindow::levelEndAnimation(bool success) {
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);
 
+
+    playFinishAnimation = true;
+
 }
 
-void MainWindow::updateFinishGates(bool success) {
-    float32 timeStep = 1.0f / 60.0f;
-    int32 velocityIterations = 6;
-    int32 positionIterations = 2;
-
-    world.Step(timeStep, velocityIterations, positionIterations);
-
-    for (UILogicGate* gate: gates) {
-        QString tempGateText = gate->text();
-
-        std::string gateText = tempGateText.toStdString();
-
-        if (gateText != "IN" && gateText != "OUT") {
-            std::cout << "in move statement for gate with text " << gateText << std::endl;
-
-            b2Vec2 position = body->GetPosition();
+void MainWindow::updateFinishGates() {
 
 
-            if (success) {
-                QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
-                gate->move(gatePos);
+    if (playFinishAnimation) {
+        float32 timeStep = 1.0f / 60.0f;
+        int32 velocityIterations = 6;
+        int32 positionIterations = 2;
+
+        world.Step(timeStep, velocityIterations, positionIterations);
+
+        for (UILogicGate* gate: gates) {
+            QString tempGateText = gate->text();
+
+            std::string gateText = tempGateText.toStdString();
+
+            if (gateText != "IN" && gateText != "OUT") {
+                std::cout << "in move statement for gate with text " << gateText << std::endl;
+
+                b2Vec2 position = body->GetPosition();
+
+
+                if (levelSuccess) {
+                    QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
+                    gate->move(gatePos);
+                }
+
+                else {
+                    QPoint gatePos(gate->x() + position.x, gate->y() + position.y);
+                    gate->move(gatePos);
+                }
+                std::cout << "moved gate" << std::endl;
+                std::cout << gate->y() << std::endl;
             }
 
-            else {
-                QPoint gatePos(gate->x() + position.x, gate->y() + position.y);
-                gate->move(gatePos);
-            }
-            std::cout << "moved gate" << std::endl;
-            std::cout << gate->y() << std::endl;
         }
+
 
     }
 
+
+
+
 }
 
+void MainWindow::stopTimer() {
+    playFinishAnimation = false;
+
+}
 void MainWindow::showWindow() {
     this->show();
 }
@@ -172,7 +193,6 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 }
 
 void MainWindow::setupLevel(Level level){
-    timer.stop();
 
     ui->nextLevelButton->hide();
     clearGates();

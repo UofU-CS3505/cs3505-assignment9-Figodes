@@ -8,6 +8,7 @@
 #include "gatetypes.h"
 #include <QPair>
 #include "welcomescreen.h"
+#include <mutex>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -55,6 +56,11 @@ private:
     b2World world;
     b2Body* body;
     QTimer timer;
+    bool playFinishAnimation = false;
+    bool levelSuccess = false;
+
+    std::mutex mtx;
+
 
 
     void showWelcomeScreen();
@@ -91,7 +97,7 @@ public slots:
 
     void levelEndAnimation(bool success);
 
-    void updateFinishGates(bool success);
+    void updateFinishGates();
 
     void disableAllButtons();
     void enableAllButtons();
@@ -100,6 +106,7 @@ public slots:
     void colorAllWires(QColor color);
     void colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
 
+    void stopTimer();
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

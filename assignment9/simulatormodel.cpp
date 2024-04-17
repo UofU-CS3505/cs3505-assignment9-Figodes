@@ -138,12 +138,6 @@ void SimulatorModel::startSimulation(){
 void SimulatorModel::simulateInput(){
     std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
 
-    //TODO: pretty sure this doesnt need to be here, same thing happens somewhere else and this never gets used?
-    if(currentInput == qPow(2, levelInputs.size())){
-        endSimulation(true);
-        return;
-    }
-
     activeGates.clear();
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);

@@ -212,24 +212,9 @@ void MainWindow::setupLevel(Level level){
 
     ui->levelDescription->setText(level.getDescription());
 
-    QVector<QLayoutItem*> previousInputs;
-    for (int i = 0; i < ui->inputs->count(); i++) //clear input buttons
-        previousInputs.append(ui->inputs->itemAt(i));
-    for (QLayoutItem* item : previousInputs)
-    {
-        ui->inputs->removeItem(item);
-    }
     for (int i = 0; i < level.inputCount; i++) //create new inputs
     {
         addGate(GateTypes::LEVEL_IN);
-    }
-
-    QVector<QLayoutItem*> previousOutputs;
-    for (int i = 0; i < ui->outputs->count(); i++) //clear output buttons
-        previousOutputs.append(ui->outputs->itemAt(i));
-    for (QLayoutItem* item : previousOutputs)
-    {
-        ui->outputs->removeItem(item);
     }
     for (int i = 0; i < level.outputCount; i++)//create new outputs
     {
@@ -393,6 +378,25 @@ void MainWindow::clearGates(){
     outputButtons.clear();
     uiButtonConnections.clear();
     levelInOutGates.clear();
+    QLayoutItem* prevItem;
+    while (true) //clear input buttons
+    {
+        prevItem = ui->inputs->takeAt(0); //takes first each time until there are none left
+        if (!prevItem)
+            break;
+
+        delete prevItem->widget();
+        delete prevItem;
+    }
+    while (true) //clear output buttons
+    {
+        prevItem = ui->outputs->takeAt(0);
+        if (!prevItem)
+            break;
+
+        delete prevItem->widget();
+        delete prevItem;
+    }
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

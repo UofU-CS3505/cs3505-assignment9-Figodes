@@ -241,6 +241,15 @@ void SimulatorModel::endSimulation(bool levelSucceeded){
         levelInputs.clear();
         levelOutputs.clear();
     }
+    else{
+        QVector<bool> actualOutputs;
+        for(gateNode* output: levelOutputs)
+            actualOutputs.append(output->outputStates[0]);
+
+        emit incorrectCircuit(levels[currentLevel].getLevelInput(currentInput),
+            levels[currentLevel].getExpectedOutput(currentInput),
+            actualOutputs);
+    }
     emit levelFinished(levelSucceeded);
 }
 

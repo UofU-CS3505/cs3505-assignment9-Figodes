@@ -109,6 +109,9 @@ public slots:
     void stopTimer();
 
     void deleteGate(UILogicGate *gate);
+
+    void displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput);
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
+    connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -587,6 +588,10 @@ void MainWindow::simulationEnd(bool success)
         enableAllButtons();
         colorAllWires(Qt::black);
     }
+}
+
+void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput){
+
 }
 
 

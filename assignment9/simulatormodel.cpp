@@ -324,11 +324,6 @@ void SimulatorModel::removeGate(qint32 gateId)
         }
     }
 
-    for (qint32 outputIndex = 0; outputIndex < toDelete->outputToNodes.size(); outputIndex++)
-    {
-        auto outputSet = toDelete->outputToNodes[outputIndex];
-    }
-
     for (auto outputSet : toDelete->outputToNodes)
         for (gateNode* receiverFrom : outputSet)
             for (qint32 receiverInputIndex = 0; receiverInputIndex < receiverFrom->inputFromNodes.size(); receiverInputIndex++) //remove input connections

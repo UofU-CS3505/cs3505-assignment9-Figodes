@@ -29,6 +29,7 @@ private:
     UILogicGate *pickedUpGate;
     QSet<QPushButton*> inputButtons;
     QSet<QPushButton*> outputButtons;
+    QSet<UILogicGate*> levelInOutGates;
 
     QPoint dragStartPosition;
 
@@ -48,13 +49,13 @@ private:
 
     QVector<Wire> uiButtonConnections;
 
-    QVector<UILogicGate*> gates;
+    QMap<qint32, UILogicGate*> gates;
     bool eventFilter(QObject *obj, QEvent *event);
     void trackButtonsOn(UILogicGate* quarry);
 
     welcomeScreen welcomescreen;
-    b2World world;
-    b2Body* body;
+    b2World* world;
+    QMap<qint32, b2Body*> bodies;
     QTimer timer;
     bool playFinishAnimation = false;
     bool levelSuccess = false;
@@ -79,8 +80,8 @@ public slots:
 
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
-    void showInputs(QVector<bool> inputs);
-    void showOutputs(QVector<bool> outputs);
+    void showInputs(const QVector<bool>& inputs);
+    void showOutputs(const QVector<bool>& outputs);
 
     void mouseMoveEvent(QMouseEvent* event);
     void addGate(GateTypes gateType);
@@ -95,8 +96,7 @@ public slots:
 
     void showWindow();
 
-    void levelEndAnimation(bool success);
-
+    void levelEndAnimation();
     void updateFinishGates();
 
     void disableAllButtons();

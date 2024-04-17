@@ -110,7 +110,7 @@ public:
 
 public slots:
     void addNewGate(qint32 gateID, GateTypes gt);
-    void setupLevel(bool moveToNext);
+    void setupNextLevel();
     ///
     /// \brief startSimulation Initializes values so the simluation can start
     ///
@@ -122,8 +122,8 @@ signals:
     void invalidLevel(); //indicates the circuit cannot be simulated
     void levelFinished(bool succeeded); // enable button to move to next level in view, maybe also a restart button? Trigger celebration
     void displayNewLevel(Level level);
-    void inputsSet(QVector<bool> inputs);
-    void outputsSet(QVector<bool> outputs);
+    void inputsSet(const QVector<bool>& inputs);
+    void outputsSet(const QVector<bool>& outputs);
     void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
     void colorAllConnections(QColor color);
 };

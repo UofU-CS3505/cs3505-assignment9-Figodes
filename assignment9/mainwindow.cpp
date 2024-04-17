@@ -6,13 +6,12 @@
 #include "SimulatorModel.h"
 #include <QPainter>
 #include <QTimer>
-#include <mutex>
+#include <QRandomGenerator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow),
-    world(b2Vec2(0.0f, -10.0f)),
-    body(nullptr)
+    world(new b2World(b2Vec2(0.0f, 20.0f)))
 {
     qApp->installEventFilter(this);
     setMouseTracking(true);
@@ -27,21 +26,17 @@ MainWindow::MainWindow(QWidget *parent)
     model = new SimulatorModel();
     connect(this, &MainWindow::connectionDrawn, model, &SimulatorModel::connect);
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
-    //connect(model, &SimulatorModel::gatesCleared, this, &MainWindow::clearGates); //should just clear on setupNewLevel
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
     connect(model, &SimulatorModel::outputsSet, this, &MainWindow::showOutputs);
     connect(this, &MainWindow::startSimulation, model, &SimulatorModel::startSimulation);
-    connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupLevel);
-    connect(ui->nextLevelButton, &QPushButton::clicked, this, &MainWindow::stopTimer);
+    connect(ui->nextLevelButton, &QPushButton::clicked, model, &SimulatorModel::setupNextLevel);
     connect(model, &SimulatorModel::levelFinished, this, &MainWindow::simulationEnd);
     connect(model, &SimulatorModel::disableEditing, this, &MainWindow::disableAllButtons);
     connect(model, &SimulatorModel::enableEditing, this, &MainWindow::enableAllButtons);
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
-
-    connect(model, &SimulatorModel::levelFinished, this, &MainWindow::levelEndAnimation);
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
@@ -51,8 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
-    connect(&timer, &QTimer::timeout, this, &MainWindow::updateFinishGates);
-    timer.start(1000/60);
+    connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     this->hide();
@@ -72,108 +66,91 @@ void MainWindow::showWelcomeScreen() {
    // welcomescreen.show();
 }
 
-void MainWindow::levelEndAnimation(bool success) {
-    levelSuccess = success;
+void MainWindow::levelEndAnimation() {
+    world = new b2World(b2Vec2(0.0f, 20.0f)); //reset world
     std::cout << "in victory animation" << std::endl;
 
-    //TODO: disable and enable appropraite buttons
+    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
+    timer.start(1000 / 60);
 
+    //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
+    b2BodyDef* wallBodyDef = new b2BodyDef();
+    wallBodyDef->type = b2_staticBody;
+    wallBodyDef->position.Set(ui->canvas->width() / 2, ui->canvas->height()); //defines position of floor
+    b2Body* wallsBody = world->CreateBody(wallBodyDef); //adds to world
+    b2PolygonShape* wallBox = new b2PolygonShape();
+    wallBox->SetAsBox(ui->canvas->width() / 2, 5.0f); //defines dimensions of ground, for some reason the argument here is half its dimension in each direction
+    wallsBody->CreateFixture(wallBox, 0.0f); //applies dimensions to floor
 
-    // connect(&timer, &QTimer::timeout, this, [this, success]() { updateFinishGates(success); });
-    // timer.start(1000 / 60);
+    wallBodyDef->position.Set(ui->canvas->width() / 2, 0); //reuse and modify definer for position, now for ceiling
+    wallsBody = world->CreateBody(wallBodyDef); //adds to world
+    wallBox->SetAsBox(ui->canvas->width() / 2, 5.0f); //redefines dimensions for ceiling
+    wallsBody->CreateFixture(wallBox, 0.0f); //applies dimensions to ceiling
 
-  //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
+    wallBodyDef->position.Set(0, ui->canvas->height() / 2); //same as before but for horizontal walls
+    wallsBody = world->CreateBody(wallBodyDef);
+    wallBox->SetAsBox(5.0f, ui->canvas->height() / 2);
+    wallsBody->CreateFixture(wallBox, 0.0f);
 
-        // Define the ground body.
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -10.0f);
-
-    // Call the body factory which allocates memory for the ground body
-    // from a pool and creates the ground box shape (also from a pool).
-    // The body is also added to the world.
-    b2Body* groundBody = world.CreateBody(&groundBodyDef);
-
-    // Define the ground box shape.
-    b2PolygonShape groundBox;
-
-    // The extents are the half-widths of the box.
-    groundBox.SetAsBox(50.0f, 10.0f);
-
-    // Add the ground fixture to the ground body.
-    groundBody->CreateFixture(&groundBox, 0.0f);
+    wallBodyDef->position.Set(ui->canvas->width(), ui->canvas->height() / 2); //same as before but for horizontal walls
+    wallsBody = world->CreateBody(wallBodyDef);
+    wallBox->SetAsBox(5.0f, ui->canvas->height() / 2);
+    wallsBody->CreateFixture(wallBox, 0.0f);
 
     // Define the dynamic body. We set its position and call the body factory.
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 4.0f);
-    body = world.CreateBody(&bodyDef);
+    //can set fixedRotation = true at bodyDef if we need them not to rotate
+    b2BodyDef* bodyDef = new b2BodyDef();
+    bodyDef->type = b2_dynamicBody;
+    bodyDef->fixedRotation = true;
+    bodyDef->linearDamping = 0;
+    for (UILogicGate* g : gates.values())
+    {
+        if (levelInOutGates.contains(g)) //ignore level-in/outs
+            continue;
+        bodyDef->position.Set(g->pos().x() + g->width()/2, g->pos().y() + g->height()/2);
+        std::cout << "set " << g->id << " at: " << g->pos().x() << ", " << g->pos().y() << std::endl;
+        bodies.insert(g->id, world->CreateBody(bodyDef));
+    }
 
     // Define another box shape for our dynamic body.
-    b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(1.0f, 1.0f);
+    UILogicGate* sampleGate = gates.values()[0];
+    b2PolygonShape* dynamicBox = new b2PolygonShape();
+    dynamicBox->SetAsBox(sampleGate->width() * 0.7, sampleGate->height()  * 0.7);
 
     // Define the dynamic body fixture.
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &dynamicBox;
-
-    // Set the box density to be non-zero, so it will be dynamic.
-    fixtureDef.density = 1.0f;
-
-    // Override the default friction.
-    fixtureDef.friction = 0.3f;
-
-    fixtureDef.restitution = 0.9f;
+    b2FixtureDef* fixtureDef = new b2FixtureDef();
+    fixtureDef->shape = dynamicBox;
+    fixtureDef->density = 100.0f;
+    fixtureDef->friction = 0.0f;
+    fixtureDef->restitution = 2.00f;
 
     // Add the shape to the body.
-    body->CreateFixture(&fixtureDef);
-
-
-    playFinishAnimation = true;
-
+    QRandomGenerator rng;
+    for (auto body : bodies)
+    {
+        body->CreateFixture(fixtureDef);
+        body->SetLinearVelocity(b2Vec2(rng.bounded(-50, 50), rng.bounded(-50, 50)));
+    }
 }
 
 void MainWindow::updateFinishGates() {
+    float32 timeStep = 1.0f / 60.0f;
+    int32 velocityIterations = 6;
+    int32 positionIterations = 2;
 
+    world->Step(timeStep, velocityIterations, positionIterations);
 
-    if (playFinishAnimation) {
-        float32 timeStep = 1.0f / 60.0f;
-        int32 velocityIterations = 6;
-        int32 positionIterations = 2;
+    for (UILogicGate* gate: gates) {
+        if (!levelInOutGates.contains(gate)) {
+            b2Vec2 position = bodies[gate->id]->GetPosition();
 
-        world.Step(timeStep, velocityIterations, positionIterations);
-
-        for (UILogicGate* gate: gates) {
-            QString tempGateText = gate->text();
-
-            std::string gateText = tempGateText.toStdString();
-
-            if (gateText != "IN" && gateText != "OUT") {
-                std::cout << "in move statement for gate with text " << gateText << std::endl;
-
-                b2Vec2 position = body->GetPosition();
-
-
-                if (levelSuccess) {
-                    QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
-                    gate->move(gatePos);
-                }
-
-                else {
-                    QPoint gatePos(gate->x() + position.x, gate->y() + position.y);
-                    gate->move(gatePos);
-                }
-                std::cout << "moved gate" << std::endl;
-                std::cout << gate->y() << std::endl;
-            }
-
+            std::cout << "moved " << gate->id << " to: " << position.x << ", " << position.y << std::endl;
+            QPoint gatePos(position.x - gate->width()/2, position.y - gate->height()/2);
+            gate->move(gatePos);
         }
-
-
     }
 
-
-
-
+    update();
 }
 
 void MainWindow::stopTimer() {
@@ -254,26 +231,6 @@ void MainWindow::setupLevel(Level level){
         addGate(GateTypes::LEVEL_OUT);
     }
 
-    //Input and Output buttons can not be moved
-
-    for (int i = 0; i < ui->inputs->count(); ++i) {
-        QLayoutItem* item = ui->inputs->itemAt(i);
-        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
-        if (gate) {  // Check if the cast is successful
-            // Set the canBeMoved property to false
-            gate->canBeMoved = false;
-        }
-    }
-
-    for (int i = 0; i < ui->outputs->count(); ++i) {
-        QLayoutItem* item = ui->outputs->itemAt(i);
-        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
-        if (gate) {  // Check if the cast is successful
-            // Set the canBeMoved property to false
-            gate->canBeMoved = false;
-        }
-    }
-
     update();
 }
 
@@ -282,26 +239,26 @@ void MainWindow::onStartClicked(){
     emit startSimulation();
 }
 
-void MainWindow::showInputs(QVector<bool> inputs){
+void MainWindow::showInputs(const QVector<bool>& inputs){
     //iterate through ui->inputs->children (input buttons)
     for (int i = 0; i < inputs.size(); i++)
     {
         QWidget* input = ui->inputs->itemAt(i)->widget();
-        if(inputs[i] && input)
+        if(inputs.at(i) && input)
             input->setStyleSheet("background-color : lawngreen");
-        else
+        else if(input)
             input->setStyleSheet("background-color : green");
     }
 }
 
-void MainWindow::showOutputs(QVector<bool> outputs){
+void MainWindow::showOutputs(const QVector<bool>& outputs){
     //iterate through ui->inputs->children (input buttons)
     for (int i = 0; i < outputs.size(); i++)
     {
         QWidget* output = ui->outputs->itemAt(i)->widget();
-        if(outputs[i] && output)
+        if(outputs.at(i) && output)
             output->setStyleSheet("background-color : lawngreen");
-        else
+        else if(output)
             output->setStyleSheet("background-color : green");
     }
 }
@@ -345,23 +302,27 @@ void MainWindow::addGate(GateTypes gateType) {
         break;
     case GateTypes::LEVEL_IN:
         newGate = new UILogicGate(this, idCounter++, "IN", 0, 1);
+        newGate->canBeMoved = false;
         break;
     case GateTypes::LEVEL_OUT:
         newGate = new UILogicGate(this, idCounter++, "OUT", 1, 0);
+        newGate->canBeMoved = false;
         break;
     }
     trackButtonsOn(newGate);
-    gates.append(newGate);
+    gates.insert(newGate->id, newGate);
     newGate->show();
     emit newGateCreated(newGate->id, gateType);
 
     if (gateType == GateTypes::LEVEL_IN)
     {
+        levelInOutGates.insert(newGate);
         ui->inputs->addWidget(newGate);
         return;
     }
     if (gateType == GateTypes::LEVEL_OUT)
     {
+        levelInOutGates.insert(newGate);
         ui->outputs->addWidget(newGate);
         return;
     }
@@ -379,9 +340,11 @@ void MainWindow::clearGates(){
     std::cout<<"clearing gates"<<std::endl;
     for(QObject* o: ui->canvas->children())
         delete o;
+    gates.clear();
     inputButtons.clear();
     outputButtons.clear();
     uiButtonConnections.clear();
+    levelInOutGates.clear();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -560,7 +523,8 @@ void MainWindow::enableAllButtons() {
     ui->addNOTGate->setEnabled(1);
 
     for(UILogicGate* g : gates) {
-        g->canBeMoved = true;
+        if (!levelInOutGates.contains(g)) //if not an level-in/out
+            g->canBeMoved = true;
     }
 }
 
@@ -606,7 +570,7 @@ void MainWindow::simulationEnd(bool success)
     if (success)
     {
        ui->nextLevelButton->show();
-       //kick off celebraiton code here
+       levelEndAnimation(); //start celebration here
     }
     else
     {

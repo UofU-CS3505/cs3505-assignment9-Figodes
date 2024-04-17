@@ -38,8 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
 
-    connect(model, &SimulatorModel::levelFinished, this, &MainWindow::levelEndAnimation);
-
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
     connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
@@ -569,7 +567,7 @@ void MainWindow::simulationEnd(bool success)
     if (success)
     {
        ui->nextLevelButton->show();
-       //kick off celebraiton code here
+       levelEndAnimation(true); //start celebration here
     }
     else
     {

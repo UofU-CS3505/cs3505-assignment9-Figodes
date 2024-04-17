@@ -119,5 +119,7 @@ signals:
 
     /// \brief Signal for when a new gate button is clicked, sends the new gate created to model
     void newGateCreated(qint32 gateID, GateTypes gt);
+
+    void removeGateFromModel(qint32 gateID);
 };
 #endif // MAINWINDOW_H

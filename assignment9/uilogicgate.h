@@ -28,6 +28,7 @@ signals:
     void updatePickedUpGateLocation(UILogicGate *gate, QPoint initialPosition);
     void startDrawingLine(QPoint location);
     void inputOrOutputPressed(qint32 id, QPushButton* button);
+    void deleteGate(UILogicGate *gate);
 
 
 public slots:

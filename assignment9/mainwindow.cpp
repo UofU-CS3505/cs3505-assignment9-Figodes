@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
 
+
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     this->hide();
 
@@ -334,6 +335,10 @@ void MainWindow::addGate(GateTypes gateType) {
 
     newGate->setStyleSheet("background-color : lime");
     newGate->pickedUp = true;
+
+}
+
+void MainWindow::deleteGate(UILogicGate *gate) {
 
 }
 

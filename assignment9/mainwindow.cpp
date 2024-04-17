@@ -279,11 +279,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
     update();
 }
 
-
-void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-}
-
-
 void MainWindow::addGate(GateTypes gateType) {
     // if the user adds a new gate, disable the current one
     if (pickedUpGate){

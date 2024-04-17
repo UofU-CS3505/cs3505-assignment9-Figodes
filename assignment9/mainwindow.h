@@ -62,8 +62,6 @@ private:
 
     std::mutex mtx;
 
-
-
     void showWelcomeScreen();
     bool isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2);
     bool isConnectionValid(QPushButton* button1, QPushButton* button2, qint32 gate1, qint32 gate2);
@@ -85,7 +83,6 @@ public slots:
 
     void mouseMoveEvent(QMouseEvent* event);
     void addGate(GateTypes gateType);
-    void mouseReleaseEvent(QMouseEvent* event);
 
     /// \brief Clears all currently placed logic gates in UI.
     void clearGates();

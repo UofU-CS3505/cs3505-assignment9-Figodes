@@ -30,10 +30,17 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
 
     setText(operationName);
     setAlignment(Qt::AlignCenter);
+    setMargin(5);
 
-    if (inputCount == 0 || outputCount == 0)
+    if (inputCount == 0)
     {
         setFixedSize(width() - 30, height() - 30);
+        setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    }
+    if (outputCount == 0)
+    {
+        setFixedSize(width() - 30, height() - 30);
+        setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     }
 
     qint32 edgeBuffer = 5;

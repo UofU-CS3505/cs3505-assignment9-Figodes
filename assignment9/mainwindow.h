@@ -74,8 +74,8 @@ public slots:
 
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
-    void showInputs(QVector<bool> inputs);
-    void showOutputs(QVector<bool> outputs);
+    void showInputs(const QVector<bool>& inputs);
+    void showOutputs(const QVector<bool>& outputs);
 
     void mouseMoveEvent(QMouseEvent* event);
     void addGate(GateTypes gateType);
@@ -90,9 +90,8 @@ public slots:
 
     void showWindow();
 
-    void levelEndAnimation(bool success);
-
-    void updateFinishGates(bool success);
+    void levelEndAnimation();
+    void updateFinishGates();
 
     void disableAllButtons();
     void enableAllButtons();

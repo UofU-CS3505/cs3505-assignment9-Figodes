@@ -38,8 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     model->initializeView();
 
-    connect(model, &SimulatorModel::levelFinished, this, &MainWindow::levelEndAnimation);
-
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
 
     connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
@@ -68,10 +66,10 @@ void MainWindow::showWelcomeScreen() {
    // welcomescreen.show();
 }
 
-void MainWindow::levelEndAnimation(bool success) {
+void MainWindow::levelEndAnimation() {
     std::cout << "in victory animation" << std::endl;
 
-    connect(&timer, &QTimer::timeout, this, [this, success]() { updateFinishGates(success); });
+    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
     timer.start(1000 / 60);
 
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
@@ -121,7 +119,7 @@ void MainWindow::levelEndAnimation(bool success) {
 
 }
 
-void MainWindow::updateFinishGates(bool success) {
+void MainWindow::updateFinishGates() {
     float32 timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
@@ -138,16 +136,9 @@ void MainWindow::updateFinishGates(bool success) {
 
             b2Vec2 position = body->GetPosition();
 
+            QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
+            gate->move(gatePos);
 
-            if (success) {
-                QPoint gatePos(gate->x() + position.x, gate->y() - position.y);
-                gate->move(gatePos);
-            }
-
-            else {
-                QPoint gatePos(gate->x() + position.x, gate->y() + position.y);
-                gate->move(gatePos);
-            }
             std::cout << "moved gate" << std::endl;
             std::cout << gate->y() << std::endl;
         }
@@ -239,24 +230,24 @@ void MainWindow::onStartClicked(){
     emit startSimulation();
 }
 
-void MainWindow::showInputs(QVector<bool> inputs){
+void MainWindow::showInputs(const QVector<bool>& inputs){
     //iterate through ui->inputs->children (input buttons)
     for (int i = 0; i < inputs.size(); i++)
     {
         QWidget* input = ui->inputs->itemAt(i)->widget();
-        if(inputs[i] && input)
+        if(inputs.at(i) && input)
             input->setStyleSheet("background-color : lawngreen");
         else if(input)
             input->setStyleSheet("background-color : green");
     }
 }
 
-void MainWindow::showOutputs(QVector<bool> outputs){
+void MainWindow::showOutputs(const QVector<bool>& outputs){
     //iterate through ui->inputs->children (input buttons)
     for (int i = 0; i < outputs.size(); i++)
     {
         QWidget* output = ui->outputs->itemAt(i)->widget();
-        if(outputs[i] && output)
+        if(outputs.at(i) && output)
             output->setStyleSheet("background-color : lawngreen");
         else if(output)
             output->setStyleSheet("background-color : green");
@@ -569,7 +560,7 @@ void MainWindow::simulationEnd(bool success)
     if (success)
     {
        ui->nextLevelButton->show();
-       //kick off celebraiton code here
+       levelEndAnimation(); //start celebration here
     }
     else
     {

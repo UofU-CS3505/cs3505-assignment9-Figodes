@@ -216,26 +216,6 @@ void MainWindow::setupLevel(Level level){
         addGate(GateTypes::LEVEL_OUT);
     }
 
-    //Input and Output buttons can not be moved
-
-    for (int i = 0; i < ui->inputs->count(); ++i) {
-        QLayoutItem* item = ui->inputs->itemAt(i);
-        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
-        if (gate) {  // Check if the cast is successful
-            // Set the canBeMoved property to false
-            gate->canBeMoved = false;
-        }
-    }
-
-    for (int i = 0; i < ui->outputs->count(); ++i) {
-        QLayoutItem* item = ui->outputs->itemAt(i);
-        UILogicGate* gate = dynamic_cast<UILogicGate*>(item->widget());  // Try to cast the item to UILogicGate
-        if (gate) {  // Check if the cast is successful
-            // Set the canBeMoved property to false
-            gate->canBeMoved = false;
-        }
-    }
-
     update();
 }
 
@@ -307,9 +287,11 @@ void MainWindow::addGate(GateTypes gateType) {
         break;
     case GateTypes::LEVEL_IN:
         newGate = new UILogicGate(this, idCounter++, "IN", 0, 1);
+        newGate->canBeMoved = false;
         break;
     case GateTypes::LEVEL_OUT:
         newGate = new UILogicGate(this, idCounter++, "OUT", 1, 0);
+        newGate->canBeMoved = false;
         break;
     }
     trackButtonsOn(newGate);

@@ -246,7 +246,7 @@ void MainWindow::showInputs(QVector<bool> inputs){
         QWidget* input = ui->inputs->itemAt(i)->widget();
         if(inputs[i] && input)
             input->setStyleSheet("background-color : lawngreen");
-        else
+        else if(input)
             input->setStyleSheet("background-color : green");
     }
 }
@@ -258,7 +258,7 @@ void MainWindow::showOutputs(QVector<bool> outputs){
         QWidget* output = ui->outputs->itemAt(i)->widget();
         if(outputs[i] && output)
             output->setStyleSheet("background-color : lawngreen");
-        else
+        else if(output)
             output->setStyleSheet("background-color : green");
     }
 }

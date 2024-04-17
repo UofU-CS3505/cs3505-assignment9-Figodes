@@ -101,5 +101,5 @@ void UILogicGate::startLineDrawing()
     emit inputOrOutputPressed(this->id, button);
 }
 
-
+UILogicGate::~UILogicGate(){}
 

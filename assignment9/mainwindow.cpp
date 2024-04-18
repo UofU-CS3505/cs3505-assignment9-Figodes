@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     idCounter = 0;
     model = new SimulatorModel();
     connect(this, &MainWindow::connectionDrawn, model, &SimulatorModel::connect);
+    connect(this, &MainWindow::connectionBroken, model, &SimulatorModel::disconnect);
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
@@ -40,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
     connect(this, &MainWindow::removeGateFromModel, model, &SimulatorModel::removeGate);
     model->initializeView();
+
+    connect(ui->nextLevelButton, &QPushButton::clicked, this, [this]{timer.stop();});
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(ui->retryButton, &QPushButton::clicked, this, &MainWindow::retryClicked);
@@ -138,7 +141,7 @@ void MainWindow::levelEndAnimation() {
 
     //start simulating
     connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
-    timer.start(1000 / 60);
+    timer.start(1000 / (60 * 3)); // *3 to increase speed
 }
 
 void MainWindow::updateFinishGates() {
@@ -354,7 +357,7 @@ void MainWindow::deleteGate(UILogicGate *gate) {
 
     std::cout << gate->text().toStdString() << std::endl;
 
-    if(gate->text() != "IN" && gate->text() != "OUT") {
+    if(!levelInOutGates.contains(gate)) {
         emit removeGateFromModel(gate->id);
     }
 
@@ -385,7 +388,7 @@ void MainWindow::deleteGate(UILogicGate *gate) {
         numWiresRemoved++;
     }
 
-    if(gate->text() != "IN" && gate->text() != "OUT") {
+    if(!levelInOutGates.contains(gate)) {
         gates.remove(gate->id);
 
 
@@ -476,32 +479,50 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         // Second button clicked, end connection        
         if (isConnectionValid(buttonBeingConnected, button, connectingGate, gate)) // Check if the connection is valid
         {
-            if (!isConnectionAlreadyExists(buttonBeingConnected, button)) // Check if the connection already exists
+            qint32 giver;
+            qint32 receiver;
+
+            qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
+            qint32 inputIndex = -1; // Initialize to -1 to indicate no match found
+            if (gates[connectingGate]->outputs.contains(buttonBeingConnected))
             {
-                qint32 giver;
-                qint32 receiver;
+                outputIndex = gates[connectingGate]->outputs.indexOf(buttonBeingConnected);
+                inputIndex = gates[gate]->inputs.indexOf(button);
+                giver = connectingGate;
+                receiver = gate;
+            }
+            else
+            {
+                outputIndex = gates[gate]->outputs.indexOf(button);
+                inputIndex = gates[connectingGate]->inputs.indexOf(buttonBeingConnected);
+                giver = gate;
+                receiver = connectingGate;
+            }
 
-                Wire newWire = {.first = buttonBeingConnected, .second = button, .color = Qt::black};
-                uiButtonConnections.append(newWire);
-
-                qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
-                qint32 inputIndex = -1; // Initialize to -1 to indicate no match found
-                if (gates[connectingGate]->outputs.contains(buttonBeingConnected))
-                {
-                    outputIndex = gates[connectingGate]->outputs.indexOf(buttonBeingConnected);
-                    inputIndex = gates[gate]->inputs.indexOf(button);
-                    giver = connectingGate;
-                    receiver = gate;
-                }
-                else
-                {
-                    outputIndex = gates[gate]->outputs.indexOf(button);
-                    inputIndex = gates[connectingGate]->inputs.indexOf(buttonBeingConnected);
-                    giver = gate;
-                    receiver = connectingGate;
-                }
-
+            if (!isConnectionAlreadyExists(buttonBeingConnected, button))// Check if the connection already exists
+            {
                 emit connectionDrawn(giver, outputIndex, receiver, inputIndex);
+                Wire newWire;
+                if (outputButtons.contains(buttonBeingConnected))
+                    newWire = {.first = buttonBeingConnected, .second = button, .color = Qt::black};
+                else
+                    newWire = {.first = button, .second = buttonBeingConnected, .color = Qt::black};
+                uiButtonConnections.append(newWire);
+            }
+            else //conneciton already exists and should be deleted
+            {
+                QPushButton* givingButton = gates[giver]->outputs[outputIndex];
+                QPushButton* receivingButton = gates[receiver]->inputs[inputIndex];
+                Wire brokenWire = {.first = givingButton, .second = receivingButton, .color = Qt::black};
+                emit connectionBroken(giver, outputIndex, receiver, inputIndex);
+                //remove wire from ui connections
+                for (qint32 i = 0; i < uiButtonConnections.size(); i++)
+                    if (uiButtonConnections[i] == brokenWire)
+                    {
+                        uiButtonConnections.removeAt(i);
+                        break;
+                    }
+
             }
         }
 
@@ -531,9 +552,9 @@ bool MainWindow::isConnectionValid(QPushButton* button1, QPushButton* button2, q
 
 bool MainWindow::isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2)
 {
-    for (const auto& pair : uiButtonConnections)
+    for (const Wire w : uiButtonConnections)
     {
-        if ((pair.first == button1 && pair.second == button2) || (pair.first == button2 && pair.second == button1))
+        if ((w.first == button1 && w.second == button2) || (w.first == button2 && w.second == button1))
         {
             return true;
         }
@@ -713,5 +734,8 @@ void MainWindow::retryClicked() {
     ui->failLabel->hide();
 }
 
-
+bool MainWindow::Wire::operator==(const Wire& other)
+{
+    return this->first == other.first && this->second == other.second;
+}
 

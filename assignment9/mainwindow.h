@@ -43,8 +43,9 @@ private:
 
     struct Wire
     {
-        QPushButton* first, * second;
+        QPushButton* first, * second; //first and second imply output to input order, first should alwas=ys be an outputting button and vise versa
         QColor color;
+        bool operator==(const Wire& other);
     };
 
     QVector<Wire> uiButtonConnections;
@@ -118,6 +119,7 @@ signals:
 
     // Signal to tell the model that a connection has been made between logic gates
     void connectionDrawn(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex);
+    void connectionBroken(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex);
 
     /// \brief Signal for when a level should start simulating.
     void startSimulation();

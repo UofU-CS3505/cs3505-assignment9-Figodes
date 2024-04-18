@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
     this->hide();
+    ui->failLabel->hide();
 
     showWelcomeScreen();
 }
@@ -668,9 +669,27 @@ void MainWindow::simulationEnd(bool success)
         colorAllWires(Qt::black);
     }
 }
+void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput) {
+    QString message = "Level Failed!\n\n";
+    message += "Input That Failed: " + boolVectorToString(failedInput) + "\n";
+    message += "Expected Output: " + boolVectorToString(expectedOutput) + "\n";
+    message += "Actual Output: " + boolVectorToString(actualOutput);
 
-void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput){
+    ui->failLabel->setText(message);
+    ui->failLabel->setWordWrap(true);  // Ensure the text wraps if too long
+    ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
+    ui->failLabel->show();  // Show the label with the failure information
 
+    ui->failLabel->hide();
 }
+
+QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
+    QString result;
+    for (bool b : vec) {
+        result += (b ? "1" : "0") + QString(" ");
+    }
+    return result.trimmed();
+}
+
 
 

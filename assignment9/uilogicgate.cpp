@@ -79,11 +79,11 @@ UILogicGate::UILogicGate(QWidget* parent, qint32 id, QString operationName, qint
 
 void UILogicGate::mousePressEvent(QMouseEvent* event)
 {
-    if(canBeMoved){
-        if (event->button() == Qt::RightButton) {
-            emit deleteGate(this);
-        }
-        else{
+    if (event->button() == Qt::RightButton) {
+        emit deleteGate(this);
+    }
+    else {
+        if(canBeMoved){
             pickedUp = !pickedUp;
             if (pickedUp) {
                 // Record the offset inside the widget at which it was clicked
@@ -96,8 +96,10 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
             }
             emit updatePickedUpGateLocation(this, event->pos());
             emit enableButtons();
+
         }
     }
+
 }
 
 

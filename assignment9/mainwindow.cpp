@@ -348,7 +348,12 @@ void MainWindow::deleteGate(UILogicGate *gate) {
     if(gate->pickedUp) {
         return;
     }
-    emit removeGateFromModel(gate->id);
+
+    std::cout << gate->text().toStdString() << std::endl;
+
+    if(gate->text() != "IN" && gate->text() != "OUT") {
+        emit removeGateFromModel(gate->id);
+    }
 
     QVector<int> wiresToRemove;
     for (int i = 0; i < uiButtonConnections.size(); i++) {
@@ -377,20 +382,24 @@ void MainWindow::deleteGate(UILogicGate *gate) {
         numWiresRemoved++;
     }
 
-    gates.remove(gate->id);
+    if(gate->text() != "IN" && gate->text() != "OUT") {
+        gates.remove(gate->id);
 
 
-    for (QPushButton* button : gate->inputs) {
-        inputButtons.remove(button);
+        for (QPushButton* button : gate->inputs) {
+            inputButtons.remove(button);
 
+        }
+
+        for (QPushButton* button : gate->outputs) {
+            outputButtons.remove(button);
+
+        }
+
+        delete gate;
     }
 
-    for (QPushButton* button : gate->outputs) {
-        outputButtons.remove(button);
 
-    }
-
-    delete gate;
     update();
 }
 

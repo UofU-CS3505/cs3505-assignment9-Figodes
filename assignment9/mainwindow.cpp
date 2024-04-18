@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::colorConnection, this, &MainWindow::colorWire);
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
+    connect(this, &MainWindow::removeGateFromModel, model, &SimulatorModel::removeGate);
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
@@ -225,7 +226,6 @@ void MainWindow::setupLevel(Level level){
 }
 
 void MainWindow::onStartClicked(){
-    std::cout<<"start clicked"<<std::endl;
     emit startSimulation();
 }
 
@@ -249,7 +249,7 @@ void MainWindow::showOutputs(const QVector<bool>& outputs){
         if(outputs.at(i) && output)
             output->setStyleSheet("background-color : lawngreen");
         else if(output)
-            output->setStyleSheet("background-color : green");
+            output->setStyleSheet("background-color : darkred");
     }
 }
 

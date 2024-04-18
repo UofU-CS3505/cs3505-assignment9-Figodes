@@ -35,7 +35,7 @@ QLabel
 {
         background-color: transparent;
         color: #ffffff;
-        font-weight: bold;
+
 }
 
 
@@ -52,7 +52,7 @@ QMenuBar
         background-color: #484c58;
         color: #ffffff;
         border-color: #051a39;
-        font-weight: bold;
+
 
 }
 
@@ -98,7 +98,7 @@ QMenu
     background-color: #c4c5c3;
     border: 1px solid;
     color: #000000;
-        font-weight: bold;
+
 
 }
 
@@ -157,7 +157,7 @@ QToolButton
 {
         background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(177, 181, 193, 255),stop:1 rgba(159, 163, 174, 255));
         color: #ffffff;
-        font-weight: bold;
+
         border-style: solid;
         border-width: 1px;
         border-radius: 3px;
@@ -179,7 +179,7 @@ QToolButton::disabled
 QPushButton
 {
         background-color: qlineargradient(spread:repeat, x1:0.486, y1:0, x2:0.505, y2:1, stop:0 rgba(0, 128, 0, 255), stop:1 rgba(0, 85, 0, 255));        color: #ffffff;
-        font-weight: bold;
+
         border-style: solid;
         border-width: 1px;
         border-radius: 3px;
@@ -255,7 +255,7 @@ QComboBox
     border-radius: 3px;
     padding-left: 6px;
     color: lightgray;
-        font-weight: bold;
+
     height: 20px;
 
 }
@@ -326,7 +326,7 @@ QDateTimeEdit
 {
         background-color: #000000;
         color: #00ff00;
-        font-weight: bold;
+
         border: 1px solid #333333;
         padding : 4px;
 
@@ -431,7 +431,7 @@ QLineEdit
 {
         background-color: #000000;
         color: #00ff00;
-        font-weight: bold;
+
     border: 1px solid #333333;
         padding: 4px;
 
@@ -488,7 +488,7 @@ QGroupBox
 QGroupBox
 {
         background-color: qlineargradient(spread:repeat, x1:0.486, y1:0, x2:0.505, y2:1, stop:0.00480769 rgba(170, 169, 169, 255),stop:1 rgba(122, 122, 122, 255));
-        font-weight: bold;
+
 
 }
 
@@ -521,7 +521,7 @@ QGroupBox::title::disabled
 /*-----QCheckBox-----*/
 QCheckBox{
         background-color: transparent;
-        font-weight: bold;
+
         color: #fff;
 
 }
@@ -572,7 +572,7 @@ QCheckBox::indicator:disabled
 /*-----QRadioButton-----*/
 QRadioButton{
         background-color: transparent;
-        font-weight: bold;
+
         color: #fff;
 
 }
@@ -633,7 +633,7 @@ QTableView
     background-color: #808080;
     border: 1px groove #333333;
     color: #f0f0f0;
-        font-weight: bold;
+
     gridline-color: #333333;
     outline : 0;
 
@@ -688,7 +688,7 @@ QHeaderView::section
 {
     background-color: #282830;
     color: #fff;
-        font-weight: bold;
+
     text-align: left;
         padding: 4px;
 
@@ -753,7 +753,7 @@ QTabBar::tab
 {
         background-color: transparent;
         color: #ffffff;
-        font-weight: bold;
+
         width: 80px;
         height: 9px;
 
@@ -1193,7 +1193,7 @@ QProgressBar
 {
         background-color: #000;
         color: #00ff00;
-        font-weight: bold;
+
         border: 0px groove #000;
         border-radius: 10px;
         text-align: center;
@@ -1236,7 +1236,7 @@ QStatusBar
         background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(102, 115, 140, 255),stop:1 rgba(56, 63, 77, 255));
         color: #ffffff;
         border-color: #051a39;
-        font-weight: bold;
+
 
 }
 

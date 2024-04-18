@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->hide();
     ui->nextLevelButton->hide();
+    ui->retryButton->hide();
 
     connectionBeingDrawn = false;
     idCounter = 0;
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+    connect(ui->retryButton, &QPushButton::clicked, this, &MainWindow::retryClicked);
 
     connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
 
@@ -49,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
     connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
+    connect(ui->resetButton, &QPushButton::clicked, model, &SimulatorModel::resetLevel);
 
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
@@ -591,6 +594,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::disableAllButtons() {
     ui->startButton->setDisabled(1);
+    ui->resetButton->setDisabled(1);
 
     ui->addANDGate->setDisabled(1);
     ui->addORGate->setDisabled(1);
@@ -610,6 +614,7 @@ void MainWindow::disableAllButtons() {
 }
 void MainWindow::enableAllButtons() {
     ui->startButton->setEnabled(1);
+    ui->resetButton->setEnabled(1);
 
     ui->addANDGate->setEnabled(1);
     ui->addORGate->setEnabled(1);
@@ -688,8 +693,9 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
     ui->failLabel->setWordWrap(true);  // Ensure the text wraps if too long
     ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
     ui->failLabel->show();  // Show the label with the failure information
+    ui->retryButton->show();
 
-    ui->failLabel->hide();
+
 }
 
 QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
@@ -698,6 +704,13 @@ QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
         result += (b ? "1" : "0") + QString(" ");
     }
     return result.trimmed();
+}
+
+void MainWindow::retryClicked() {
+    uiButtonConnections.clear();
+    repaint();
+    ui->retryButton->hide();
+    ui->failLabel->hide();
 }
 
 

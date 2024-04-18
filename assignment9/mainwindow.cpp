@@ -184,38 +184,30 @@ void MainWindow::setupLevel(Level level){
     ui->nextLevelButton->hide();
     clearGates();
 
-    ui->tableWidget->setRowCount(qPow(2, level.inputCount));
-    ui->tableWidget->setColumnCount(level.inputCount + 2 * level.outputCount);
+    ui->tableWidget->clear();
 
+    // Set number of rows and columns in the table
+    ui->tableWidget->setRowCount(qPow(2, level.inputCount));
+    ui->tableWidget->setColumnCount(level.inputCount + level.outputCount);
+
+    // Set headers
     QStringList headers;
-    for (int i = 0; i < level.inputCount; ++i) {
-        headers << QString("Input %1").arg(i + 1);
-    }
-    for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Expected Output %1").arg(i + 1);
-    }
-    for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Actual Output %1").arg(i + 1);
-    }
+    for (int i = 0; i < level.inputCount; ++i)
+        headers << QString("Input %1").arg(i);
+    for (int i = 0; i < level.outputCount; ++i)
+        headers << QString("Output %1").arg(i);
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
-
-    for (int i = 0; i < qPow(2, level.inputCount); ++i) {
-        QVector<bool> inputSet = level.getLevelInput(i);
-        for (int j = 0; j < level.inputCount; ++j) {
-            QTableWidgetItem* item = new QTableWidgetItem(inputSet[j] ? "1" : "0");
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui->tableWidget->setItem(i, j, item);
-        }
-        QVector<bool> outputSet = level.getExpectedOutput(i);
-        for (int j = 0; j < level.outputCount; ++j) {
-            QTableWidgetItem* item = new QTableWidgetItem(outputSet[j] ? "1" : "0");
-            ui->tableWidget->setItem(i, level.outputCount + j, item);
-        }
+    // Populate the table with inputs and outputs
+    for (int i = 0; i < ui->tableWidget->rowCount(); ++i)
+    {
+        QVector<bool> inputs = level.getLevelInput(i);
+        QVector<bool> outputs = level.getExpectedOutput(i);
+        for (int j = 0; j < level.inputCount; ++j)
+            ui->tableWidget->setItem(i, j, new QTableWidgetItem(QString::number(inputs[j])));
+        for (int j = 0; j < level.outputCount; ++j)
+            ui->tableWidget->setItem(i, level.inputCount + j, new QTableWidgetItem(QString::number(outputs[j])));
     }
-
-    // Resize columns to fit content
-    ui->tableWidget->resizeColumnsToContents();
 
     ui->levelDescription->setText(level.getDescription());
 

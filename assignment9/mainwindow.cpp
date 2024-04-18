@@ -648,6 +648,8 @@ void MainWindow::simulationEnd(bool success)
     }
     else
     {
+        for(UILogicGate* gate: levelInOutGates)
+            gate->setStyleSheet("background-color : green");
         enableAllButtons();
         colorAllWires(Qt::black);
     }

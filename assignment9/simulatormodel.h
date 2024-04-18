@@ -119,6 +119,7 @@ public slots:
     /// \brief startSimulation Initializes values so the simluation can start
     ///
     void startSimulation();
+    void resetLevel();
 
 signals:
     void disableEditing();

@@ -591,6 +591,12 @@ void MainWindow::disableAllButtons() {
             g->canBeMoved = false;
         }
     }
+
+
+    for (QPushButton* button : outputButtons)
+        button->setEnabled(false);
+    for (QPushButton* button : inputButtons)
+        button->setEnabled(false);
 }
 void MainWindow::enableAllButtons() {
     ui->startButton->setEnabled(1);
@@ -603,6 +609,11 @@ void MainWindow::enableAllButtons() {
         if (!levelInOutGates.contains(g)) //if not an level-in/out
             g->canBeMoved = true;
     }
+
+    for (QPushButton* button : outputButtons)
+        button->setEnabled(true);
+    for (QPushButton* button : inputButtons)
+        button->setEnabled(true);
 }
 
 void MainWindow::colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor)

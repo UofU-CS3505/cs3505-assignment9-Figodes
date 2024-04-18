@@ -344,6 +344,9 @@ void MainWindow::addGate(GateTypes gateType) {
 }
 
 void MainWindow::deleteGate(UILogicGate *gate) {
+    if(gate->pickedUp) {
+        return;
+    }
     emit removeGateFromModel(gate->id);
 
     QVector<int> wiresToRemove;

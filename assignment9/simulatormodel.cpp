@@ -294,6 +294,11 @@ void SimulatorModel::setupNextLevel()
     std::cout<<"loading next level"<<std::endl;
     if(currentLevel < levels.size() - 1)
         currentLevel++;
+
+    resetLevel();
+}
+
+void SimulatorModel::resetLevel(){
     allGates.clear();
     emit displayNewLevel(levels[currentLevel]);
     emit enableEditing();

@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
 
 
-    ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
+    ui->canvas->setStyleSheet("QLabel { border: 1px solid green; }");
     this->hide();
     ui->failLabel->hide();
 

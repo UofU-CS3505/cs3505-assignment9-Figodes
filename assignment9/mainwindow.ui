@@ -103,14 +103,14 @@
    <widget class="QPushButton" name="startButton">
     <property name="geometry">
      <rect>
-      <x>900</x>
+      <x>849</x>
       <y>720</y>
-      <width>80</width>
+      <width>131</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string>Start!</string>
+     <string>Start Simulation!</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -250,7 +250,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

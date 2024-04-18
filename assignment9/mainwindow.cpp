@@ -10,8 +10,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow),
-    world(new b2World(b2Vec2(0.0f, 20.0f)))
+    , ui(new Ui::MainWindow)
+    , world(new b2World(b2Vec2(0.0f, 20.0f)))
+    , timer(new QTimer())
 {
     qApp->installEventFilter(this);
     setMouseTracking(true);
@@ -42,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::removeGateFromModel, model, &SimulatorModel::removeGate);
     model->initializeView();
 
-    connect(ui->nextLevelButton, &QPushButton::clicked, this, [this]{timer.stop();});
+    connect(ui->nextLevelButton, &QPushButton::clicked, this, [this]{timer->stop();});
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(ui->retryButton, &QPushButton::clicked, this, &MainWindow::retryClicked);
@@ -53,9 +54,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
-    connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
     connect(ui->resetButton, &QPushButton::clicked, model, &SimulatorModel::resetLevel);
 
+    connect(timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid green; }");
     this->hide();
@@ -140,8 +141,7 @@ void MainWindow::levelEndAnimation() {
     }
 
     //start simulating
-    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
-    timer.start(1000 / (60 * 3)); // *3 to increase speed
+    timer->start(1000 / (60 * 3)); // *3 to increase speed
 }
 
 void MainWindow::updateFinishGates() {
@@ -182,8 +182,7 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 
 void MainWindow::setupLevel(Level level){
 
-    // Number of inputs (1, 2)
-    // Get expected outputs from level
+    timer->stop();
     ui->nextLevelButton->hide();
     clearGates();
 
@@ -522,7 +521,6 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
                         uiButtonConnections.removeAt(i);
                         break;
                     }
-
             }
         }
 
@@ -715,8 +713,6 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
     ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
     ui->failLabel->show();  // Show the label with the failure information
     ui->retryButton->show();
-
-
 }
 
 QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
@@ -728,7 +724,7 @@ QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
 }
 
 void MainWindow::retryClicked() {
-    uiButtonConnections.clear();
+    //uiButtonConnections.clear();
     repaint();
     ui->retryButton->hide();
     ui->failLabel->hide();

@@ -263,8 +263,6 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
             }, this);
         break;
     case GateTypes::NOT:
-
-
         newNode = new gateNode(gateID, 1, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
                 outputs[0] = !inputs[0];
             }, this);
@@ -295,13 +293,18 @@ void SimulatorModel::setupNextLevel()
     if(currentLevel < levels.size() - 1)
         currentLevel++;
 
-    resetLevel();
+    allGates.clear();
+    levelInputs.clear();
+    levelOutputs.clear();
+    emit displayNewLevel(levels[currentLevel]);
+    emit enableEditing();
 }
 
 void SimulatorModel::resetLevel(){
     allGates.clear();
+    levelInputs.clear();
+    levelOutputs.clear();
     emit displayNewLevel(levels[currentLevel]);
-    emit enableEditing();
 }
 
 QVector<bool> SimulatorModel::toBoolVector(QVector<gateNode*> gates){

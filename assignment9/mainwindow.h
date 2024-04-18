@@ -57,7 +57,7 @@ private:
     welcomeScreen welcomescreen;
     b2World* world;
     QMap<qint32, b2Body*> bodies;
-    QTimer timer;
+    QTimer* timer;
     bool playFinishAnimation = false;
     bool levelSuccess = false;
 

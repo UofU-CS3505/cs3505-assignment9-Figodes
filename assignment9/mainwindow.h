@@ -112,6 +112,8 @@ public slots:
 
     QString boolVectorToString(const QVector<bool>& vec);
 
+    void retryClicked();
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

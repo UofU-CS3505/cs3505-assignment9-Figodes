@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->hide();
     ui->nextLevelButton->hide();
+    ui->retryButton->hide();
 
     connectionBeingDrawn = false;
     idCounter = 0;
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     model->initializeView();
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+    connect(ui->retryButton, &QPushButton::clicked, this, &MainWindow::retryClicked);
 
     connect(&welcomescreen, &welcomeScreen::windowClosed, this, &MainWindow::showWindow);
 
@@ -679,8 +681,9 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
     ui->failLabel->setWordWrap(true);  // Ensure the text wraps if too long
     ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
     ui->failLabel->show();  // Show the label with the failure information
+    ui->retryButton->show();
 
-    ui->failLabel->hide();
+
 }
 
 QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
@@ -689,6 +692,13 @@ QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
         result += (b ? "1" : "0") + QString(" ");
     }
     return result.trimmed();
+}
+
+void MainWindow::retryClicked() {
+    uiButtonConnections.clear();
+    repaint();
+    ui->retryButton->hide();
+    ui->failLabel->hide();
 }
 
 

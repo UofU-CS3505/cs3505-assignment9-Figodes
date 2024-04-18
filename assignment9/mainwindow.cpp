@@ -65,8 +65,8 @@ MainWindow::~MainWindow()
 void MainWindow::showWelcomeScreen() {
 
     // UNCOMMENT BELOW LINE TO
-    //welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
-   // welcomescreen.show();
+   // welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
+    //welcomescreen.show();
 }
 
 void MainWindow::levelEndAnimation() {

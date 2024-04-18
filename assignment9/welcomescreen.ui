@@ -48,14 +48,23 @@
   <widget class="QLabel" name="gameDescription">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>30</x>
      <y>40</y>
-     <width>201</width>
-     <height>16</height>
+     <width>341</width>
+     <height>151</height>
     </rect>
    </property>
    <property name="text">
-    <string>game description will go here</string>
+    <string>Welcome to Untitled Logic Gate Game!
+In this game we will teach you about basic digital logic.
+Digital logic consists of connecting inputs and outputs. In between them is a series of gates that manipulate their inputs. A 1 represents an active input, while a 0 represents an inactive input. An “on” input will be light green, while an &quot;off&quot; input will be dark red.
+
+In this game you will have to use logic gates to manipulate inputs to give the desired output.
+
+Good Luck! </string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

@@ -175,6 +175,8 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 
 void MainWindow::setupLevel(Level level){
 
+    // Number of inputs (1, 2)
+    // Get expected outputs from level
     ui->nextLevelButton->hide();
     clearGates();
 

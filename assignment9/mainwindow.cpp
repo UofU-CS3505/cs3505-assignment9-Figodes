@@ -351,7 +351,7 @@ void MainWindow::addGate(GateTypes gateType) {
 }
 
 void MainWindow::deleteGate(UILogicGate *gate) {
-    if(gate->pickedUp) {
+    if(gate->pickedUp || gate->canBeMoved == false) {
         return;
     }
 

@@ -68,7 +68,8 @@ QVector<Level> Level::getLevelList(){
         "Once you constructed a circuit in the workspace which should satisfy the input and output conditions, press the Start Simulation! button to simulate the circuit.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0];},
         1, 1));
-    levels.append(Level("Basics: Welcome to the basics. Let's do something nice and easy. Try to make an output by using one and gate.",
+    levels.append(Level("Basics: Welcome to the basics. Let's do something nice and easy. Try to make an output by using one AND gate.\nAn AND gate need one input to be on AND another to be on"
+        "in order to produce an on output.\n Therefore, for this level, the only combination of inputs that will produce an ON output is two that are on.\n",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
         2, 1));
     levels.append(Level("or gate and not gate :)",

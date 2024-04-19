@@ -61,16 +61,20 @@ QVector<bool> Level::getLevelInput(qint32 inputIndex)
 
 QVector<Level> Level::getLevelList(){
     QVector<Level> levels;
-    levels.append(Level("For each level, the goal is to match input and output signals. In the table to the right, you can see which outputs should be produced by which outputs."
+    levels.append(Level("For each level, the goal is to produce the appropriate output from the given input signals. In the table to the right, you can see which outputs map to which inputs."
         " Below is the workspace; on the left side of the workspace are the input ports, and on the right are the output ports. Ports can be connected by clicking on the + button on one, and then"
         "clicking the + button on the another.\n"
         "For this level, there is only one input and output, and the signal should match the output exactly, so all that's necessary is connecting the input to the output directly."
-        "Once you constructed a circuit in the workspace which should satisfy the input and output conditions, press the Start Simulation! button to simulate the circuit.",
+        "Once you've connected the each side, press the Start Simulation! button to simulate the circuit.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0];},
         1, 1));
-    levels.append(Level("Basics: Welcome to the basics. Let's do something nice and easy. Try to make an output by using one AND gate.\nAn AND gate need one input to be on AND another to be on"
-        "in order to produce an on output.\n Therefore, for this level, the only combination of inputs that will produce an ON output is two that are on.\n",
+    levels.append(Level("Now for something slightly more complex, logic gates can be added using the buttons on the right. Click to pick up a gate, and click again to set it down.\n"
+        "In this level, the output should only be ON when BOTH inputs are ON."
+        " This precisely matches the behavior of an AND gate, which only outputs ON (on the right side of the gate) when both of its inputs are ON (on the left side of the gate).",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
+        2, 1));
+    levels.append(Level("Next the OR gate; an OR gate outputs ON when EITHER OR BOTH of its inputs are ON. ",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] || inputSet[1];},
         2, 1));
     levels.append(Level("or gate and not gate :)",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},

@@ -314,11 +314,11 @@ void MainWindow::addGate(GateTypes gateType) {
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     case GateTypes::LEVEL_IN:
-        newGate = new UILogicGate(this, idCounter++, "IN", 0, 1);
+        newGate = new UILogicGate(this, idCounter++, QString("IN %1").arg(ui->inputs->count()), 0, 1);
         newGate->canBeMoved = false;
         break;
     case GateTypes::LEVEL_OUT:
-        newGate = new UILogicGate(this, idCounter++, "OUT", 1, 0);
+        newGate = new UILogicGate(this, idCounter++, QString("OUT %1").arg(ui->outputs->count()), 1, 0);
         newGate->canBeMoved = false;
         break;
     }

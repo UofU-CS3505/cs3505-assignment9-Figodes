@@ -76,6 +76,9 @@ QVector<Level> Level::getLevelList(){
     levels.append(Level("Next the OR gate; an OR gate outputs ON when EITHER OR BOTH of its inputs are ON. ",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] || inputSet[1];},
         2, 1));
+    levels.append(Level("Lastly, the NOT gate. A NOT gate inverts the incoming signal: if its input is ON, it outputs OFF; if its input is OFF, it outputs ON.",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !inputSet[0];},
+        1, 1));
     levels.append(Level("or gate and not gate :)",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
         2, 1));

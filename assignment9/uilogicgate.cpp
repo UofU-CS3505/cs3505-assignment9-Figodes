@@ -111,7 +111,6 @@ void UILogicGate::updateLocation(QPoint newLocation) {
 
 void UILogicGate::startLineDrawing()
 {
-
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     // After, go to the gate, do indexof sender pushbutton on the inputs/outputs
     emit inputOrOutputPressed(this->id, button);

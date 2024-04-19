@@ -10,8 +10,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow),
-    world(new b2World(b2Vec2(0.0f, 20.0f)))
+    , ui(new Ui::MainWindow)
+    , world(new b2World(b2Vec2(0.0f, 20.0f)))
+    , timer(new QTimer())
 {
     qApp->installEventFilter(this);
     setMouseTracking(true);
@@ -26,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     idCounter = 0;
     model = new SimulatorModel();
     connect(this, &MainWindow::connectionDrawn, model, &SimulatorModel::connect);
+    connect(this, &MainWindow::connectionBroken, model, &SimulatorModel::disconnect);
     connect(this, &MainWindow::newGateCreated, model, &SimulatorModel::addNewGate);
     connect(model, &SimulatorModel::displayNewLevel, this, &MainWindow::setupLevel);
     connect(model, &SimulatorModel::inputsSet, this, &MainWindow::showInputs);
@@ -41,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::removeGateFromModel, model, &SimulatorModel::removeGate);
     model->initializeView();
 
+    connect(ui->nextLevelButton, &QPushButton::clicked, this, [this]{timer->stop();});
+
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(ui->retryButton, &QPushButton::clicked, this, &MainWindow::retryClicked);
 
@@ -50,11 +54,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addORGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::OR); });
     connect(ui->addNOTGate, &QPushButton::pressed, this, [this](){ addGate(GateTypes::NOT); });
 
-    connect(ui->nextLevelButton, &QPushButton::clicked, this , [this]{timer.stop();});
     connect(ui->resetButton, &QPushButton::clicked, model, &SimulatorModel::resetLevel);
 
+    connect(timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
 
-    ui->canvas->setStyleSheet("QLabel { border: 1px solid black; }");
+    ui->canvas->setStyleSheet("QLabel { border: 1px solid green; }");
+    ui->resetButton->setStyleSheet("background-color : darkred");
     this->hide();
     ui->failLabel->hide();
 
@@ -137,8 +142,7 @@ void MainWindow::levelEndAnimation() {
     }
 
     //start simulating
-    connect(&timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
-    timer.start(1000 / 60);
+    timer->start(1000 / (60 * 3)); // *3 to increase speed
 }
 
 void MainWindow::updateFinishGates() {
@@ -179,43 +183,42 @@ void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
 
 void MainWindow::setupLevel(Level level){
 
-    // Number of inputs (1, 2)
-    // Get expected outputs from level
+    timer->stop();
     ui->nextLevelButton->hide();
     clearGates();
 
-    ui->tableWidget->setRowCount(qPow(2, level.inputCount));
-    ui->tableWidget->setColumnCount(level.inputCount + 2 * level.outputCount);
+    ui->tableWidget->clear();
 
+    // Set number of rows and columns in the table
+    ui->tableWidget->setRowCount(qPow(2, level.inputCount));
+    ui->tableWidget->setColumnCount(level.inputCount + level.outputCount);
+
+    // Set headers
     QStringList headers;
-    for (int i = 0; i < level.inputCount; ++i) {
-        headers << QString("Input %1").arg(i + 1);
-    }
-    for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Expected Output %1").arg(i + 1);
-    }
-    for (int i = 0; i < level.outputCount; ++i) {
-        headers << QString("Actual Output %1").arg(i + 1);
-    }
+    for (int i = 0; i < level.inputCount; ++i)
+        headers << QString("Input %1").arg(i);
+    for (int i = 0; i < level.outputCount; ++i)
+        headers << QString("Output %1").arg(i);
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
-
-    for (int i = 0; i < qPow(2, level.inputCount); ++i) {
-        QVector<bool> inputSet = level.getLevelInput(i);
-        for (int j = 0; j < level.inputCount; ++j) {
-            QTableWidgetItem* item = new QTableWidgetItem(inputSet[j] ? "1" : "0");
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui->tableWidget->setItem(i, j, item);
+    // Populate the table with inputs and outputs
+    for (int i = 0; i < ui->tableWidget->rowCount(); ++i)
+    {
+        QVector<bool> inputs = level.getLevelInput(i);
+        QVector<bool> outputs = level.getExpectedOutput(i);
+        for (int j = 0; j < level.inputCount; ++j)
+        {
+            auto newItem = new QTableWidgetItem(QString::number(inputs[j]));
+            newItem->setFlags(Qt::ItemIsEnabled); //prevents selection/editing of items
+            ui->tableWidget->setItem(i, j, newItem);
         }
-        QVector<bool> outputSet = level.getExpectedOutput(i);
-        for (int j = 0; j < level.outputCount; ++j) {
-            QTableWidgetItem* item = new QTableWidgetItem(outputSet[j] ? "1" : "0");
-            ui->tableWidget->setItem(i, level.outputCount + j, item);
+        for (int j = 0; j < level.outputCount; ++j)
+        {
+            auto newItem = new QTableWidgetItem(QString::number(outputs[j]));
+            newItem->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget->setItem(i, level.inputCount + j, newItem);
         }
     }
-
-    // Resize columns to fit content
-    ui->tableWidget->resizeColumnsToContents();
 
     ui->levelDescription->setText(level.getDescription());
 
@@ -311,11 +314,11 @@ void MainWindow::addGate(GateTypes gateType) {
         newGate = new UILogicGate(ui->canvas, idCounter++, "NOT", 1, 1);
         break;
     case GateTypes::LEVEL_IN:
-        newGate = new UILogicGate(this, idCounter++, "IN", 0, 1);
+        newGate = new UILogicGate(this, idCounter++, QString("IN %1").arg(ui->inputs->count()), 0, 1);
         newGate->canBeMoved = false;
         break;
     case GateTypes::LEVEL_OUT:
-        newGate = new UILogicGate(this, idCounter++, "OUT", 1, 0);
+        newGate = new UILogicGate(this, idCounter++, QString("OUT %1").arg(ui->outputs->count()), 1, 0);
         newGate->canBeMoved = false;
         break;
     }
@@ -354,7 +357,7 @@ void MainWindow::deleteGate(UILogicGate *gate) {
 
     std::cout << gate->text().toStdString() << std::endl;
 
-    if(gate->text() != "IN" && gate->text() != "OUT") {
+    if(!levelInOutGates.contains(gate)) {
         emit removeGateFromModel(gate->id);
     }
 
@@ -385,7 +388,7 @@ void MainWindow::deleteGate(UILogicGate *gate) {
         numWiresRemoved++;
     }
 
-    if(gate->text() != "IN" && gate->text() != "OUT") {
+    if(!levelInOutGates.contains(gate)) {
         gates.remove(gate->id);
 
 
@@ -476,32 +479,49 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         // Second button clicked, end connection        
         if (isConnectionValid(buttonBeingConnected, button, connectingGate, gate)) // Check if the connection is valid
         {
-            if (!isConnectionAlreadyExists(buttonBeingConnected, button)) // Check if the connection already exists
+            qint32 giver;
+            qint32 receiver;
+
+            qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
+            qint32 inputIndex = -1; // Initialize to -1 to indicate no match found
+            if (gates[connectingGate]->outputs.contains(buttonBeingConnected))
             {
-                qint32 giver;
-                qint32 receiver;
+                outputIndex = gates[connectingGate]->outputs.indexOf(buttonBeingConnected);
+                inputIndex = gates[gate]->inputs.indexOf(button);
+                giver = connectingGate;
+                receiver = gate;
+            }
+            else
+            {
+                outputIndex = gates[gate]->outputs.indexOf(button);
+                inputIndex = gates[connectingGate]->inputs.indexOf(buttonBeingConnected);
+                giver = gate;
+                receiver = connectingGate;
+            }
 
-                Wire newWire = {.first = buttonBeingConnected, .second = button, .color = Qt::black};
-                uiButtonConnections.append(newWire);
-
-                qint32 outputIndex = -1; // Initialize to -1 to indicate no match found
-                qint32 inputIndex = -1; // Initialize to -1 to indicate no match found
-                if (gates[connectingGate]->outputs.contains(buttonBeingConnected))
-                {
-                    outputIndex = gates[connectingGate]->outputs.indexOf(buttonBeingConnected);
-                    inputIndex = gates[gate]->inputs.indexOf(button);
-                    giver = connectingGate;
-                    receiver = gate;
-                }
-                else
-                {
-                    outputIndex = gates[gate]->outputs.indexOf(button);
-                    inputIndex = gates[connectingGate]->inputs.indexOf(buttonBeingConnected);
-                    giver = gate;
-                    receiver = connectingGate;
-                }
-
+            if (!isConnectionAlreadyExists(buttonBeingConnected, button))// Check if the connection already exists
+            {
                 emit connectionDrawn(giver, outputIndex, receiver, inputIndex);
+                Wire newWire;
+                if (outputButtons.contains(buttonBeingConnected))
+                    newWire = {.first = buttonBeingConnected, .second = button, .color = Qt::black};
+                else
+                    newWire = {.first = button, .second = buttonBeingConnected, .color = Qt::black};
+                uiButtonConnections.append(newWire);
+            }
+            else //conneciton already exists and should be deleted
+            {
+                QPushButton* givingButton = gates[giver]->outputs[outputIndex];
+                QPushButton* receivingButton = gates[receiver]->inputs[inputIndex];
+                Wire brokenWire = {.first = givingButton, .second = receivingButton, .color = Qt::black};
+                emit connectionBroken(giver, outputIndex, receiver, inputIndex);
+                //remove wire from ui connections
+                for (qint32 i = 0; i < uiButtonConnections.size(); i++)
+                    if (uiButtonConnections[i] == brokenWire)
+                    {
+                        uiButtonConnections.removeAt(i);
+                        break;
+                    }
             }
         }
 
@@ -531,9 +551,9 @@ bool MainWindow::isConnectionValid(QPushButton* button1, QPushButton* button2, q
 
 bool MainWindow::isConnectionAlreadyExists(QPushButton* button1, QPushButton* button2)
 {
-    for (const auto& pair : uiButtonConnections)
+    for (const Wire w : uiButtonConnections)
     {
-        if ((pair.first == button1 && pair.second == button2) || (pair.first == button2 && pair.second == button1))
+        if ((w.first == button1 && w.second == button2) || (w.first == button2 && w.second == button1))
         {
             return true;
         }
@@ -694,8 +714,6 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
     ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
     ui->failLabel->show();  // Show the label with the failure information
     ui->retryButton->show();
-
-
 }
 
 QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
@@ -707,11 +725,14 @@ QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
 }
 
 void MainWindow::retryClicked() {
-    uiButtonConnections.clear();
+    //uiButtonConnections.clear();
     repaint();
     ui->retryButton->hide();
     ui->failLabel->hide();
 }
 
-
+bool MainWindow::Wire::operator==(const Wire& other)
+{
+    return this->first == other.first && this->second == other.second;
+}
 

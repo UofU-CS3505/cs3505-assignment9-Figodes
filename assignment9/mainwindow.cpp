@@ -73,9 +73,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::showWelcomeScreen() {
 
-    // UNCOMMENT BELOW LINE TO
-   // welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
-    //welcomescreen.show();
+    //UNCOMMENT BELOW LINE TO SHOW WELCOME
+    // welcomescreen.setWindowFlags(Qt::WindowStaysOnTopHint);
+    // welcomescreen.show();
 }
 
 void MainWindow::levelEndAnimation() {
@@ -207,9 +207,17 @@ void MainWindow::setupLevel(Level level){
         QVector<bool> inputs = level.getLevelInput(i);
         QVector<bool> outputs = level.getExpectedOutput(i);
         for (int j = 0; j < level.inputCount; ++j)
-            ui->tableWidget->setItem(i, j, new QTableWidgetItem(QString::number(inputs[j])));
+        {
+            auto newItem = new QTableWidgetItem(QString::number(inputs[j]));
+            newItem->setFlags(Qt::ItemIsEnabled); //prevents selection/editing of items
+            ui->tableWidget->setItem(i, j, newItem);
+        }
         for (int j = 0; j < level.outputCount; ++j)
-            ui->tableWidget->setItem(i, level.inputCount + j, new QTableWidgetItem(QString::number(outputs[j])));
+        {
+            auto newItem = new QTableWidgetItem(QString::number(outputs[j]));
+            newItem->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget->setItem(i, level.inputCount + j, newItem);
+        }
     }
 
     ui->levelDescription->setText(level.getDescription());

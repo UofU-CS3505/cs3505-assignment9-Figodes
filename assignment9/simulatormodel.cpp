@@ -68,7 +68,15 @@ void SimulatorModel::disconnect(qint32 givingId, qint32 outputIndex, qint32 rece
 {
     gateNode* giver = allGates.value(givingId);
     gateNode* receiver = allGates.value(receivingId);
-    giver->outputToNodes[outputIndex].remove(receiver);
+
+    qint32 timesGiverInputsIntoReceiver = 0;
+    for (auto inputSet : receiver->inputFromNodes)
+        for (auto inputter : inputSet)
+            if (inputter.first->id == givingId)
+                timesGiverInputsIntoReceiver++;
+    if (timesGiverInputsIntoReceiver == 1) //only remove the tie if this is the only connection
+        giver->outputToNodes[outputIndex].remove(receiver);
+
     receiver->inputFromNodes[inputIndex].remove(QPair<gateNode*, qint32>(giver, outputIndex));
 }
 

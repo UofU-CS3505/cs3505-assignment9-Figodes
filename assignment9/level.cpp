@@ -65,7 +65,7 @@ QVector<Level> Level::getLevelList(){
         " Below is the workspace; on the left side of the workspace are the input ports, and on the right are the output ports. Ports can be connected by clicking on the + button on one, and then"
         "clicking the + button on the another.\n"
         "For this level, there is only one input and output, and the signal should match the output exactly, so all that's necessary is connecting the input to the output directly."
-        "Once you constructed a circuit in the workspace which should satisfy the input and output conditions, press the Start! button to simulate the circuit.",
+        "Once you constructed a circuit in the workspace which should satisfy the input and output conditions, press the Start Simulation! button to simulate the circuit.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0];},
         1, 1));
     levels.append(Level("Basics: Welcome to the basics. Let's do something nice and easy. Try to make an output by using one and gate.",

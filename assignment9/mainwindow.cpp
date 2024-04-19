@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer, &QTimer::timeout, this, [this]() { updateFinishGates(); });
 
     ui->canvas->setStyleSheet("QLabel { border: 1px solid green; }");
+    ui->resetButton->setStyleSheet("background-color : darkred");
     this->hide();
     ui->failLabel->hide();
 

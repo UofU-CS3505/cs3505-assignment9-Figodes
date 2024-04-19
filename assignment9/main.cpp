@@ -23,6 +23,6 @@ int main(int argc, char *argv[])
     a.setStyleSheet(styleSheet);
 
     //TODO: when game is finished, delete below line. closing the welcome screen will make the game appear
-    w.show();
+   // w.show();
     return a.exec();
 }

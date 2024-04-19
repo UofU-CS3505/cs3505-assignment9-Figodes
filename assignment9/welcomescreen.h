@@ -34,6 +34,7 @@ private:
     b2World world;
     b2Body* body;
     QTimer timer;
+    bool continueToGame;
 };
 
 #endif // WELCOMESCREEN_H

@@ -11,6 +11,8 @@ welcomeScreen::welcomeScreen(QWidget *parent)
     ui->setupUi(this);
 
     ui->gameDescription->hide();
+    ui->controlDescription->hide();
+    continueToGame = false;
 
     connect(ui->continueButton, &QPushButton::clicked, this, &welcomeScreen::continueButtonClicked);
 
@@ -86,16 +88,20 @@ void welcomeScreen::updateWorld()
 
 void welcomeScreen::continueButtonClicked() {
     // if the description is hidden, then show it. otherwise, show the game and close the window.
-    if (ui->gameDescription->isHidden()) {
-        ui->welcomeText->hide();
-        ui->gameDescription->show();
-    }
-    else
-    {
+    if (continueToGame) {
         emit windowClosed();
         accept();
     }
+    else if (ui->gameDescription->isHidden()) {
+        ui->welcomeText->hide();
+        ui->gameDescription->show();
+    }
+    else if (ui->controlDescription->isHidden()) {
+        ui->gameDescription->hide();
+        ui->controlDescription->show();
+        continueToGame = true;
 
+    }
 }
 
 void welcomeScreen::closeEvent(QCloseEvent *event) {

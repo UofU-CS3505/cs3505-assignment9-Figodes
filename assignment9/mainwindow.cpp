@@ -178,6 +178,7 @@ void MainWindow::showWindow() {
 
 
 void MainWindow::updatePickedUpGate(UILogicGate *gate, QPoint initialPosition) {
+    // if the user clicks on their selected gate, drop it.
     if (pickedUpGate == gate)
         pickedUpGate = nullptr;
     else
@@ -266,7 +267,7 @@ void MainWindow::showOutputs(const QVector<bool>& outputs){
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {
-    // Mouse move event for moving picked up gates
+    // move the gate if it's been picked up.
     if (pickedUpGate)
     {
         disableAllButtons();
@@ -355,25 +356,24 @@ void MainWindow::addGate(GateTypes gateType) {
 }
 
 void MainWindow::deleteGate(UILogicGate *gate) {
+    // if the gate is picked up or is an input or output gate, skip the method
     if(gate->pickedUp || gate->canBeMoved == false) {
         return;
     }
 
-    std::cout << gate->text().toStdString() << std::endl;
-
+    // if the gate isn't an input or output gate, remove from model
     if(!levelInOutGates.contains(gate)) {
         emit removeGateFromModel(gate->id);
     }
 
+    // collect all the wires that must be removed from the gate
     QVector<int> wiresToRemove;
     for (int i = 0; i < uiButtonConnections.size(); i++) {
 
         for (QPushButton* button: gate->inputs) {
             if (uiButtonConnections[i].first == button || uiButtonConnections[i].second == button) {
                 wiresToRemove.append(i);
-
                 }
-
             }
 
         for (QPushButton* button: gate->outputs) {
@@ -381,11 +381,12 @@ void MainWindow::deleteGate(UILogicGate *gate) {
                 wiresToRemove.append(i);
             }
         }
-
     }
 
-
+    // int to see how many wires have been removed so far
     int numWiresRemoved = 0;
+
+    // iterate through the wires and delte them
     for (int index : wiresToRemove) {
         uiButtonConnections.removeAt(index - numWiresRemoved);
        // numWiresRemoved++;
@@ -393,23 +394,18 @@ void MainWindow::deleteGate(UILogicGate *gate) {
     }
 
     if(!levelInOutGates.contains(gate)) {
+        // delete the gate and their input and output buttons
         gates.remove(gate->id);
-
-
         for (QPushButton* button : gate->inputs) {
             inputButtons.remove(button);
-
         }
-
         for (QPushButton* button : gate->outputs) {
             outputButtons.remove(button);
-
         }
-
         delete gate;
     }
 
-
+    // redraw the screen so the deleted gates are gone
     update();
 }
 
@@ -730,11 +726,10 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
 }
 
 void MainWindow::gameCompleted() {
-
+    // reuse the fail label to tell the player they won the game
     ui->failLabel->setText("You Win! Congratulations on passing CS 3810!");
     ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
     ui->failLabel->show();
-    std::cout << "in game completed" << std::endl;
 }
 
 QString MainWindow::boolVectorToString(const QVector<bool>& vec) {

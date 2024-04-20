@@ -284,6 +284,7 @@ void MainWindow::mousePressEvent(QMouseEvent* event) {
         for (QPushButton* button : inputButtons) {
             button->setEnabled(true);
         }
+        enableAllButtons();
         // Stop drawing the connection
         connectionBeingDrawn = false;
         update(); // Update the UI

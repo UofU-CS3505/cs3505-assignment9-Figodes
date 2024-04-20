@@ -458,6 +458,7 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         buttonBeingConnected = button;
         connectionBeingDrawn = true;
         connectingGate = gate;
+        disableAllButtons();
 
         if (outputButtons.contains(buttonBeingConnected))
         {
@@ -520,6 +521,7 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
                     if (uiButtonConnections[i] == brokenWire)
                     {
                         uiButtonConnections.removeAt(i);
+                        enableAllButtons();
                         break;
                     }
             }
@@ -533,6 +535,7 @@ void MainWindow::connectionBeingMade(qint32 gate, QPushButton* button)
         // Reset state for next connection
         buttonBeingConnected = nullptr;
         connectionBeingDrawn = false;
+        enableAllButtons();
         update();
 
     }
@@ -627,10 +630,13 @@ void MainWindow::disableAllButtons() {
     }
 
 
-    for (QPushButton* button : outputButtons)
-        button->setEnabled(false);
-    for (QPushButton* button : inputButtons)
-        button->setEnabled(false);
+    if(!connectionBeingDrawn) {
+        for (QPushButton* button : outputButtons)
+            button->setEnabled(false);
+        for (QPushButton* button : inputButtons)
+            button->setEnabled(false);
+    }
+
 }
 void MainWindow::enableAllButtons() {
     ui->startButton->setEnabled(1);

@@ -106,11 +106,11 @@ QVector<Level> Level::getLevelList(){
                 outputSet[0] = inputSet[0];
         },
         3, 1));
-    // levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder.",
-    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){
-    //         outputSet[0] = false;
-    //         outputSet[1] = false;
-    //     },
-    //     3, 2));
+    levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder.",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){
+            outputSet[0] = false;
+            outputSet[1] = false;
+        },
+        3, 2));
     return levels;
 }

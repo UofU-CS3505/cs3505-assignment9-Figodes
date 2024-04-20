@@ -132,6 +132,7 @@ signals:
     void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
     void colorAllConnections(QColor color);
     void incorrectCircuit(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput);
+    void endGame();
 };
 
 #endif // SIMULATORMODEL_H

@@ -115,6 +115,8 @@ public slots:
 
     void retryClicked();
 
+    void gameCompleted();
+
 signals:
 
     // Signal to tell the model that a connection has been made between logic gates

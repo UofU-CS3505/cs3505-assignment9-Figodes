@@ -245,6 +245,7 @@ void SimulatorModel::endSimulation(bool levelSucceeded){
 
         if (currentLevel == levels.size() - 1)//just finished final level
         {
+            std::cout << "in end game emiiton" << std::endl;
             emit endGame();
             return;
         }

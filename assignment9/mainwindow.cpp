@@ -41,7 +41,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::colorAllConnections, this, &MainWindow::colorAllWires);
     connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
     connect(this, &MainWindow::removeGateFromModel, model, &SimulatorModel::removeGate);
+    connect(model, &SimulatorModel::endGame, this, &MainWindow::gameCompleted);
     model->initializeView();
+
+
 
     connect(ui->nextLevelButton, &QPushButton::clicked, this, [this]{timer->stop();});
 
@@ -705,11 +708,13 @@ void MainWindow::simulationEnd(bool success)
     {
         for(UILogicGate* gate: levelInOutGates)
             gate->setStyleSheet("background-color : green");
-        enableAllButtons();
+       // enableAllButtons();
         colorAllWires(Qt::black);
     }
 }
 void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput) {
+    disableAllButtons();
+
     QString message = "Level Failed!\n\n";
     message += "Input That Failed: " + boolVectorToString(failedInput) + "\n";
     message += "Expected Output: " + boolVectorToString(expectedOutput) + "\n";
@@ -720,6 +725,15 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
     ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
     ui->failLabel->show();  // Show the label with the failure information
     ui->retryButton->show();
+
+}
+
+void MainWindow::gameCompleted() {
+
+    ui->failLabel->setText("You Win! Congratulations on passing CS 3810!");
+    ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
+    ui->failLabel->show();
+    std::cout << "in game completed" << std::endl;
 }
 
 QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
@@ -733,6 +747,7 @@ QString MainWindow::boolVectorToString(const QVector<bool>& vec) {
 void MainWindow::retryClicked() {
     //uiButtonConnections.clear();
     repaint();
+    enableAllButtons();
     ui->retryButton->hide();
     ui->failLabel->hide();
 }

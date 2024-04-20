@@ -62,8 +62,6 @@ welcomeScreen::welcomeScreen(QWidget *parent)
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);
 
-
-
 }
 
 welcomeScreen::~welcomeScreen()

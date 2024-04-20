@@ -4,8 +4,10 @@
 #include <QString>
 #include <QVector>
 
+///
 ///\brief This class represents a level of the game,
 /// containing its description and the correct outputs for each set of inputs.
+///
 class Level
 {
 public:

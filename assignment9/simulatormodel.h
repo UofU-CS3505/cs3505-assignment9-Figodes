@@ -9,8 +9,10 @@
 #include "level.h"
 #include "gatetypes.h"
 
+///
 /// \brief This class the circuit that the user has created, and handles simulating it,
 /// testing its behavior for different inputs, and moving between levels.
+///
 class SimulatorModel : public QObject
 {
     Q_OBJECT
@@ -27,19 +29,33 @@ private:
         /// \param evaluatorFunc A function pointer (I would recommend using a lambda) for a function that sets the elements of outputs based on the elements of inputs. This should represent the operation of this gate.
         ///
         gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel);
-        //The sets of nodes that this node takes inputs from -- each input having its own set -- and output terminal each input it connected to.
+        ///
+        /// \brief inputFromNodes The sets of nodes that this node takes inputs from.
+        /// Each input having its own set -- and output terminal each input it connected to.
+        ///
         QVector<QSet<QPair<gateNode*, qint32>>> inputFromNodes;
-        //The set of nodes that this node gives outputs to
+        ///
+        /// \brief outputToNodes The set of nodes that this node gives outputs to.
+        ///
         QVector<QSet<gateNode*>> outputToNodes;
-        //Whether the input/output at a given position are receiving/giving a signal
+        ///
+        /// \brief inputStates Whether the input at a given position are receiving/giving
+        ///  a signal.
+        ///
         QVector<bool> inputStates;
+        ///
+        /// \brief outputStates Whether the output at a given position are receiving/giving
+        ///  a signal.
+        ///
         QVector<bool> outputStates;
         ///
         /// \brief SimulatorModel::gateNode::evaluate Helper that uses a node's evaluation function to evaluate its outputs based on its inputs.
         /// This will chnage the contents of outputStates.
         ///
         void evaluate();
-        // Not sure if gates actually need to know their ids
+        ///
+        /// \brief id An integer that identifies this gate.
+        ///
         qint32 id;
         ///
         /// \brief hasOutputted Whether or not this node has produced an output in the simulation yet
@@ -52,6 +68,9 @@ private:
         bool recursiveDFSLoopDetected(QSet<qint32>* visitedIds);
 
     private:
+        ///
+        /// \brief evaluator A function that sets the gate's outputs based on its inputs.
+        ///
         std::function<void(QVector<bool> currentInputs, QVector<bool>& futureOutputs)> evaluator;
     };
 
@@ -74,6 +93,9 @@ private:
     QVector<bool> toBoolVector(QVector<gateNode*> gates);
 
 public:
+    ///
+    /// \brief SimulatorModel Constructs a new SimulatorModel.
+    ///
     SimulatorModel();
     ///
     /// \brief currentLevel The index of the currently displayed/modelled level
@@ -83,10 +105,17 @@ public:
     /// \brief levels A list of all levels
     ///
     QVector<Level> levels;
-    /// All the gates in the model, keyed by their id
+    ///
+    /// \brief allGates All the gates in the model, keyed by their id
+    ///
     QMap<qint32, gateNode*> allGates;
-    /// Right now I'm thinking of just making the level inputs special nodes that only have either outputs or inputs
+    ///
+    /// \brief levelInputs The gates that act as the inputs of the level.
+    ///
     QVector<gateNode*> levelInputs;
+    ///
+    /// \brief levelOutputs The gates that act as the outputs of the level.
+    ///
     QVector<gateNode*> levelOutputs;
     ///
     /// \brief disconnect Conects two gates to eachother. Input/output positions are based on spatial height, 0 indicating the highest button on that side of a gate.
@@ -156,10 +185,27 @@ public slots:
     void resetLevel();
 
 signals:
+    ///
+    /// \brief disableEditing Disaables editing in the UI.
+    ///
     void disableEditing();
+    ///
+    /// \brief enableEditing Enables editing in the UI.
+    ///
     void enableEditing();
-    void invalidCircuit(); //indicates the circuit cannot be simulated
-    void levelFinished(bool succeeded); // enable button to move to next level in view, trigger celebration
+    ///
+    /// \brief invalidCircuit Indicates the circuit cannot be simulated.
+    ///
+    void invalidCircuit();
+    ///
+    /// \brief levelFinished Enable button to move to next level in view, trigger celebration.
+    /// \param succeeded Whether the level was succeeded or failed.
+    ///
+    void levelFinished(bool succeeded);
+    ///
+    /// \brief displayNewLevel Displays the given level in the view.
+    /// \param level
+    ///
     void displayNewLevel(Level level);
     ///
     /// \brief inputsSet Set the appearance of the level inputs
@@ -169,9 +215,31 @@ signals:
     /// \brief inputsSet Set the appearance of the level outputs
     ///
     void outputsSet(const QVector<bool>& outputs);
+    ///
+    /// \brief colorConnection Colors the given connection the given color.
+    /// \param giverId
+    /// \param outputIndex
+    /// \param receiverId
+    /// \param inputIndex
+    /// \param newColor
+    ///
     void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
+    ///
+    /// \brief colorAllConnections Colors all connections the given color.
+    /// \param color
+    ///
     void colorAllConnections(QColor color);
+    ///
+    /// \brief incorrectCircuit Emitted when the user's circuit is incorrect
+    /// and they fail the level.
+    /// \param failedInput The sequence of inputs they failed on.
+    /// \param expectedOutput What the circuit output was supposed to be.
+    /// \param actualOutput What the circuit output actually was.
+    ///
     void incorrectCircuit(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput);
+    ///
+    /// \brief endGame Ends the game, called when the last level is finished.
+    ///
     void endGame();
 };
 

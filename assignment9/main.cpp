@@ -1,10 +1,15 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include "uilogicgate.h"
 #include <QApplication>
 #include <QFile>
 
+///
+/// \brief qMain Main method, starts the app.
+/// \param argc
+/// \param argv
+/// \return
+///
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

@@ -1,5 +1,4 @@
 #include "level.h"
-#include <iostream>
 #include <QtMath>
 
 Level::Level(QString description, QVector<QVector<bool>> expectedOutputs, qint32 inputCount, qint32 outputCount)

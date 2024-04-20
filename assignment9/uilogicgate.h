@@ -5,8 +5,10 @@
 #include <QPushButton>
 #include <QVector>
 
+///
 /// \brief This class represents a logic gate in the UI that can be
 /// placed and connected to other gates.
+///
 class UILogicGate : public QLabel
 {
     Q_OBJECT

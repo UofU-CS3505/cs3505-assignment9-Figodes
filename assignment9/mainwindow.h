@@ -114,6 +114,7 @@ public slots:
     void deleteGate(UILogicGate *gate);
 
     void displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput);
+    void displayInvalidCircuit();
 
     QString boolVectorToString(const QVector<bool>& vec);
 

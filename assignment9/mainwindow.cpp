@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::incorrectCircuit, this, &MainWindow::displayLevelFailed);
     connect(this, &MainWindow::removeGateFromModel, model, &SimulatorModel::removeGate);
     connect(model, &SimulatorModel::endGame, this, &MainWindow::gameCompleted);
+    connect(model, &SimulatorModel::invalidCircuit, this, &MainWindow::displayInvalidCircuit);
     model->initializeView();
 
 
@@ -723,6 +724,20 @@ void MainWindow::displayLevelFailed(QVector<bool> failedInput, QVector<bool> exp
     ui->failLabel->show();  // Show the label with the failure information
     ui->retryButton->show();
 
+}
+
+void MainWindow::displayInvalidCircuit()
+{
+    disableAllButtons();
+
+    QString message = "This circuit cannot be simulated!\n\n"
+                      "This circuit in circular, and could simulate indefinitely";
+
+    ui->failLabel->setText(message);
+    ui->failLabel->setWordWrap(true);  // Ensure the text wraps if too long
+    ui->failLabel->setStyleSheet("QLabel { background-color: black; color: lime; }");
+    ui->failLabel->show();  // Show the label with the failure information
+    ui->retryButton->show();
 }
 
 void MainWindow::gameCompleted() {

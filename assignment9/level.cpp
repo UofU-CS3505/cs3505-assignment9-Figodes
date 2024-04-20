@@ -82,7 +82,7 @@ QVector<Level> Level::getLevelList(){
         "a gate we've seen before.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
         2, 1));
-    levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when eithe rof the first two INPUTs are on, "
+    levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when either of the first two INPUTs are on, "
         "but is always OFF if the third INPUT is ON.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !inputSet[2];},
         3, 1));

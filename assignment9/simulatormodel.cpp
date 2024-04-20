@@ -138,8 +138,8 @@ void SimulatorModel::startSimulation(){
     else
     {
         std::cout << "CANNOT SIMULATE" << std::endl;
-        emit invalidLevel();
-        emit enableEditing(); //may move this into the view as a response to invalidLevel
+        emit invalidCircuit();
+        emit enableEditing();
     }
 }
 
@@ -245,6 +245,7 @@ void SimulatorModel::endSimulation(bool levelSucceeded){
 
         if (currentLevel == levels.size() - 1)//just finished final level
         {
+            std::cout << "in end game emiiton" << std::endl;
             emit endGame();
             return;
         }

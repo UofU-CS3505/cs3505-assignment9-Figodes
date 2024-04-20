@@ -41,7 +41,14 @@ private:
         void evaluate();
         // Not sure if gates actually need to know their ids
         qint32 id;
+        ///
+        /// \brief hasOutputted Whether or not this node has produced an output in the simulation yet
+        ///
         bool hasOutputted;
+        ///
+        /// \brief recursiveDFSLoopDetected A recursive algorithm that detects any loops on the path forward from this node
+        /// \param visitedIds A list of IDs of nodes that this recursive run has visited, starts empty, passed down to each successive recursive call.
+        ///
         bool recursiveDFSLoopDetected(QSet<qint32>* visitedIds);
 
     private:
@@ -53,13 +60,28 @@ private:
     /// Assumes level input nodes have one output state
     ///
     void setNthInputSequence(qint32 n);
+    ///
+    /// \brief currentInput The index of the input sequence currently being simulated
+    ///
     qint32 currentInput;
+    ///
+    /// \brief activeGates Gates which have received some, but not all of their inputs, and have not outputted yet
+    ///
     QSet<gateNode*> activeGates;
+    ///
+    /// \brief toBoolVector Returns the output states of the given gates in an order matching their order in the argument list.
+    ///
     QVector<bool> toBoolVector(QVector<gateNode*> gates);
 
 public:
     SimulatorModel();
+    ///
+    /// \brief currentLevel The index of the currently displayed/modelled level
+    ///
     qint32 currentLevel;
+    ///
+    /// \brief levels A list of all levels
+    ///
     QVector<Level> levels;
     /// All the gates in the model, keyed by their id
     QMap<qint32, gateNode*> allGates;
@@ -111,25 +133,41 @@ public:
     void initializeView();
 
 public slots:
+    ///
+    /// \brief addNewGate Adds a gate of the specified type
+    /// \param gateID The ID of the new gate
+    ///
     void addNewGate(qint32 gateID, GateTypes gt);
     ///
     /// \brief removeGate Removes a gate and all its connections
     ///
     void removeGate(qint32 gateID);
+    ///
+    /// \brief setupNextLevel Initializes and loads a new level
+    ///
     void setupNextLevel();
     ///
     /// \brief startSimulation Initializes values so the simluation can start
     ///
     void startSimulation();
+    ///
+    /// \brief resetLevel Completely clears all existent gates and reload the current level
+    ///
     void resetLevel();
 
 signals:
     void disableEditing();
     void enableEditing();
-    void invalidLevel(); //indicates the circuit cannot be simulated
-    void levelFinished(bool succeeded); // enable button to move to next level in view, maybe also a restart button? Trigger celebration
+    void invalidCircuit(); //indicates the circuit cannot be simulated
+    void levelFinished(bool succeeded); // enable button to move to next level in view, trigger celebration
     void displayNewLevel(Level level);
+    ///
+    /// \brief inputsSet Set the appearance of the level inputs
+    ///
     void inputsSet(const QVector<bool>& inputs);
+    ///
+    /// \brief inputsSet Set the appearance of the level outputs
+    ///
     void outputsSet(const QVector<bool>& outputs);
     void colorConnection(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
     void colorAllConnections(QColor color);

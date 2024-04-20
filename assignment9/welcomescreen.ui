@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Welcome!</string>
   </property>
   <widget class="QLabel" name="welcomeText">
    <property name="geometry">
@@ -56,8 +56,8 @@
    </property>
    <property name="text">
     <string>Welcome to Untitled Logic Gate Game!
-In this game we will teach you about basic digital logic.
-Digital logic consists of connecting inputs and outputs. In between them is a series of gates that manipulate their inputs. A 1 represents an active input, while a 0 represents an inactive input. An “on” input will be light green, while an &quot;off&quot; input will be dark red.
+This game aims to teach you about basic digital logic.
+Digital logic consists of connecting inputs and outputs. In between them is a series of gates that manipulate the inputs into the desired outputs. A 1 represents an active input, while a 0 represents an inactive input. An “on” input will be light green, while an &quot;off&quot; input will be dark red.
 
 In this game you will have to use logic gates to manipulate inputs to give the desired output.
 
@@ -71,9 +71,9 @@ Good Luck! </string>
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>20</y>
+     <y>10</y>
      <width>341</width>
-     <height>231</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="text">
@@ -81,7 +81,7 @@ Good Luck! </string>
 Click on one of the buttons on the top right to select a gate, and drag it into the box.
 Click on one of the input ‘+’ buttons, and drag to to a gate button to connect an input to a gate.
 To connect a gate to an output, click on a ‘+’ button on the right side of the gate and drag to an output.
-To delete a gate, right click on it, while you do not have it selected. 
+To delete a gate, right click on it, while you do not have it selected.  To delete an existing connection, click on both of the input/output ports it connects.
 For each level, we will give instructions/tips, but the main thing you should look at is the truth table.
 It will show you what input combinations, manipulated by your gates, should yield which outputs. For example, you will have to figure out what gates will make a 0, 0 input yield a 1 output.
 </string>

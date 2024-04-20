@@ -82,15 +82,15 @@ QVector<Level> Level::getLevelList(){
         "a gate we've seen before.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
         2, 1));
-    levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when eithe rof the first two INPUTs are on, "
+    levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when either of the first two INPUTs are on, "
         "but is always OFF if the third INPUT is ON.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !inputSet[2];},
         3, 1));
-    levels.append(Level("With digital logic, there is never just one way of solving a problem. The INPUT and OUTPUT sequence here matches an AND gate, but can be made without"
+    levels.append(Level("With digital logic, there is never just one way of solving a problem. The INPUT and OUTPUT sequence here matches an AND gate, but can be made without "
         "using an AND gate at all. Can you figure out how?",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
         2, 1));
-    levels.append(Level("Logic gates themselves can even be more complex than just these basic 3. For example, this sequence of OUTPUTS matches and XOR gate. An XOR is similar"
+    levels.append(Level("Logic gates themselves can even be more complex than just these basic 3. For example, this sequence of OUTPUTS matches an XOR gate. An XOR is similar "
         "to an OR gate, but only outputs ON if either INPUT is ON, not BOTH. Hence the name XOR, standing for Exclusive Or.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !(inputSet[0] && inputSet[1]);},
         2, 1));
@@ -106,11 +106,11 @@ QVector<Level> Level::getLevelList(){
                 outputSet[0] = inputSet[0];
         },
         3, 1));
-    // levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder.",
-    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){
-    //         outputSet[0] = false;
-    //         outputSet[1] = false;
-    //     },
-    //     3, 2));
+    levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder.",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){
+            outputSet[0] = false;
+            outputSet[1] = false;
+        },
+        3, 2));
     return levels;
 }

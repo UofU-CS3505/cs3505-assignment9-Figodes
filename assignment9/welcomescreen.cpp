@@ -19,6 +19,8 @@ welcomeScreen::welcomeScreen(QWidget *parent)
     connect(&timer, &QTimer::timeout, this, &welcomeScreen::updateWorld);
     timer.start(1000 / 60);
 
+    // NOTE: the code below is reused from lab 12
+
     // Define the ground body.
     b2BodyDef groundBodyDef;
     groundBodyDef.position.Set(0.0f, -10.0f);
@@ -62,8 +64,6 @@ welcomeScreen::welcomeScreen(QWidget *parent)
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);
 
-
-
 }
 
 welcomeScreen::~welcomeScreen()
@@ -82,29 +82,34 @@ void welcomeScreen::updateWorld()
 
     b2Vec2 position = body->GetPosition();
 
+    // make the label bounce up and down with box2d
     QPoint labelPos((this->width() - ui->welcomeText->width())/2, (position.y * 100));
     ui->welcomeText->move(labelPos);
 }
 
 void welcomeScreen::continueButtonClicked() {
-    // if the description is hidden, then show it. otherwise, show the game and close the window.
+    // if the user is through the help screen, start the game
     if (continueToGame) {
         emit windowClosed();
         accept();
     }
+    // otherwise, display the first info screen
     else if (ui->gameDescription->isHidden()) {
         ui->welcomeText->hide();
         ui->gameDescription->show();
     }
+    // otherwise, display the second info screen
     else if (ui->controlDescription->isHidden()) {
         ui->gameDescription->hide();
         ui->controlDescription->show();
-        continueToGame = true;
 
+        // we can now continue to the game
+        continueToGame = true;
     }
 }
 
 void welcomeScreen::closeEvent(QCloseEvent *event) {
+    // if the user clicks the x on the window, just start the game
     emit windowClosed();
     accept();
 }

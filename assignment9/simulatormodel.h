@@ -9,6 +9,8 @@
 #include "level.h"
 #include "gatetypes.h"
 
+/// \brief This class the circuit that the user has created, and handles simulating it,
+/// testing its behavior for different inputs, and moving between levels.
 class SimulatorModel : public QObject
 {
     Q_OBJECT

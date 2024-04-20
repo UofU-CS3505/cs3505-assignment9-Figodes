@@ -9,6 +9,7 @@ namespace Ui {
 class welcomeScreen;
 }
 
+/// \brief This class represents the welcome window that appears at the start of the game.
 class welcomeScreen : public QDialog
 {
     Q_OBJECT

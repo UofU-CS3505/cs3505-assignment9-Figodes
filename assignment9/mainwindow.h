@@ -16,6 +16,8 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+/// \brief The main window of the game, allowing the user to make circuits,
+/// interact with the game, and see the results of their circuits.
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

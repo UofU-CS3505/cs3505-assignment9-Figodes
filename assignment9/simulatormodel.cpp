@@ -149,6 +149,10 @@ void SimulatorModel::simulateInput(){
     activeGates.clear();
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
+    for (gateNode* gate : allGates)
+        for (auto inputSet : gate->inputFromNodes)
+            if (inputSet.size() == 0) //this gate has any inputs that don't receive from anywhere
+                activeGates.insert(gate);
 
     emit colorAllConnections(Qt::black);
     resetGateStates();

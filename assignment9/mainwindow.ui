@@ -19,7 +19,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Untitled Logic Gate Game</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="font">

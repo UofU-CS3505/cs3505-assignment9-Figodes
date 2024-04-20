@@ -242,6 +242,12 @@ void SimulatorModel::endSimulation(bool levelSucceeded){
     if(levelSucceeded){
         levelInputs.clear();
         levelOutputs.clear();
+
+        if (currentLevel == levels.size() - 1)//just finished final level
+        {
+            emit endGame();
+            return;
+        }
     }
     else{
         QVector<bool> actualOutputs;

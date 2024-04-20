@@ -1,5 +1,4 @@
 #include "simulatormodel.h"
-#include <iostream>
 #include <QQueue>
 #include <QTimer>
 #include <QSet>
@@ -8,28 +7,10 @@
 
 SimulatorModel::SimulatorModel()
 {
-    std::cout<<"in constructor"<<std::endl;
     currentLevel = 0;
 
     //load levels from file
     levels = Level::getLevelList();
-
-    // //testing example, remove later
-    // gateNode* testNode = new gateNode(1, 2, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-    //     outputs[0] = inputs[0] || inputs[1];
-    // }, this);
-    // levelInputs.append(new gateNode(0, 0, 1, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-    //     outputs[0] = true;
-    // }, this));
-    // levelOutputs.append(new gateNode(2, 1, 0, [=](QVector<bool> inputs, QVector<bool>& outputs) {
-    //     //nothing
-    // }, this));
-    // connect(0, 0, 1, 0); //level in to testNode 0
-    // connect(1, 0, 2, 0); //testNode to levelout
-    // //connect(2, 0, 1, 1); //levelout to testNode 1 (circular)
-    // std::cout << "simulation check?: " << canBeSimulated() << std::endl;
-    // startSimulation();
-    // //end of testing example
 }
 
 SimulatorModel::gateNode::gateNode(qint32 id, qint32 inputCount, qint32 outputCount, std::function<void(QVector<bool> , QVector<bool>&)> evaluatorFunc, SimulatorModel* parentModel)
@@ -58,7 +39,6 @@ void SimulatorModel::gateNode::evaluate()
 
 void SimulatorModel::connect(qint32 givingId, qint32 outputIndex, qint32 receivingId, qint32 inputIndex)
 {
-    std::cout << "connection made!" << std::endl;
     gateNode* giver = allGates.value(givingId);
     gateNode* receiver = allGates.value(receivingId);
     giver->outputToNodes[outputIndex].insert(receiver);
@@ -130,22 +110,18 @@ void SimulatorModel::setNthInputSequence(qint32 n){
 
 void SimulatorModel::startSimulation(){   
     //lock ui for input testing
-    //std::cout<<"in startSimulation"<<std::endl;
     emit disableEditing();
     currentInput = 0;
     if (canBeSimulated())
         simulateInput();
     else
     {
-        std::cout << "CANNOT SIMULATE" << std::endl;
         emit invalidCircuit();
         emit enableEditing();
     }
 }
 
 void SimulatorModel::simulateInput(){
-    std::cout<<"in simulateInput, simulating input "<<currentInput<<std::endl;
-
     activeGates.clear();
     for (gateNode* levelInput : levelInputs)
         activeGates.insert(levelInput);
@@ -161,7 +137,6 @@ void SimulatorModel::simulateInput(){
 }
 
 void SimulatorModel::simulateOneIteration(){
-    std::cout<<"in simulateOneIteration()"<<std::endl;
     //simulate iteration, update view
     QSet<gateNode*> spentGates;
     QSet<gateNode*> futureGates;
@@ -223,15 +198,12 @@ void SimulatorModel::simulateOneIteration(){
         emit outputsSet(toBoolVector(levelOutputs));
 
         for(int i = 0; i < levelOutputs.size(); i++){
-            if(levelOutputs[i]->inputStates[0] == levels[currentLevel].getExpectedOutput(currentInput)[i])
-                std::cout << "input " << i << " is correct" << std::endl;
-            else{
+            if(levelOutputs[i]->inputStates[0] != levels[currentLevel].getExpectedOutput(currentInput)[i]){
                 endSimulation(false);
                 return; //end sim early if level failed at any point
             }
         }
 
-        std::cout << currentInput << " of " << qPow(2, levelInputs.size()) - 1 << std::endl;
         if (currentInput == qPow(2, levelInputs.size()) - 1) //last input finished simulating, no wrong outputs
             endSimulation(true);
         else //more input sets to simulate
@@ -249,7 +221,6 @@ void SimulatorModel::endSimulation(bool levelSucceeded){
 
         if (currentLevel == levels.size() - 1)//just finished final level
         {
-            std::cout << "in end game emiiton" << std::endl;
             emit endGame();
             return;
         }
@@ -300,15 +271,12 @@ void SimulatorModel::addNewGate(qint32 gateID, GateTypes gateType) {
         break;
     }
 
-    if (newNode) {
+    if (newNode)
         allGates.insert(gateID, newNode);
-        std::cout << "new node, " << gateID << ", added to model" << std::endl;
-    }
 }
 
 void SimulatorModel::setupNextLevel()
 {
-    std::cout<<"loading next level"<<std::endl;
     if(currentLevel < levels.size() - 1)
         currentLevel++;
 

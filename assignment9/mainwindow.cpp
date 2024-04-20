@@ -2,7 +2,6 @@
 #include "qevent.h"
 #include "ui_mainwindow.h"
 #include <QMouseEvent>
-#include <iostream>
 #include "SimulatorModel.h"
 #include <QPainter>
 #include <QTimer>
@@ -84,7 +83,6 @@ void MainWindow::showWelcomeScreen() {
 
 void MainWindow::levelEndAnimation() {
     world = new b2World(b2Vec2(0.0f, 20.0f)); //reset world
-    std::cout << "in victory animation" << std::endl;
 
     //  QTimer::singleShot(100, this, &MainWindow::updateVictoryGates);
     b2BodyDef* wallBodyDef = new b2BodyDef();
@@ -121,7 +119,6 @@ void MainWindow::levelEndAnimation() {
         if (levelInOutGates.contains(g)) //ignore level-in/outs
             continue;
         bodyDef->position.Set(g->pos().x() + g->width()/2, g->pos().y() + g->height()/2);
-        std::cout << "set " << g->id << " at: " << g->pos().x() << ", " << g->pos().y() << std::endl;
         bodies.insert(g->id, world->CreateBody(bodyDef));
     }
 
@@ -160,7 +157,6 @@ void MainWindow::updateFinishGates() {
         if (!levelInOutGates.contains(gate)) {
             b2Vec2 position = bodies[gate->id]->GetPosition();
 
-            std::cout << "moved " << gate->id << " to: " << position.x << ", " << position.y << std::endl;
             QPoint gatePos(position.x - gate->width()/2, position.y - gate->height()/2);
             gate->move(gatePos);
         }
@@ -411,7 +407,6 @@ void MainWindow::deleteGate(UILogicGate *gate) {
 }
 
 void MainWindow::clearGates(){
-    std::cout<<"clearing gates"<<std::endl;
     for(QObject* o: ui->canvas->children())
         delete o;
     gates.clear();
@@ -689,7 +684,6 @@ void MainWindow::colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId
 
 void MainWindow::colorAllWires(QColor color)
 {
-    std::cout << "coloring all" << std::endl;
     for (qint32 i = 0; i < uiButtonConnections.size(); i++)
         uiButtonConnections[i].color = color;
     update();
@@ -731,7 +725,7 @@ void MainWindow::displayInvalidCircuit()
     disableAllButtons();
 
     QString message = "This circuit cannot be simulated!\n\n"
-                      "This circuit in circular, and could simulate indefinitely";
+                      "This circuit is circular, and could simulate indefinitely";
 
     ui->failLabel->setText(message);
     ui->failLabel->setWordWrap(true);  // Ensure the text wraps if too long

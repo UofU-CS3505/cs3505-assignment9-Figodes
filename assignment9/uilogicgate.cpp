@@ -1,6 +1,5 @@
 #include "uilogicgate.h"
 #include "mainwindow.h"
-#include <iostream>
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QVector>
@@ -105,7 +104,6 @@ void UILogicGate::mousePressEvent(QMouseEvent* event)
 
 
 void UILogicGate::updateLocation(QPoint newLocation) {
-    std::cout << newLocation.x() << newLocation.y() << std::endl;
     this->move(mapToParent(newLocation));
 }
 

@@ -197,10 +197,15 @@ void MainWindow::setupLevel(Level level){
     // Set headers
     QStringList headers;
     for (int i = 0; i < level.inputCount; ++i)
-        headers << QString("Input %1").arg(i);
+        headers << QString("IN %1").arg(i);
     for (int i = 0; i < level.outputCount; ++i)
-        headers << QString("Output %1").arg(i);
+        headers << QString("OUT %1").arg(i);
     ui->tableWidget->setHorizontalHeaderLabels(headers);
+
+    for (int i = 0; i < level.inputCount + level.outputCount; i++)
+    {
+        ui->tableWidget->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);
+    }
 
     // Populate the table with inputs and outputs
     for (int i = 0; i < ui->tableWidget->rowCount(); ++i)

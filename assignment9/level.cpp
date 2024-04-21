@@ -105,10 +105,11 @@ QVector<Level> Level::getLevelList(){
                 outputSet[0] = inputSet[0];
         },
         3, 1));
-    levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder.",
+    levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder, where the 3rd INPUT is the incoming carry bit, and the second OUTPUT is the outgoing carry.\n"
+        "Really, it's not necessary to think about those bits as any different from the others; fundamentally the circuit is just adding 3 bits and outputting the result in binary.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){
-            outputSet[0] = false;
-            outputSet[1] = false;
+            outputSet[0] = ((inputSet[0] + inputSet[1] + inputSet[2]) == 1) || ((inputSet[0] + inputSet[1] + inputSet[2]) == 3);
+            outputSet[1] = ((inputSet[0] + inputSet[1] + inputSet[2]) == 2) || ((inputSet[0] + inputSet[1] + inputSet[2]) == 3);
         },
         3, 2));
     return levels;

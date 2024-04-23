@@ -81,10 +81,9 @@ QVector<Level> Level::getLevelList(){
         "a gate we've seen before.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
         2, 1));
-    levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when either of the first two INPUTs are on, "
-        "but is always OFF if the third INPUT is ON.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !inputSet[2];},
-        3, 1));
+    levels.append(Level("Another example of a compound gate is the NAND gate. NAND gates are the inverse of AND gates, outputting OFF only when BOTH inputs are ON.",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] && inputSet[1]);},
+        2, 1));
     levels.append(Level("With digital logic, there is never just one way of solving a problem. The INPUT and OUTPUT sequence here matches an AND gate, but can be made without "
         "using an AND gate at all. Can you figure out how?",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
@@ -93,9 +92,10 @@ QVector<Level> Level::getLevelList(){
         "to an OR gate, but only outputs ON if either INPUT is ON, not BOTH. Hence the name XOR, standing for Exclusive Or.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !(inputSet[0] && inputSet[1]);},
         2, 1));
-    levels.append(Level("Another example of a compound gate is the NAND gate. NAND gates are the inverse of AND gates, outputting OFF only when BOTH inputs are ON.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] && inputSet[1]);},
-        2, 1));
+    levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when either of the first two INPUTs are on, "
+        "but is always OFF if the third INPUT is ON.",
+        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !inputSet[2];},
+        3, 1));
     levels.append(Level("Another basic digital component is the MUX, or multiplexer. This circuit chooses between two INPUTs using the third INPUT. If the third input is OFF, "
         "the first INPUT is used as the OUTPUT, whereas if the third INPUT is ON, the the second INPUT routed to the OUTPUT instead.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){

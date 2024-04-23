@@ -30,33 +30,12 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    UILogicGate *pickedUpGate;
-    QSet<QPushButton*> inputButtons;
-    QSet<QPushButton*> outputButtons;
-    QSet<UILogicGate*> levelInOutGates;
 
-    QPoint dragStartPosition;
+    UILogicGate *pickedUpGate;
 
     SimulatorModel* model;
-    QLabel* gatePlaceholder = nullptr;
-    qint32 currentGateType;
     qint32 idCounter;
-    bool connectionBeingDrawn;
-    QPushButton* buttonBeingConnected;
-    qint32 connectingGate;
-
-    struct Wire
-    {
-        QPushButton* first, * second; //first and second imply output to input order, first should alwas=ys be an outputting button and vise versa
-        QColor color;
-        bool operator==(const Wire& other);
-    };
-
-    QVector<Wire> uiButtonConnections;
-
     QMap<qint32, UILogicGate*> gates;
-    bool eventFilter(QObject *obj, QEvent *event);
-    void trackButtonsOn(UILogicGate* quarry);
 
     welcomeScreen welcomescreen;
     b2World* world;
@@ -64,6 +43,24 @@ private:
     QTimer* timer;
     bool playFinishAnimation = false;
     bool levelSuccess = false;
+
+    bool connectionBeingDrawn;
+    QPushButton* buttonBeingConnected;
+    qint32 connectingGate;
+    QSet<QPushButton*> inputButtons;
+    QSet<QPushButton*> outputButtons;
+    QSet<UILogicGate*> levelInOutGates;
+
+    struct Wire
+    {
+        QPushButton* first, * second; //first and second imply output to input order, first should alwas=ys be an outputting button and vise versa
+        QColor color;
+        bool operator==(const Wire& other);
+    };
+    QVector<Wire> uiButtonConnections;
+
+    bool eventFilter(QObject *obj, QEvent *event);
+    void trackButtonsOn(UILogicGate* quarry);
 
     std::mutex mtx;
 
@@ -84,11 +81,17 @@ public slots:
     /// \brief Turns the 3 input buttons on and off to show the given inputs.
     /// \param inputs: an array of 3 bools.
     void showInputs(const QVector<bool>& inputs);
+    /// \brief showOutputs Same as showInputs, but for level outputs
     void showOutputs(const QVector<bool>& outputs);
 
+    //Overrides that respond to the mouse hovering and clicking anywhere in the main window.
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+
+    /// \brief addGate Adds a gate of the specified type to the view, additonally signalling the model to do the same.
     void addGate(GateTypes gateType);
+    /// \brief deleteGate Removes the specified gate from the view and signals the model to do the same.
+    void deleteGate(UILogicGate *gate);
 
     /// \brief Clears all currently placed logic gates in UI.
     void clearGates();
@@ -99,27 +102,34 @@ public slots:
 
     void showWindow();
 
+    /// \brief levelEndAnimation Starts the level-end animation
     void levelEndAnimation();
+    /// \brief updateFinishGates Updates positions each frame for level-end animation
     void updateFinishGates();
+    /// \brief stopTimer Stops the timer responsible for updating the level-end animation
+    void stopTimer();
 
     void disableAllButtons();
     void enableAllButtons();
     void simulationEnd(bool success);
 
+    /// \brief colorAllWires Colors all wires with the given color
     void colorAllWires(QColor color);
+    /// \brief colorWire Changes the color of a specific wire going from the outputIndexth output of the node with giverId
+    /// to the inputIndexth input on the node with receiverId.
     void colorWire(qint32 giverId, qint32 outputIndex, qint32 receiverId, qint32 inputIndex, QColor newColor);
 
-    void stopTimer();
-
-    void deleteGate(UILogicGate *gate);
-
+    /// \brief displayLevelFailed Displays a message informing the user why their circuit failed.
+    /// \param failedInput The input sequence that cause a wrong output
+    /// \param expectedOutput The expected output for the failed input
+    /// \param actualOutput The result given by the circuit for the failed input
     void displayLevelFailed(QVector<bool> failedInput, QVector<bool> expectedOutput, QVector<bool> actualOutput);
+    /// \brief displayInvalidCircuit Informas the user that their circuit cannot be simulated
     void displayInvalidCircuit();
 
     QString boolVectorToString(const QVector<bool>& vec);
 
     void retryClicked();
-
     void gameCompleted();
 
 signals:

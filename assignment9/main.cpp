@@ -24,10 +24,8 @@ int main(int argc, char *argv[])
 
     QString styleSheet { QLatin1String(styleSheetFile.readAll()) };
 
-    //setup stylesheet
+    //set up stylesheet
     a.setStyleSheet(styleSheet);
 
-    //TODO: when game is finished, delete below line. closing the welcome screen will make the game appear
-   // w.show();
     return a.exec();
 }

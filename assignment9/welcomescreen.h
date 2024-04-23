@@ -6,6 +6,7 @@
 #include <QTimer>
 
 ///
+///  Written for CS 3505 Final Project, by Duncan Gilbreath, Ty Corbin, Will Campbell, Austin Laguette, and Indigo Barber
 /// NewSpriteWindow class for assignment 9, CS 3505, by Duncan G., Austin L, Ty C, Indigo B, and Will C.
 /// This is a class for the window that pops up when the game is launched
 ///

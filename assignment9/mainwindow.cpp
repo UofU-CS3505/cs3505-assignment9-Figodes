@@ -43,9 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(model, &SimulatorModel::endGame, this, &MainWindow::gameCompleted);
     connect(model, &SimulatorModel::invalidCircuit, this, &MainWindow::displayInvalidCircuit);
     model->initializeView();
-
-
-
     connect(ui->nextLevelButton, &QPushButton::clicked, this, [this]{timer->stop();});
 
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);

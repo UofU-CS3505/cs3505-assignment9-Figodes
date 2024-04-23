@@ -10,6 +10,7 @@
 #include "gatetypes.h"
 
 ///
+/// Written for CS 3505 Final Project, by Duncan Gilbreath, Ty Corbin, Will Campbell, Austin Laguette, and Indigo Barber
 /// \brief This class the circuit that the user has created, and handles simulating it,
 /// testing its behavior for different inputs, and moving between levels.
 ///

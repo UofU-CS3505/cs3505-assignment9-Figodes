@@ -17,6 +17,7 @@ class MainWindow;
 QT_END_NAMESPACE
 
 ///
+///  Written for CS 3505 Final Project, by Duncan Gilbreath, Ty Corbin, Will Campbell, Austin Laguette, and Indigo Barber
 /// \brief The main window of the game, allowing the user to make circuits,
 /// interact with the game, and see the results of their circuits.
 ///
@@ -33,22 +34,43 @@ private:
 
     UILogicGate *pickedUpGate;
 
+    // Model instantiation
     SimulatorModel* model;
+
+    // Id counter for gates that get placed
     qint32 idCounter;
+
+    // Map of gates with their ID and UILogicGate object
     QMap<qint32, UILogicGate*> gates;
 
+    // Welcome screen instantiation
     welcomeScreen welcomescreen;
+
+    // Box2D world object
     b2World* world;
+
+    // Map of the bodies for box2d
     QMap<qint32, b2Body*> bodies;
+
+    // Instantiate timer for timing
     QTimer* timer;
+
+    // Bool states for different functionality
     bool playFinishAnimation = false;
     bool levelSuccess = false;
-
     bool connectionBeingDrawn;
+
+    // Save state for button being connected for connecting buttons
     QPushButton* buttonBeingConnected;
+
+    // Gate being connected
     qint32 connectingGate;
+
+    // Lists of buttons that represent connections between gates
     QSet<QPushButton*> inputButtons;
     QSet<QPushButton*> outputButtons;
+
+    // List of gates
     QSet<UILogicGate*> levelInOutGates;
 
     struct Wire

@@ -5,6 +5,7 @@
 #include <QVector>
 
 ///
+///  Written for CS 3505 Final Project, by Duncan Gilbreath, Ty Corbin, Will Campbell, Austin Laguette, and Indigo Barber
 ///\brief This class represents a level of the game,
 /// containing its description and the correct outputs for each set of inputs.
 ///

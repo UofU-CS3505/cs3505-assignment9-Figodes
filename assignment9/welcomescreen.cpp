@@ -77,7 +77,7 @@ void welcomeScreen::updateWorld()
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
 
-    // Instruct the world to perform a single step of simulation.
+    // iterate through simulation
     world.Step(timeStep, velocityIterations, positionIterations);
 
     b2Vec2 position = body->GetPosition();

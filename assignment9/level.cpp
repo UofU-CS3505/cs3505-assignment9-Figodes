@@ -74,43 +74,43 @@ QVector<Level> Level::getLevelList(){
     levels.append(Level("Next the OR gate; an OR gate outputs ON when EITHER OR BOTH of its inputs are ON. ",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] || inputSet[1];},
         2, 1));
-    levels.append(Level("Lastly, the NOT gate. A NOT gate inverts the incoming signal: if its input is ON, it outputs OFF; if its input is OFF, it outputs ON.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !inputSet[0];},
-        1, 1));
-    levels.append(Level("Unfortunately, some logic can only be represented with a combination of multiple gates.\nNotice that the outputs here are the opposite of "
-        "a gate we've seen before.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
-        2, 1));
-    levels.append(Level("Another example of a compound gate is the NAND gate. NAND gates are the inverse of AND gates, outputting OFF only when BOTH inputs are ON.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] && inputSet[1]);},
-        2, 1));
-    levels.append(Level("With digital logic, there is never just one way of solving a problem. The INPUT and OUTPUT sequence here matches an AND gate, but can be made without "
-        "using an AND gate at all. Can you figure out how?",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
-        2, 1));
-    levels.append(Level("Logic gates themselves can even be more complex than just these basic 3. For example, this sequence of OUTPUTS matches an XOR gate. An XOR is similar "
-        "to an OR gate, but only outputs ON if either INPUT is ON, not BOTH. Hence the name XOR, standing for Exclusive Or.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !(inputSet[0] && inputSet[1]);},
-        2, 1));
+    // levels.append(Level("Lastly, the NOT gate. A NOT gate inverts the incoming signal: if its input is ON, it outputs OFF; if its input is OFF, it outputs ON.",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !inputSet[0];},
+    //     1, 1));
+    // levels.append(Level("Unfortunately, some logic can only be represented with a combination of multiple gates.\nNotice that the outputs here are the opposite of "
+    //     "a gate we've seen before.",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] || inputSet[1]);},
+    //     2, 1));
+    // levels.append(Level("Another example of a compound gate is the NAND gate. NAND gates are the inverse of AND gates, outputting OFF only when BOTH inputs are ON.",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = !(inputSet[0] && inputSet[1]);},
+    //     2, 1));
+    // levels.append(Level("With digital logic, there is never just one way of solving a problem. The INPUT and OUTPUT sequence here matches an AND gate, but can be made without "
+    //     "using an AND gate at all. Can you figure out how?",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = inputSet[0] && inputSet[1];},
+    //     2, 1));
+    // levels.append(Level("Logic gates themselves can even be more complex than just these basic 3. For example, this sequence of OUTPUTS matches an XOR gate. An XOR is similar "
+    //     "to an OR gate, but only outputs ON if either INPUT is ON, not BOTH. Hence the name XOR, standing for Exclusive Or.",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !(inputSet[0] && inputSet[1]);},
+    //     2, 1));
     levels.append(Level("To add more complexity, now we have a third input port! Note how in this circuit, the OUTPUT is alway ON when either of the first two INPUTs are on, "
         "but is always OFF if the third INPUT is ON.",
         [](QVector<bool> inputSet, QVector<bool>& outputSet){outputSet[0] = (inputSet[0] || inputSet[1]) && !inputSet[2];},
         3, 1));
-    levels.append(Level("Another basic digital component is the MUX, or multiplexer. This circuit chooses between two INPUTs using the third INPUT. If the third input is OFF, "
-        "the first INPUT is used as the OUTPUT, whereas if the third INPUT is ON, the the second INPUT routed to the OUTPUT instead.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){
-            if (inputSet[2])
-                outputSet[0] = inputSet[1];
-            else
-                outputSet[0] = inputSet[0];
-        },
-        3, 1));
-    levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder, where the 3rd INPUT is the incoming carry bit, and the second OUTPUT is the outgoing carry.\n"
-        "Really, it's not necessary to think about those bits as any different from the others; fundamentally the circuit is just adding 3 bits and outputting the result in binary.",
-        [](QVector<bool> inputSet, QVector<bool>& outputSet){
-            outputSet[0] = ((inputSet[0] + inputSet[1] + inputSet[2]) == 1) || ((inputSet[0] + inputSet[1] + inputSet[2]) == 3);
-            outputSet[1] = ((inputSet[0] + inputSet[1] + inputSet[2]) == 2) || ((inputSet[0] + inputSet[1] + inputSet[2]) == 3);
-        },
-        3, 2));
+    // levels.append(Level("Another basic digital component is the MUX, or multiplexer. This circuit chooses between two INPUTs using the third INPUT. If the third input is OFF, "
+    //     "the first INPUT is used as the OUTPUT, whereas if the third INPUT is ON, the the second INPUT routed to the OUTPUT instead.",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){
+    //         if (inputSet[2])
+    //             outputSet[0] = inputSet[1];
+    //         else
+    //             outputSet[0] = inputSet[0];
+    //     },
+    //     3, 1));
+    // levels.append(Level("Here, this INPUT to OUTPUT mapping matches that of a 1-bit adder, where the 3rd INPUT is the incoming carry bit, and the second OUTPUT is the outgoing carry.\n"
+    //     "Really, it's not necessary to think about those bits as any different from the others; fundamentally the circuit is just adding 3 bits and outputting the result in binary.",
+    //     [](QVector<bool> inputSet, QVector<bool>& outputSet){
+    //         outputSet[0] = ((inputSet[0] + inputSet[1] + inputSet[2]) == 1) || ((inputSet[0] + inputSet[1] + inputSet[2]) == 3);
+    //         outputSet[1] = ((inputSet[0] + inputSet[1] + inputSet[2]) == 2) || ((inputSet[0] + inputSet[1] + inputSet[2]) == 3);
+    //     },
+    //     3, 2));
     return levels;
 }
